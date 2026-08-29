@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "encoding": "base64",
+  "notes": "Patterns are base64-encoded so prohibited literals never appear in-repo. Decoded at scan time.",
+  "patterns": [
+    {
+      "id": "p01",
+      "pattern": "T250b2dvbnk=",
+      "mode": "literal"
+    },
+    {
+      "id": "p02",
+      "pattern": "S2Fub24=",
+      "mode": "literal"
+    },
+    {
+      "id": "p03",
+      "pattern": "QWxsYWdtYQ==",
+      "mode": "literal"
+    },
+    {
+      "id": "p04",
+      "pattern": "Q29uZXh1cw==",
+      "mode": "literal"
+    },
+    {
+      "id": "p05",
+      "pattern": "TWV0YWJvbGU=",
+      "mode": "literal"
+    },
+    {
+      "id": "p06",
+      "pattern": "QWlzdGhlc2lz",
+      "mode": "literal"
+    },
+    {
+      "id": "p07",
+      "pattern": "XGJBUkdcYg==",
+      "mode": "regex"
+    },
+    {
+      "id": "p08",
+      "pattern": "XGJBV0ZcYg==",
+      "mode": "regex"
+    },
+    {
+      "id": "p09",
+      "pattern": "QWdlbnQgV29ya3BsYWNl",
+      "mode": "literal"
+    },
+    {
+      "id": "p10",
+      "pattern": "VVZPUw==",
+      "mode": "literal"
+    },
+    {
+      "id": "p11",
+      "pattern": "SGVybWVz",
+      "mode": "literal"
+    },
+    {
+      "id": "p12",
+      "pattern": "VGVuZGVySGF3aw==",
+      "mode": "literal"
+    },
+    {
+      "id": "p13",
+      "pattern": "UHJvZ3Jlc3NQbGF5",
+      "mode": "literal"
+    },
+    {
+      "id": "p14",
+      "pattern": "dmVudHVyZXMtbWFpbg==",
+      "mode": "literal"
+    },
+    {
+      "id": "p15",
+      "pattern": "R2F0ZSBF",
+      "mode": "literal"
+    },
+    {
+      "id": "p16",
+      "pattern": "REFSUlY=",
+      "mode": "literal"
+    },
+    {
+      "id": "p17",
+      "pattern": "XGJSQUVcYg==",
+      "mode": "regex"
+    },
+    {
+      "id": "p18",
+      "pattern": "UFIgIzM0Mg==",
+      "mode": "literal"
+    },
+    {
+      "id": "p19",
+      "pattern": "XGJlc3RhdGVcYg==",
+      "mode": "regex"
+    },
+    {
+      "id": "p20",
+      "pattern": "cHJpdmF0ZSBzdGFydHVw",
+      "mode": "literal"
+    },
+    {
+      "id": "p21",
+      "pattern": "XGJSMEFcYg==",
+      "mode": "regex"
+    },
+    {
+      "id": "p22",
+      "pattern": "XGJSMEJcYg==",
+      "mode": "regex"
+    },
+    {
+      "id": "p23",
+      "pattern": "XGJSMENcYg==",
+      "mode": "regex"
+    },
+    {
+      "id": "p24",
+      "pattern": "QzpcZGV2XF9jdXN0b2R5",
+      "mode": "literal"
+    },
+    {
+      "id": "p25",
+      "pattern": "QzovZGV2L19jdXN0b2R5",
+      "mode": "literal"
+    },
+    {
+      "id": "p26",
+      "pattern": "QHVyaWRvbGFu",
+      "mode": "literal"
+    },
+    {
+      "id": "p27",
+      "pattern": "T250b2dvbnku",
+      "mode": "literal"
+    }
+  ]
+}

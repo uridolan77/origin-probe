@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "policy": "deny_by_default",
+  "description": "Only paths matching an allowed category may be published or exported. Everything else is denied.",
+  "categories": {
+    "product_source": {
+      "description": "Application source that ships in the public static site.",
+      "globs": [
+        "src/app/**",
+        "src/components/**",
+        "src/lib/**",
+        "public/**"
+      ]
+    },
+    "static_genealogy_data": {
+      "description": "Reviewed genealogy JSON records.",
+      "globs": [
+        "data/genealogies/**/*.json",
+        "data/genealogies/*.json"
+      ]
+    },
+    "public_citations": {
+      "description": "Public citation notes and bibliographic excerpts.",
+      "globs": [
+        "data/citations/**",
+        "docs/citations/**"
+      ]
+    },
+    "public_methodology": {
+      "description": "Plain-language methodology and readiness docs.",
+      "globs": [
+        "docs/**/*.md",
+        "LAUNCH_READINESS.md",
+        "README.md"
+      ]
+    },
+    "analytics_event_contract": {
+      "description": "Typed analytics event contract and documentation.",
+      "globs": [
+        "src/lib/events.ts",
+        "docs/EVENT_CONTRACT.md"
+      ]
+    },
+    "correction_mechanism": {
+      "description": "Correction submission UI and local adapter.",
+      "globs": [
+        "src/lib/corrections.ts",
+        "src/components/CorrectionForm.tsx",
+        "src/app/corrections/**"
+      ]
+    },
+    "generated_social_cards": {
+      "description": "Pre-generated Open Graph card images.",
+      "globs": [
+        "public/og/**/*.png"
+      ]
+    },
+    "ordinary_build_configuration": {
+      "description": "Ordinary build, lint, test, and CI configuration.",
+      "globs": [
+        "package.json",
+        "package-lock.json",
+        "tsconfig.json",
+        "next.config.ts",
+        "next-env.d.ts",
+        "eslint.config.mjs",
+        "vitest.config.ts",
+        "playwright.config.ts",
+        "PUBLIC_EXPORT_MANIFEST.json",
+        ".env.example",
+        ".gitignore",
+        ".github/workflows/**",
+        "tools/**",
+        "tests/**"
+      ]
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "origin-probe",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Phrase genealogy research probe — static export",
+  "scripts": {
+    "dev": "next dev",
+    "build": "npm run gen:og && next build",
+    "start": "npx --yes serve out",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "guard:data": "node tools/validate-data.mjs",
+    "guard:absolutes": "node tools/guard-absolutes.mjs",
+    "guard:cleanroom": "node tools/cleanroom-scan.mjs",
+    "guard:manifest": "node tools/export-manifest-check.mjs",
+    "guard:all": "npm run guard:data && npm run guard:absolutes && npm run guard:cleanroom && npm run guard:manifest",
+    "gen:og": "node tools/gen-og-cards.mjs",
+    "verify": "npm run guard:all && npm run typecheck && npm run lint && npm run test && npm run build"
+  },
+  "dependencies": {
+    "next": "16.3.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "@resvg/resvg-js": "2.6.2",
+    "@testing-library/react": "16.3.0",
+    "@types/node": "22.15.29",
+    "@types/react": "19.1.6",
+    "@types/react-dom": "19.1.5",
+    "eslint": "9.28.0",
+    "eslint-config-next": "16.3.3",
+    "jsdom": "26.1.0",
+    "satori": "0.13.2",
+    "typescript": "5.8.3",
+    "vitest": "3.2.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
