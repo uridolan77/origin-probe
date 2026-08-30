@@ -1,7 +1,8 @@
 ﻿# Launch readiness
 
-G2 public probe window authorized under ORIGIN-G2-PUBLIC-PROBE-AUTH-001.
+Public product preview is live. `ORIGIN_G2_WINDOW_001` is `INVALID_MEASUREMENT`.
 
-- LIVE analytics bound to approved ntfy ingest (+ GitHub issue #2 durable mirror)
-- Publication / deployment authorized for this probe
-- Product changes frozen once window start is recorded
+- Operator seed action: HOLD
+- Live forgeable ntfy ingest: disabled
+- Next gate: ORIGIN_G2R_MEASUREMENT_INTEGRITY_REPAIR
+- Product genealogies/copy/thresholds: frozen

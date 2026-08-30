@@ -7,6 +7,7 @@ import {
 } from "@/components/EvidenceRoleSection";
 import { GenealogyTimeline } from "@/components/GenealogyTimeline";
 import { ShareActions } from "@/components/ShareActions";
+import { ResultViewBeacon } from "@/components/ResultViewBeacon";
 import { SourceList } from "@/components/SourceList";
 import { getAll, getBySlug } from "@/lib/genealogies";
 
@@ -63,6 +64,7 @@ export default async function GenealogyPage({ params }: PageProps) {
         </div>
       </header>
 
+      <ResultViewBeacon slug={g.slug} />
       <ShareActions slug={g.slug} phrase={g.phrase} />
 
       <section className="stack" aria-labelledby="roles-heading">

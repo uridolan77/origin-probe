@@ -9,9 +9,9 @@ const nextConfig: NextConfig = {
   },
   trailingSlash: true,
   env: {
-    // ORIGIN-G2-PUBLIC-PROBE-AUTH-001 public probe window binding
-    NEXT_PUBLIC_ORIGIN_LIVE_ANALYTICS: "true",
-    NEXT_PUBLIC_ORIGIN_EVENT_INGEST_URL: "https://ntfy.sh/origin-g2-b1d8a602337b4c0b818e476e91cb4c55",
+    // ORIGIN_G2_WINDOW_001 invalidated — do not emit to forgeable public sink.
+    // G2R will bind NEXT_PUBLIC_ORIGIN_MEASUREMENT_API_URL to a trusted endpoint.
+    NEXT_PUBLIC_ORIGIN_LIVE_ANALYTICS: "false",
     NEXT_PUBLIC_BASE_PATH: "/origin-probe",
     SITE_URL: "https://uridolan77.github.io/origin-probe",
   },
