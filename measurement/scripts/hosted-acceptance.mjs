@@ -13,21 +13,102 @@
 import crypto from "node:crypto";
 import { execSync } from "node:child_process";
 import { hashClientId } from "../lib/config.js";
+import { reduceWindowEvents } from "../lib/reducer.js";
 import { issueShareToken } from "../lib/tokens.js";
 
-const API_A = (process.env.MEASUREMENT_API_URL_A || "http://127.0.0.1:8787").replace(/\/$/, "");
-const API_B = (process.env.MEASUREMENT_API_URL_B || "http://127.0.0.1:8788").replace(/\/$/, "");
-const ADMIN = process.env.MEASUREMENT_ADMIN_KEY || "";
-const HMAC = process.env.MEASUREMENT_HMAC_SECRET || "";
-const SALT = process.env.MEASUREMENT_CLIENT_SALT || "";
-const RUN = process.env.MEASUREMENT_RUN_ID || "";
-const ORIGIN = process.env.MEASUREMENT_ALLOWED_ORIGIN || "https://uridolan77.github.io";
+function block(reason) {
+  console.error(`HOSTED_ACCEPTANCE_TRANSCRIPT=BLOCKED reason=${reason}`);
+  process.exit(2);
+}
+
+function requiredEnv(name) {
+  const value = process.env[name];
+  if (!value) block(`missing_env:${name}`);
+  return value;
+}
+
+const API_A = requiredEnv("MEASUREMENT_API_URL_A").replace(/\/$/, "");
+const API_B = requiredEnv("MEASUREMENT_API_URL_B").replace(/\/$/, "");
+const ADMIN = requiredEnv("MEASUREMENT_ADMIN_KEY");
+const HMAC = requiredEnv("MEASUREMENT_HMAC_SECRET");
+const SALT = requiredEnv("MEASUREMENT_CLIENT_SALT");
+const RUN = requiredEnv("MEASUREMENT_RUN_ID");
+const ORIGIN = requiredEnv("MEASUREMENT_ALLOWED_ORIGIN");
+const RESTART_CMD = requiredEnv("MEASUREMENT_RESTART_CMD");
+const TOPOLOGY_JSON = requiredEnv("MEASUREMENT_TOPOLOGY_EVIDENCE_JSON");
 const slug = "culture-eats-strategy-for-breakfast";
 
-const O = process.env.MEASUREMENT_OPERATOR_RAW || "operator-profile-aaaaaaaa";
+const O = requiredEnv("MEASUREMENT_OPERATOR_RAW");
 const A = "browser-a-profile-" + crypto.randomBytes(4).toString("hex");
 const B = "browser-b-profile-" + crypto.randomBytes(4).toString("hex");
 const C = "browser-c-profile-" + crypto.randomBytes(4).toString("hex");
+
+if (API_A === API_B) block("api_urls_must_be_distinct");
+
+let topology;
+try {
+  topology = JSON.parse(TOPOLOGY_JSON);
+} catch {
+  block("invalid_topology_evidence_json");
+}
+if (
+  typeof topology?.apiA?.containerId !== "string" ||
+  topology.apiA.containerId.length === 0 ||
+  typeof topology?.apiB?.containerId !== "string" ||
+  topology.apiB.containerId.length === 0 ||
+  topology.apiA.containerId === topology.apiB.containerId ||
+  typeof topology?.apiA?.imageId !== "string" ||
+  topology.apiA.imageId.length === 0 ||
+  topology.apiA.imageId !== topology?.apiB?.imageId
+) {
+  block("topology_does_not_prove_distinct_containers_on_one_image");
+}
+
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, canonicalize(value[key])]),
+    );
+  }
+  return value;
+}
+
+function canonicalJson(value) {
+  return JSON.stringify(canonicalize(value));
+}
+
+function sha256(value) {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+function eventDigest(events) {
+  return sha256(canonicalJson(events));
+}
+
+function isCanonicalUtc(value) {
+  if (typeof value !== "string") return false;
+  const milliseconds = Date.parse(value);
+  return Number.isFinite(milliseconds) && new Date(milliseconds).toISOString() === value;
+}
+
+function reducerEvent(event) {
+  return {
+    id: event.id,
+    type: event.type,
+    runId: event.runId,
+    at: event.at,
+    slug: event.slug,
+    clientHash: event.clientHash,
+    creatorHash: event.creatorHash,
+    shareTokenFingerprint: event.shareTokenFingerprint,
+    seed: event.seed,
+    derivedFrom: event.derivedFrom,
+    exclusions: event.exclusions,
+  };
+}
 
 const results = [];
 function record(name, ok, detail = "") {
@@ -56,43 +137,101 @@ async function call(api, method, path, { client, body, admin = false, origin = O
   return { status: res.status, json };
 }
 
-async function waitHealthy(api, attempts = 40) {
+async function readHealth(api) {
+  try {
+    const response = await fetch(`${api}/v1/health`);
+    return { status: response.status, json: await response.json() };
+  } catch {
+    return { status: 0, json: null };
+  }
+}
+
+async function waitForBootChange(api, priorBootId, attempts = 60) {
   for (let i = 0; i < attempts; i++) {
-    try {
-      const r = await fetch(`${api}/v1/health`);
-      if (r.ok) return true;
-    } catch {
-      // retry
+    const health = await readHealth(api);
+    if (
+      health.status === 200 &&
+      health.json?.instance?.bootId &&
+      health.json.instance.bootId !== priorBootId
+    ) {
+      return health.json;
     }
     await new Promise((r) => setTimeout(r, 500));
   }
-  return false;
+  return null;
 }
 
-if (!(await waitHealthy(API_A)) || !(await waitHealthy(API_B))) {
-  console.error("APIs not healthy");
-  process.exit(1);
+function validHealth(health, expectedLabel) {
+  const text = JSON.stringify(health);
+  return (
+    health?.ledgerSchemaVersion === "v1" &&
+    health?.ledgerSchemaReady === true &&
+    health?.runId === RUN &&
+    health?.bindings?.runId === RUN &&
+    health?.instance?.label === expectedLabel &&
+    /^[0-9a-f-]{36}$/.test(health?.instance?.bootId || "") &&
+    isCanonicalUtc(health?.instance?.bootedAt) &&
+    [
+      health?.bindings?.configFingerprint,
+      health?.bindings?.databaseBindingFingerprint,
+      health?.bindings?.buildFingerprint,
+    ].every((value) => /^sha256:[0-9a-f]{64}$/.test(value || "")) &&
+    !text.includes("origin_measure_dev") &&
+    !text.includes("postgres://")
+  );
 }
 
-const healthResponse = await fetch(`${API_A}/v1/health`);
-const health = await healthResponse.json();
-const healthText = JSON.stringify(health);
+function sameLogicalBinding(a, b) {
+  return (
+    a?.runId === b?.runId &&
+    a?.bindings?.configFingerprint === b?.bindings?.configFingerprint &&
+    a?.bindings?.databaseBindingFingerprint ===
+      b?.bindings?.databaseBindingFingerprint &&
+    a?.bindings?.buildFingerprint === b?.bindings?.buildFingerprint
+  );
+}
+
+async function exportSnapshot(api, scope = "run") {
+  const response = await fetch(`${api}/v1/export?scope=${scope}`, {
+    headers: { "x-admin-key": ADMIN },
+  });
+  const json = await response.json();
+  const events = Array.isArray(json?.events) ? json.events : [];
+  return { status: response.status, json, events, digest: eventDigest(events) };
+}
+
+const healthResponseA = await readHealth(API_A);
+const healthResponseB = await readHealth(API_B);
+const healthA = healthResponseA.json;
+const healthB = healthResponseB.json;
 if (
-  healthResponse.status !== 200 ||
-  health.ledgerSchemaVersion !== "v1" ||
-  health.ledgerSchemaReady !== true ||
-  health.runId !== RUN ||
-  health.bindings?.runId !== RUN ||
-  !/^sha256:[0-9a-f]{64}$/.test(
-    health.bindings?.databaseBindingFingerprint || "",
-  ) ||
-  healthText.includes("origin_measure_dev") ||
-  healthText.includes("postgres://")
+  healthResponseA.status !== 200 ||
+  healthResponseB.status !== 200 ||
+  !validHealth(healthA, "api-a") ||
+  !validHealth(healthB, "api-b") ||
+  healthA.instance.bootId === healthB.instance.bootId ||
+  !sameLogicalBinding(healthA, healthB)
 ) {
-  console.error("health binding/schema evidence invalid", health);
-  process.exit(1);
+  block("health_does_not_prove_distinct_identically_bound_instances");
 }
 
+const baselineA = await exportSnapshot(API_A, "all");
+const baselineB = await exportSnapshot(API_B, "all");
+if (
+  baselineA.status !== 200 ||
+  baselineB.status !== 200 ||
+  baselineA.json?.scope !== "all" ||
+  baselineB.json?.scope !== "all" ||
+  baselineA.json?.activeRunId !== RUN ||
+  baselineB.json?.activeRunId !== RUN ||
+  baselineA.events.length !== 0 ||
+  baselineB.events.length !== 0 ||
+  baselineA.digest !== baselineB.digest
+) {
+  block("hosted_acceptance_requires_identical_empty_baseline");
+}
+
+console.log("topologyEvidenceSha256", sha256(canonicalJson(topology)));
 console.log("operatorHash", hashClientId(O, SALT).slice(0, 12) + "…");
 
 // 1 operator view excluded
@@ -199,13 +338,15 @@ let tokenA;
   );
 }
 
+const seedBody = {
+  slug,
+  seedKind: "operator",
+  idempotencyKey: "ORIGIN_G2R_UI_REACCEPTANCE_OPERATOR_SEED_001",
+};
+let seedFixture = null;
+
 // 9 seed token issuance is idempotent and its arrival is excluded
 {
-  const seedBody = {
-    slug,
-    seedKind: "operator",
-    idempotencyKey: "ORIGIN_G2R_UI_REACCEPTANCE_OPERATOR_SEED_001",
-  };
   const seed = await call(API_A, "POST", "/v1/admin/create-seed", {
     client: O,
     admin: true,
@@ -225,6 +366,7 @@ let tokenA;
     client: B,
     body: { slug, token: seed.json?.token },
   });
+  seedFixture = seed.json;
   record(
     "9_seed_idempotent_and_arrival_excluded",
       seed.status === 201 &&
@@ -363,79 +505,215 @@ let tokenA;
 
 // 15 restart durability
 {
-  const beforeRes = await fetch(`${API_A}/v1/export`, {
-    headers: { "x-admin-key": ADMIN },
-  });
-  const before = await beforeRes.json();
-  const countBefore = before.events?.length || 0;
-  const idsBefore = new Set((before.events || []).map((e) => e.id));
-
-  const restartCmd = process.env.MEASUREMENT_RESTART_CMD;
-  if (restartCmd) {
-    execSync(restartCmd, { stdio: "inherit", shell: true });
+  const beforeHealthA = (await readHealth(API_A)).json;
+  const beforeHealthB = (await readHealth(API_B)).json;
+  const beforeA = await exportSnapshot(API_A);
+  const beforeB = await exportSnapshot(API_B);
+  try {
+    execSync(RESTART_CMD, { stdio: "inherit", shell: true });
+  } catch {
+    block("restart_command_failed");
   }
-  const healthy = await waitHealthy(API_A, 60);
-  const afterRes = await fetch(`${API_A}/v1/export`, {
-    headers: { "x-admin-key": ADMIN },
+  const restartedA = await waitForBootChange(API_A, beforeHealthA?.instance?.bootId);
+  if (!restartedA) block("restart_boot_change_not_observed");
+  const afterHealthB = (await readHealth(API_B)).json;
+  const afterA = await exportSnapshot(API_A);
+  const afterB = await exportSnapshot(API_B);
+  const replay = await call(API_B, "POST", "/v1/admin/create-seed", {
+    client: O,
+    admin: true,
+    body: seedBody,
   });
-  const after = await afterRes.json();
-  const countAfter = after.events?.length || 0;
-  const preserved = [...idsBefore].every((id) => (after.events || []).some((e) => e.id === id));
+  const afterReplayA = await exportSnapshot(API_A);
+  const afterReplayB = await exportSnapshot(API_B);
   record(
     "15_restart_events_preserved",
-    healthy &&
-      beforeRes.status === 200 &&
-      afterRes.status === 200 &&
-      countBefore > 0 &&
-      countAfter >= countBefore &&
-      preserved,
-    `before=${countBefore} after=${countAfter} restarted=${Boolean(restartCmd)}`,
+    beforeA.status === 200 &&
+      beforeB.status === 200 &&
+      beforeA.events.length > 0 &&
+      beforeA.digest === beforeB.digest &&
+      validHealth(restartedA, "api-a") &&
+      sameLogicalBinding(beforeHealthA, restartedA) &&
+      afterHealthB?.instance?.bootId === beforeHealthB?.instance?.bootId &&
+      sameLogicalBinding(beforeHealthB, afterHealthB) &&
+      afterA.digest === beforeA.digest &&
+      afterB.digest === beforeA.digest &&
+      replay.status === 200 &&
+      replay.json?.replayed === true &&
+      replay.json?.token === seedFixture?.token &&
+      replay.json?.eventId === seedFixture?.eventId &&
+      afterReplayA.digest === beforeA.digest &&
+      afterReplayB.digest === beforeA.digest,
+    `events=${beforeA.events.length} digest=${beforeA.digest}`,
   );
 }
 
 // 16 concurrent duplicate arrivals → one qualification
+let scenario16ShareRawId = null;
+let scenario16ArrivalRawIds = [];
 {
   const share = await call(API_A, "POST", "/v1/create-share", {
     client: A + "-conc",
     body: { slug },
   });
+  scenario16ShareRawId = share.json?.rawEventId;
   const token = share.json?.token;
   const recipient = "concurrent-recipient-" + crypto.randomBytes(3).toString("hex");
   const [r1, r2] = await Promise.all([
     call(API_A, "POST", "/v1/share-arrival", { client: recipient, body: { slug, token } }),
     call(API_B, "POST", "/v1/share-arrival", { client: recipient, body: { slug, token } }),
   ]);
+  scenario16ArrivalRawIds = [r1.json?.rawEventId, r2.json?.rawEventId];
   const quals = [r1, r2].filter((r) => r.json?.qualifiedPropagation === true).length;
+  const loser = [r1, r2].find((r) => r.json?.qualifiedPropagation === false);
+  const exportedA = await exportSnapshot(API_A);
+  const exportedB = await exportSnapshot(API_B);
+  const rawRows = exportedA.events.filter((event) =>
+    scenario16ArrivalRawIds.includes(event.id),
+  );
+  const qualifiedRows = exportedA.events.filter(
+    (event) =>
+      event.type === "qualified_propagation" &&
+      scenario16ArrivalRawIds.includes(event.derivedFrom),
+  );
+  const loserRow = exportedA.events.find((event) => event.id === loser?.json?.rawEventId);
   record(
     "16_concurrent_duplicate_one_qualification",
-    quals === 1 && r1.status === 201 && r2.status === 201,
-    `quals=${quals}`,
+    share.status === 201 &&
+      typeof scenario16ShareRawId === "string" &&
+      r1.status === 201 &&
+      r2.status === 201 &&
+      new Set(scenario16ArrivalRawIds).size === 2 &&
+      quals === 1 &&
+      loser?.json?.exclusions?.includes("token_already_qualified") &&
+      exportedA.digest === exportedB.digest &&
+      rawRows.length === 2 &&
+      qualifiedRows.length === 1 &&
+      loserRow?.exclusions?.includes("token_already_qualified"),
+    `quals=${quals} digest=${exportedA.digest}`,
   );
 }
 
-// 17 parallel instances same dedupe
-record("17_parallel_instances_shared_dedupe", true, "exercised via api-a + api-b on shared postgres");
-
-// 18 reducer parity
+// 17 parallel instances share result-view dedupe state
+let scenario17RawIds = [];
 {
-  const exp = await fetch(`${API_A}/v1/export`, { headers: { "x-admin-key": ADMIN } });
-  const red = await fetch(`${API_A}/v1/reduce`, { headers: { "x-admin-key": ADMIN } });
-  const ej = await exp.json();
-  const rj = await red.json();
-  const qProp = (ej.events || []).filter((e) => e.type === "qualified_propagation").length;
+  await new Promise((resolve) => setTimeout(resolve, 25));
+  const viewer = "concurrent-viewer-" + crypto.randomBytes(3).toString("hex");
+  const [r1, r2] = await Promise.all([
+    call(API_A, "POST", "/v1/result-view", { client: viewer, body: { slug } }),
+    call(API_B, "POST", "/v1/result-view", { client: viewer, body: { slug } }),
+  ]);
+  scenario17RawIds = [r1.json?.rawEventId, r2.json?.rawEventId];
+  const quals = [r1, r2].filter((r) => r.json?.qualifiedResultView === true).length;
+  const loser = [r1, r2].find((r) => r.json?.qualifiedResultView === false);
+  const exportedA = await exportSnapshot(API_A);
+  const exportedB = await exportSnapshot(API_B);
+  const rawRows = exportedA.events.filter((event) =>
+    scenario17RawIds.includes(event.id),
+  );
+  const qualifiedRows = exportedA.events.filter(
+    (event) =>
+      event.type === "qualified_result_view" &&
+      scenario17RawIds.includes(event.derivedFrom),
+  );
+  const loserRow = exportedA.events.find((event) => event.id === loser?.json?.rawEventId);
+  const scenario16Rows = exportedA.events.filter((event) =>
+    scenario16ArrivalRawIds.includes(event.id),
+  );
+  const strictlyAfterScenario16 =
+    rawRows.length === 2 &&
+    scenario16Rows.length === 2 &&
+    Math.min(...rawRows.map((event) => Date.parse(event.at))) >
+      Math.max(...scenario16Rows.map((event) => Date.parse(event.at)));
+  record(
+    "17_parallel_instances_shared_dedupe",
+    r1.status === 201 &&
+      r2.status === 201 &&
+      new Set(scenario17RawIds).size === 2 &&
+      quals === 1 &&
+      loser?.json?.exclusions?.includes("repeat_view_deduped") &&
+      exportedA.digest === exportedB.digest &&
+      rawRows.length === 2 &&
+      qualifiedRows.length === 1 &&
+      loserRow?.exclusions?.includes("repeat_view_deduped") &&
+      strictlyAfterScenario16,
+    `quals=${quals} digest=${exportedA.digest}`,
+  );
+}
+
+// 18 exact run/window reducer parity across local, reversed, API-A, and API-B
+{
+  const exportedA = await exportSnapshot(API_A, "all");
+  const exportedB = await exportSnapshot(API_B, "all");
+  const shareRow = exportedA.events.find((event) => event.id === scenario16ShareRawId);
+  const endRows = exportedA.events.filter((event) => scenario17RawIds.includes(event.id));
+  const startUtc = shareRow?.at;
+  const endUtc = endRows.map((event) => event.at).sort()[0];
+  const reducerEvents = exportedA.events.map(reducerEvent);
+  let local = null;
+  let reversed = null;
+  try {
+    local = reduceWindowEvents(reducerEvents, { runId: RUN, startUtc, endUtc });
+    reversed = reduceWindowEvents([...reducerEvents].reverse(), {
+      runId: RUN,
+      startUtc,
+      endUtc,
+    });
+  } catch {
+    local = null;
+    reversed = null;
+  }
+  const query = new URLSearchParams({ startUtc: startUtc || "", endUtc: endUtc || "" });
+  const responseA = await fetch(`${API_A}/v1/reduce?${query}`, {
+    headers: { "x-admin-key": ADMIN },
+  });
+  const responseB = await fetch(`${API_B}/v1/reduce?${query}`, {
+    headers: { "x-admin-key": ADMIN },
+  });
+  const reductionA = await responseA.json();
+  const reductionB = await responseB.json();
+  const localJson = canonicalJson(local);
+  const exactParity =
+    local &&
+    localJson === canonicalJson(reversed) &&
+    localJson === canonicalJson(reductionA?.reduction) &&
+    localJson === canonicalJson(reductionB?.reduction);
   record(
     "18_reducer_parity",
-    exp.status === 200 &&
-      red.status === 200 &&
-      rj.reduction?.rawCounts?.qualified_propagation === qProp,
-    `export=${qProp} reduce=${rj.reduction?.rawCounts?.qualified_propagation}`,
+    exportedA.status === 200 &&
+      exportedB.status === 200 &&
+      exportedA.digest === exportedB.digest &&
+      responseA.status === 200 &&
+      responseB.status === 200 &&
+      exactParity &&
+      local?.runId === RUN &&
+      local?.window?.semantics === "[startUtc,endUtc)" &&
+      local?.rawCounts?.share_created === 1 &&
+      local?.rawCounts?.propagated_visit === 2 &&
+      local?.rawCounts?.qualified_propagation === 1 &&
+      local?.rawCounts?.result_view === 0 &&
+      local?.rawCounts?.qualified_result_view === 0 &&
+      local?.distinctSharerSessions === 1 &&
+      local?.windowExclusionCounts?.wrongRun === 0 &&
+      local?.windowExclusionCounts?.beforeStart > 0 &&
+      local?.windowExclusionCounts?.atOrAfterEnd >= 3 &&
+      local?.exclusions?.some((item) => item.reason === "token_already_qualified") &&
+      local?.disposition === "HOLD_ONCE",
+    `export=${exportedA.digest} reduction=${sha256(localJson)}`,
   );
 }
 
 // 19 export admin-only
 {
   const unauth = await fetch(`${API_A}/v1/export`);
-  record("19_export_admin_only", unauth.status === 401);
+  const unauthAll = await fetch(`${API_A}/v1/export?scope=all`);
+  const invalidScope = await fetch(`${API_A}/v1/export?scope=invalid`, {
+    headers: { "x-admin-key": ADMIN },
+  });
+  record(
+    "19_export_admin_only",
+    unauth.status === 401 && unauthAll.status === 401 && invalidScope.status === 400,
+  );
 }
 
 // 20 unapproved origin + public seed rejected
@@ -478,9 +756,35 @@ record("17_parallel_instances_shared_dedupe", true, "exercised via api-a + api-b
   );
 }
 
+const expectedScenarioNames = [
+  "1_operator_view_excluded",
+  "2_crawler_view_excluded",
+  "3_first_human_view_qualified",
+  "4_repeat_view_deduped",
+  "5_normal_share_issued",
+  "6_creator_self_excluded",
+  "7_distinct_recipient_qualified",
+  "8_reload_not_requalified",
+  "9_seed_idempotent_and_arrival_excluded",
+  "10_seed_recipient_multihop_and_operator_exclusion",
+  "11_modified_wrong_run_and_legacy_tokens_rejected",
+  "12_slug_mismatch_excluded",
+  "13_expired_token_rejected",
+  "14_qualified_submission_rejected",
+  "15_restart_events_preserved",
+  "16_concurrent_duplicate_one_qualification",
+  "17_parallel_instances_shared_dedupe",
+  "18_reducer_parity",
+  "19_export_admin_only",
+  "20_origin_public_seed_and_operator_impostor_rejected",
+];
+const exactScenarioSet =
+  results.length === expectedScenarioNames.length &&
+  results.every((result, index) => result.name === expectedScenarioNames[index]);
 const failed = results.filter((r) => !r.ok);
 console.log(`\n${results.length - failed.length}/${results.length} passed`);
-if (failed.length) {
+if (!exactScenarioSet || failed.length) {
+  if (!exactScenarioSet) console.error("FAILED scenario_set_mismatch");
   console.error("FAILED", failed.map((f) => f.name));
   process.exit(1);
 }

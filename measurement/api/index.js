@@ -15,6 +15,8 @@ import { reduceEvents, reduceWindowEvents } from "../lib/reducer.js";
 
 const CRAWLER_UA =
   /bot|crawl|spider|slurp|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|TelegramBot|Applebot|Googlebot|Bingbot|preview|Embedly|outbrain|vkShare|W3C_Validator/i;
+const RUNTIME_BOOT_ID = crypto.randomUUID();
+const RUNTIME_BOOTED_AT = new Date().toISOString();
 
 /** @type {PostgresLedger | null} */
 let ledgerSingleton = null;
@@ -159,6 +161,11 @@ export default async function handler(req, res) {
         bindings: getBindingEvidence({ cfg, databaseUrl: databaseUrl() }),
         durable: true,
         runtime: "vercel",
+        instance: {
+          label: process.env.MEASUREMENT_INSTANCE_LABEL || null,
+          bootId: RUNTIME_BOOT_ID,
+          bootedAt: RUNTIME_BOOTED_AT,
+        },
       });
     }
 
@@ -166,8 +173,19 @@ export default async function handler(req, res) {
       if (!requireAdmin(req, cfg)) {
         return json(res, 401, { ok: false, error: "unauthorized" });
       }
-      const events = await ledger.listEvents(cfg.runId);
-      return json(res, 200, { ok: true, events, ledgerSchemaVersion: LEDGER_SCHEMA_VERSION });
+      const requestUrl = new URL(req.url || "/", "http://local");
+      const scope = requestUrl.searchParams.get("scope") || "run";
+      if (scope !== "run" && scope !== "all") {
+        return json(res, 400, { ok: false, error: "invalid_export_scope" });
+      }
+      const events = await ledger.listEvents(scope === "all" ? null : cfg.runId);
+      return json(res, 200, {
+        ok: true,
+        scope,
+        activeRunId: cfg.runId,
+        events,
+        ledgerSchemaVersion: LEDGER_SCHEMA_VERSION,
+      });
     }
 
     if (req.method === "GET" && path === "/v1/reduce") {
