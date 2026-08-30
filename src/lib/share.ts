@@ -1,22 +1,73 @@
 ﻿const MAX_QUERY_PARAM_LENGTH = 128;
 
+export const MAX_SIGNED_SHARE_TOKEN_LENGTH = 4096;
+
+const BASE64URL_SEGMENT = /^[A-Za-z0-9_-]+$/;
+
+function isCanonicalBase64url(segment: string): boolean {
+  if (
+    segment.length === 0 ||
+    segment.length % 4 === 1 ||
+    !BASE64URL_SEGMENT.test(segment)
+  ) {
+    return false;
+  }
+  try {
+    const padded = `${segment.replace(/-/g, "+").replace(/_/g, "/")}${"=".repeat(
+      (4 - (segment.length % 4)) % 4,
+    )}`;
+    const decoded = atob(padded);
+    const canonical = btoa(decoded)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/g, "");
+    return canonical === segment;
+  } catch {
+    return false;
+  }
+}
+
 export function sanitizeQueryParam(value: string, max = MAX_QUERY_PARAM_LENGTH): string {
   return value.trim().slice(0, max).replace(/[^\w\-.:]/g, "");
 }
 
+/**
+ * A measurement-grade share token is exactly two non-empty base64url segments.
+ * Validate without normalizing so the signed bytes are preserved verbatim.
+ */
+export function isValidSignedShareToken(value: unknown): value is string {
+  if (
+    typeof value !== "string" ||
+    value.length === 0 ||
+    value.length > MAX_SIGNED_SHARE_TOKEN_LENGTH
+  ) {
+    return false;
+  }
+
+  const segments = value.split(".");
+  return (
+    segments.length === 2 &&
+    segments.every((segment) => isCanonicalBase64url(segment))
+  );
+}
+
 export function buildShareUrl(slug: string, token: string, base?: string): string {
   const safeSlug = sanitizeQueryParam(slug, 80);
-  const safeToken = sanitizeQueryParam(token, 64);
+  if (!isValidSignedShareToken(token)) {
+    throw new TypeError(
+      `Share token must contain exactly two base64url segments and be at most ${MAX_SIGNED_SHARE_TOKEN_LENGTH} characters.`,
+    );
+  }
   const basePath =
     (typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_PATH) || "";
   const origin =
     base || (typeof window !== "undefined" ? window.location.origin : "") || "";
   const path = `${basePath}/g/${safeSlug}/`;
   if (!origin) {
-    return `${path}?s=${encodeURIComponent(safeToken)}`;
+    return `${path}?s=${encodeURIComponent(token)}`;
   }
   const url = new URL(path, origin);
-  url.searchParams.set("s", safeToken);
+  url.searchParams.set("s", token);
   return url.toString();
 }
 

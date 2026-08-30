@@ -28,6 +28,26 @@ CREATE UNIQUE INDEX IF NOT EXISTS events_qual_view_uniq
   ON events (run_id, slug, client_hash, (payload->>'dedupe_bucket'))
   WHERE event_type = 'qualified_result_view';
 
+-- Exactly one durable seed issuance of each approved kind per run. The full
+-- signed token is retained so a retry with the same idempotency key can replay
+-- the original issuance without minting another token or event.
+CREATE TABLE IF NOT EXISTS seed_issuances (
+  run_id TEXT NOT NULL,
+  seed_kind TEXT NOT NULL CHECK (seed_kind IN ('operator', 'community')),
+  idempotency_key TEXT NOT NULL,
+  slug TEXT NOT NULL,
+  creator_hash TEXT NOT NULL,
+  share_token TEXT NOT NULL,
+  event_id TEXT NOT NULL UNIQUE REFERENCES events(event_id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (run_id, seed_kind)
+);
+
+-- An idempotency key identifies one request payload within a run; it cannot be
+-- reused to mint the other seed kind.
+CREATE UNIQUE INDEX IF NOT EXISTS seed_issuances_run_idempotency_uniq
+  ON seed_issuances (run_id, idempotency_key);
+
 -- Rate-limit / rejection audit (no raw IP stored)
 CREATE TABLE IF NOT EXISTS rejections (
   rejection_id TEXT PRIMARY KEY,
