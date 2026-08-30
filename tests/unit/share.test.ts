@@ -52,6 +52,7 @@ describe("signed share tokens", () => {
     "payload.signature/",
     "payload=.signature",
     " payload.signature",
+    "AB.AA",
     `${"a".repeat(4095)}.b`,
   ])("rejects malformed or oversized tokens without rewriting them: %s", (token) => {
     expect(isValidSignedShareToken(token)).toBe(false);

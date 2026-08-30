@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
-import { generateShareToken } from "@/lib/events";
 import {
   createSignedShare,
   measurementEnabled,
@@ -19,17 +18,40 @@ type Props = {
   phrase: string;
 };
 
-const MAX_REPORTED_INBOUND_ARRIVALS = 128;
 const reportedInboundArrivals = new Set<string>();
+const outboundShares = new Map<
+  string,
+  { token?: string; pending?: Promise<string | null> }
+>();
 
-function consumeInboundArrival(arrivalKey: string): boolean {
-  if (reportedInboundArrivals.has(arrivalKey)) return false;
-  reportedInboundArrivals.add(arrivalKey);
-  if (reportedInboundArrivals.size > MAX_REPORTED_INBOUND_ARRIVALS) {
-    const oldest = reportedInboundArrivals.values().next().value;
-    if (oldest) reportedInboundArrivals.delete(oldest);
-  }
+function consumeInboundArrival(token: string): boolean {
+  if (reportedInboundArrivals.has(token)) return false;
+  reportedInboundArrivals.add(token);
   return true;
+}
+
+async function mintOutboundToken(slug: string): Promise<string | null> {
+  const cached = outboundShares.get(slug);
+  if (cached?.token) return cached.token;
+  if (cached?.pending) return cached.pending;
+
+  const pending = createSignedShare(slug, false).then((token) => {
+    const active = outboundShares.get(slug);
+    if (!isValidSignedShareToken(token)) {
+      if (active?.pending === pending) outboundShares.delete(slug);
+      return null;
+    }
+    if (active?.pending === pending) outboundShares.set(slug, { token });
+    return token;
+  });
+  outboundShares.set(slug, { pending });
+  return pending;
+}
+
+/** @internal Test isolation for the module-scoped page-session caches. */
+export function resetShareActionSessionForTests(): void {
+  reportedInboundArrivals.clear();
+  outboundShares.clear();
 }
 
 function readInitialShareToken(): string | null {
@@ -44,73 +66,35 @@ function readInitialShareToken(): string | null {
 
 export function ShareActions({ slug, phrase }: Props) {
   const [status, setStatus] = useState<string | null>(null);
-  const outboundSlugRef = useRef(slug);
-  const outboundGenerationRef = useRef(0);
-  const outboundTokenRef = useRef<string | null>(null);
-  const outboundTokenPromiseRef = useRef<Promise<string | null> | null>(null);
+  const activeSlugRef = useRef(slug);
 
   useEffect(() => {
-    if (outboundSlugRef.current === slug) return;
-    outboundSlugRef.current = slug;
-    outboundGenerationRef.current += 1;
-    outboundTokenRef.current = null;
-    outboundTokenPromiseRef.current = null;
+    activeSlugRef.current = slug;
   }, [slug]);
 
   useEffect(() => {
     const token = readInitialShareToken();
     if (!token || !measurementEnabled()) return;
-    const arrivalKey = `${slug}\u0000${token}`;
-    if (!consumeInboundArrival(arrivalKey)) return;
+    if (!consumeInboundArrival(token)) return;
     void reportShareArrival(slug, token);
   }, [slug]);
-
-  async function createOutboundToken(): Promise<string | null> {
-    if (outboundSlugRef.current !== slug) {
-      outboundSlugRef.current = slug;
-      outboundGenerationRef.current += 1;
-      outboundTokenRef.current = null;
-      outboundTokenPromiseRef.current = null;
-    }
-
-    if (outboundTokenRef.current) return outboundTokenRef.current;
-    if (outboundTokenPromiseRef.current) return outboundTokenPromiseRef.current;
-
-    const requestSlug = slug;
-    const requestGeneration = outboundGenerationRef.current;
-    const pending = (async () => {
-      const token = measurementEnabled()
-        ? await createSignedShare(requestSlug, false)
-        : `offline.${generateShareToken()}`;
-      if (
-        outboundSlugRef.current !== requestSlug ||
-        outboundGenerationRef.current !== requestGeneration
-      ) {
-        return null;
-      }
-      if (!isValidSignedShareToken(token)) {
-        setStatus("Could not create share token.");
-        return null;
-      }
-      outboundTokenRef.current = token;
-      return token;
-    })();
-
-    outboundTokenPromiseRef.current = pending;
-    const token = await pending;
-    if (outboundTokenPromiseRef.current === pending) {
-      outboundTokenPromiseRef.current = null;
-    }
-    return token;
-  }
 
   async function ensureOutboundShare(): Promise<{
     token: string;
     url: string;
   } | null> {
-    const token = await createOutboundToken();
-    if (!token) return null;
-    return { token, url: buildShareUrl(slug, token) };
+    if (!measurementEnabled()) {
+      setStatus("Sharing is unavailable while measurement is offline.");
+      return null;
+    }
+    const requestSlug = slug;
+    const token = await mintOutboundToken(requestSlug);
+    if (activeSlugRef.current !== requestSlug) return null;
+    if (!token) {
+      setStatus("Could not create share token.");
+      return null;
+    }
+    return { token, url: buildShareUrl(requestSlug, token) };
   }
 
   async function onCopy() {

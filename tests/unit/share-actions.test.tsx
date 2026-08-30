@@ -26,7 +26,10 @@ vi.mock("@/lib/share", async () => {
   };
 });
 
-import { ShareActions } from "@/components/ShareActions";
+import {
+  resetShareActionSessionForTests,
+  ShareActions,
+} from "@/components/ShareActions";
 import {
   createSignedShare,
   measurementEnabled,
@@ -35,12 +38,38 @@ import {
 import { copyLink, nativeShare } from "@/lib/share";
 
 const SLUG = "culture-eats-strategy-for-breakfast";
-const INBOUND_TOKEN =
-  "eyJ2IjoyLCJydW5JZCI6IkdSVC1JTkJPVU5EIn0.inbound_signature_x";
-const OUTBOUND_TOKEN = `eyJ2IjoyLCJydW5JZCI6IkdSVC1PVVRCT1VORCJ9.${"s".repeat(512)}`;
+const TEST_SIGNATURE = Buffer.alloc(32, 0x73).toString("base64url");
+const testToken = (label: string, seed = false) =>
+  `${Buffer.from(
+    JSON.stringify({ v: 2, runId: "G2R-TEST", label, seed }),
+    "utf8",
+  ).toString("base64url")}.${TEST_SIGNATURE}`;
+const INBOUND_TOKEN = testToken("operator-seed", true);
+const OUTBOUND_TOKEN = testToken("ordinary-outbound", false);
+
+function maximumLengthToken(): string {
+  const payload = {
+    v: 2,
+    runId: "ORIGIN-G2-PUBLIC-PROBE-AUTH-002",
+    slug: SLUG,
+    creatorHash: "c".repeat(64),
+    seed: false,
+    iat: 1_788_091_200,
+    exp: 1_789_300_800,
+    nonce: "",
+  };
+  const targetPayloadBytes = 3039;
+  payload.nonce = "n".repeat(
+    targetPayloadBytes - Buffer.byteLength(JSON.stringify(payload), "utf8"),
+  );
+  return `${Buffer.from(JSON.stringify(payload), "utf8").toString(
+    "base64url",
+  )}.${TEST_SIGNATURE}`;
+}
 
 describe("ShareActions token lineage", () => {
   beforeEach(() => {
+    resetShareActionSessionForTests();
     window.history.replaceState(
       {},
       "",
@@ -71,7 +100,9 @@ describe("ShareActions token lineage", () => {
     expect(reportShareArrival).toHaveBeenCalledWith(SLUG, INBOUND_TOKEN);
 
     firstMount.unmount();
-    render(<ShareActions slug={SLUG} phrase="Culture eats strategy for breakfast" />);
+    const remounted = render(
+      <ShareActions slug={SLUG} phrase="Culture eats strategy for breakfast" />,
+    );
     expect(reportShareArrival).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByRole("button", { name: "Copy link" }));
@@ -89,6 +120,8 @@ describe("ShareActions token lineage", () => {
     );
     expect(copiedUrl).not.toContain(INBOUND_TOKEN);
 
+    remounted.unmount();
+    render(<ShareActions slug={SLUG} phrase="Culture eats strategy for breakfast" />);
     fireEvent.click(screen.getByRole("button", { name: "Share" }));
     await waitFor(() => {
       expect(screen.getByRole("status").textContent).toBe("Shared.");
@@ -127,19 +160,19 @@ describe("ShareActions token lineage", () => {
     });
 
     await act(async () => {
-      resolveFirst("first_payload_x.first_signature");
+      resolveFirst(testToken("first"));
     });
     expect(copyLink).not.toHaveBeenCalled();
 
     await act(async () => {
-      resolveSecond("second_payload.second_signature");
+      resolveSecond(testToken("second"));
     });
     await waitFor(() => {
       expect(copyLink).toHaveBeenCalledTimes(1);
     });
     const secondUrl = vi.mocked(copyLink).mock.calls[0]?.[0];
     expect(new URL(secondUrl as string).searchParams.get("s")).toBe(
-      "second_payload.second_signature",
+      testToken("second"),
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Share" }));
@@ -150,30 +183,96 @@ describe("ShareActions token lineage", () => {
     expect(vi.mocked(nativeShare).mock.calls[0]?.[0].url).toBe(secondUrl);
   });
 
-  it("bounds remembered inbound arrivals while still deduplicating remounts", () => {
-    const baseToken = "base.sig_base";
-    const mountArrival = (token: string) => {
+  it("consumes an inbound token once across many arrivals and slug rerenders", () => {
+    const baseToken = testToken("base");
+    const mountArrival = (token: string, slug = SLUG) => {
       window.history.replaceState(
         {},
         "",
-        `/g/${SLUG}/?s=${encodeURIComponent(token)}`,
+        `/g/${slug}/?s=${encodeURIComponent(token)}`,
       );
       const mounted = render(
-        <ShareActions slug={SLUG} phrase="Culture eats strategy for breakfast" />,
+        <ShareActions slug={slug} phrase="Culture eats strategy for breakfast" />,
       );
       mounted.unmount();
     };
 
     mountArrival(baseToken);
     for (let index = 0; index < 129; index += 1) {
-      const body = index.toString(36).padStart(4, "0");
-      mountArrival(`${body}.sig00000`);
+      mountArrival(testToken(`arrival-${index}`));
     }
-    mountArrival(baseToken);
+    mountArrival(baseToken, "another-slug");
 
     const baseReports = vi
       .mocked(reportShareArrival)
       .mock.calls.filter(([, token]) => token === baseToken);
-    expect(baseReports).toHaveLength(2);
+    expect(baseReports).toHaveLength(1);
+  });
+
+  it("fails closed when measurement is unavailable", async () => {
+    vi.mocked(measurementEnabled).mockReturnValue(false);
+    window.history.replaceState({}, "", `/g/${SLUG}/`);
+    render(<ShareActions slug={SLUG} phrase="Culture eats strategy for breakfast" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Copy link" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("status").textContent).toBe(
+        "Sharing is unavailable while measurement is offline.",
+      );
+    });
+    expect(createSignedShare).not.toHaveBeenCalled();
+    expect(copyLink).not.toHaveBeenCalled();
+    expect(nativeShare).not.toHaveBeenCalled();
+  });
+
+  it("coalesces concurrent Copy and Share into one issuance", async () => {
+    let resolveToken!: (token: string | null) => void;
+    vi.mocked(createSignedShare).mockImplementation(
+      () => new Promise((resolve) => (resolveToken = resolve)),
+    );
+    window.history.replaceState({}, "", `/g/${SLUG}/`);
+    render(<ShareActions slug={SLUG} phrase="Culture eats strategy for breakfast" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Copy link" }));
+    fireEvent.click(screen.getByRole("button", { name: "Share" }));
+    await waitFor(() => expect(createSignedShare).toHaveBeenCalledTimes(1));
+
+    await act(async () => resolveToken(OUTBOUND_TOKEN));
+    await waitFor(() => {
+      expect(copyLink).toHaveBeenCalledTimes(1);
+      expect(nativeShare).toHaveBeenCalledTimes(1);
+    });
+    expect(vi.mocked(nativeShare).mock.calls[0]?.[0].url).toBe(
+      vi.mocked(copyLink).mock.calls[0]?.[0],
+    );
+  });
+
+  it("preserves a complete 4096-character API token through Copy", async () => {
+    const token = maximumLengthToken();
+    expect(token).toHaveLength(4096);
+    vi.mocked(createSignedShare).mockResolvedValue(token);
+    window.history.replaceState({}, "", `/g/${SLUG}/`);
+    render(<ShareActions slug={SLUG} phrase="Culture eats strategy for breakfast" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Copy link" }));
+    await waitFor(() => expect(copyLink).toHaveBeenCalledTimes(1));
+    const copiedUrl = vi.mocked(copyLink).mock.calls[0]?.[0];
+    expect(new URL(copiedUrl as string).searchParams.get("s")).toBe(token);
+  });
+
+  it("rejects a malformed API token before Copy or Share", async () => {
+    vi.mocked(createSignedShare).mockResolvedValue("AB.AA");
+    window.history.replaceState({}, "", `/g/${SLUG}/`);
+    render(<ShareActions slug={SLUG} phrase="Culture eats strategy for breakfast" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Copy link" }));
+    await waitFor(() => {
+      expect(screen.getByRole("status").textContent).toBe(
+        "Could not create share token.",
+      );
+    });
+    expect(copyLink).not.toHaveBeenCalled();
+    expect(nativeShare).not.toHaveBeenCalled();
   });
 });

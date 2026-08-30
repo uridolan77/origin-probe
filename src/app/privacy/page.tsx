@@ -27,11 +27,11 @@ export default function PrivacyPage() {
         Measurement (plain language)
       </h2>
       <p>
-        During the authorized 14-day public decision window, live measurement is on. Your
-        browser stores a random pseudonymous client identifier in local storage. When you
-        view a traced result, create a share link, or arrive through a signed share link,
-        the browser sends that identifier and limited event context to the measurement
-        service.
+        During a documented acceptance run or an authorized public decision window, live
+        measurement is on. Your browser stores a random pseudonymous client identifier in
+        local storage. When you view a traced result, create a share link, or arrive
+        through a signed share link, the browser sends that identifier and limited event
+        context to the measurement service.
       </p>
       <p>
         Before an event is written, the service transforms the identifier with a keyed HMAC
@@ -42,9 +42,9 @@ export default function PrivacyPage() {
       </p>
       <p>
         Automated crawlers and link-preview agents are excluded from qualified counts, as
-        are operator traffic, seed-token arrivals, same-client arrivals, invalid tokens,
-        and duplicate qualifications. The private ledger is evaluated only against the
-        authorized 14-day window for the probe decision.
+        are operator arrivals, designated seed-token arrivals, same-client arrivals,
+        invalid tokens, and duplicate qualifications. The private ledger is evaluated only
+        against the authorized 14-day window for the probe decision.
       </p>
       <h2 className="display" style={{ fontSize: "1.25rem" }}>
         Corrections
