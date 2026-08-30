@@ -1,0 +1,126 @@
+{
+  "genealogyId": "gen-culture-eats-strategy",
+  "slug": "culture-eats-strategy-for-breakfast",
+  "phrase": "Culture eats strategy for breakfast",
+  "aliases": [
+    "culture eats strategy for lunch",
+    "culture eats strategy",
+    "culture trumps strategy"
+  ],
+  "revision": 1,
+  "reviewedAt": "2026-08-29",
+  "status": "provisional",
+  "finding": "Popularized attribution to Peter Drucker is stronger than any coinage claim; the earliest verified breakfast wording located is a March 2000 Giga Information Group headline cited in a September 2000 trade journal.",
+  "searchScope": "English-language open web, Quote Investigator dossier, newspaper databases cited therein, and secondary management press. Did not inspect a physical March 2000 Giga Information Group original.",
+  "evidenceReviewed": "Quote Investigator (2017) with hardcopy-verified September 2000 PIMA citation; 2006 Associated Press coverage of Mark Fields; 2011 textbook Drucker attribution.",
+  "supersedesRevision": null,
+  "correctionHistory": [],
+  "assertions": [
+    {
+      "assertionId": "a-culture-earliest",
+      "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
+      "subject": "March 2000 Giga Information Group headline, as cited September 2000",
+      "publicStatement": "Earliest verified occurrence located: a September 2000 PIMA trade-journal article quotes a March 2000 Giga Information Group headline, “Culture Eats Strategy for Breakfast!”",
+      "evidenceIds": [
+        "src-culture-pima-2000",
+        "src-culture-qi-2017"
+      ],
+      "supportKind": "direct",
+      "caveat": "The March 2000 Giga periodical itself was not inspected in this review; the claim rests on the hardcopy-verified September 2000 citation reported by Quote Investigator."
+    },
+    {
+      "assertionId": "a-culture-misattr",
+      "evidenceRole": "MISATTRIBUTED_TO",
+      "subject": "Peter Drucker",
+      "publicStatement": "Current evidence does not securely support coinage by Peter Drucker; his name appears attached to the saying years after the earliest located uses, including after his 2005 death.",
+      "evidenceIds": [
+        "src-culture-qi-2017",
+        "src-culture-textbook-2011"
+      ],
+      "supportKind": "supporting"
+    },
+    {
+      "assertionId": "a-culture-pop",
+      "evidenceRole": "POPULARIZED_BY",
+      "subject": "Corporate and management press, including Mark Fields / Ford coverage",
+      "publicStatement": "Popularized by management practice and press: by 2006 the slogan appears as a favorite of Ford executive Mark Fields, and later management writing often recycles a Drucker credit.",
+      "evidenceIds": [
+        "src-culture-fields-2006",
+        "src-culture-qi-2017"
+      ],
+      "supportKind": "supporting"
+    },
+    {
+      "assertionId": "a-culture-contested",
+      "evidenceRole": "CONTESTED_INCOMPLETE",
+      "subject": "Named coinage",
+      "publicStatement": "The record remains contested as to a named coiner; the March 2000 Giga headline author is not identified in the sources reviewed.",
+      "evidenceIds": [
+        "src-culture-qi-2017"
+      ],
+      "supportKind": "incomplete"
+    }
+  ],
+  "sources": [
+    {
+      "sourceId": "src-culture-pima-2000",
+      "title": "Recovered paper trading—ready for the Web? (citing March 2000 Giga headline)",
+      "author": "Bill Moore; Jerry Rose",
+      "publisher": "PIMA’s North American Papermaker",
+      "publicationDate": "2000-09",
+      "sourceType": "primary",
+      "url": "https://quoteinvestigator.com/2017/05/23/culture-eats/",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-culture-earliest"
+      ],
+      "shortExcerpt": "As stated in the March 2000 Giga Information Group headline “Culture Eats Strategy for Breakfast!”"
+    },
+    {
+      "sourceId": "src-culture-qi-2017",
+      "title": "Culture Eats Strategy for Breakfast",
+      "author": "Garson O’Toole",
+      "publisher": "Quote Investigator",
+      "publicationDate": "2017-05-23",
+      "sourceType": "secondary",
+      "url": "https://quoteinvestigator.com/2017/05/23/culture-eats/",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-culture-earliest",
+        "a-culture-misattr",
+        "a-culture-pop",
+        "a-culture-contested"
+      ],
+      "shortExcerpt": "Peter Drucker who died in 2005 was not mentioned in the earliest citations found by QI. His name was attached to the saying by 2011."
+    },
+    {
+      "sourceId": "src-culture-fields-2006",
+      "title": "Ford takes close look at itself as job, factory cuts are set",
+      "author": "Dee-Ann Durbin (Associated Press)",
+      "publisher": "Arizona Daily Star (AP)",
+      "publicationDate": "2006-01-24",
+      "sourceType": "primary",
+      "url": "https://quoteinvestigator.com/2017/05/23/culture-eats/",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-culture-pop"
+      ],
+      "shortExcerpt": "One of Fields’ favorite slogans on the wall: “Culture eats strategy for breakfast.”"
+    },
+    {
+      "sourceId": "src-culture-textbook-2011",
+      "title": "Business Strategy: An Introduction (3rd ed.)",
+      "author": "David Campbell; David Edgar; George Stonehouse",
+      "publisher": "Palgrave Macmillan",
+      "publicationDate": "2011",
+      "sourceType": "secondary",
+      "url": "https://quoteinvestigator.com/2017/05/23/culture-eats/",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-culture-misattr"
+      ],
+      "shortExcerpt": "as the phrase often attributed to Peter Drucker claims: ‘Culture eats strategy for breakfast.’"
+    }
+  ],
+  "sourceSetHash": "sha256:df78a9558764081a"
+}

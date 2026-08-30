@@ -1,6 +1,6 @@
 # Origin
 
-Private candidate for a small phrase-genealogy product.
+Phrase-genealogy research probe (static export).
 
 > Who coined it, who made it famous, and what came before?
 
@@ -12,7 +12,7 @@ PUBLICATION_AUTHORIZED=false
 DEPLOYMENT_AUTHORIZED=false
 ```
 
-This repository is a private build candidate. Launch, publication, and deployment are unauthorized.
+Launch, publication, and deployment are unauthorized. See `LAUNCH_READINESS.md`.
 
 ## Local setup
 
