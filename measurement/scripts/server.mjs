@@ -81,17 +81,16 @@ export async function createServer() {
     process.env.DATABASE_URL;
   if (!databaseUrl) throw new Error("MEASUREMENT_DATABASE_URL required");
 
-  // Fail closed if secrets missing (no silent defaults in hosted mode)
-  if (process.env.MEASUREMENT_REQUIRE_SECRETS === "true") {
-    for (const k of [
-      "MEASUREMENT_HMAC_SECRET",
-      "MEASUREMENT_CLIENT_SALT",
-      "MEASUREMENT_ADMIN_KEY",
-      "MEASUREMENT_ALLOWED_ORIGIN",
-      "MEASUREMENT_RUN_ID",
-    ]) {
-      if (!process.env[k]) throw new Error(`missing_env:${k}`);
-    }
+  // Every runnable HTTP surface fails closed; there is no opt-in switch that
+  // permits development credentials or an unbound run.
+  for (const k of [
+    "MEASUREMENT_HMAC_SECRET",
+    "MEASUREMENT_CLIENT_SALT",
+    "MEASUREMENT_ADMIN_KEY",
+    "MEASUREMENT_ALLOWED_ORIGIN",
+    "MEASUREMENT_RUN_ID",
+  ]) {
+    if (!process.env[k]) throw new Error(`missing_env:${k}`);
   }
 
   const cfg = getConfig();

@@ -13,6 +13,7 @@ import {
   hashClientId,
 } from "../lib/config.js";
 import { reduceEvents, reduceWindowEvents } from "../lib/reducer.js";
+import { createServer } from "../scripts/server.mjs";
 
 const RUN = "ORIGIN-G2R-UI-REACCEPTANCE-001";
 const SLUG = "culture-eats-strategy-for-breakfast";
@@ -94,19 +95,61 @@ test("complete signed tokens are preserved through the 4096-byte limit", () => {
   assert.equal(verified.payload.creatorHash.length, 2700);
 });
 
-test("configuration has no implicit measurement run", () => {
-  const prior = process.env.MEASUREMENT_RUN_ID;
-  delete process.env.MEASUREMENT_RUN_ID;
+test("configuration has no implicit measurement secrets or run", () => {
+  const required = [
+    "MEASUREMENT_HMAC_SECRET",
+    "MEASUREMENT_CLIENT_SALT",
+    "MEASUREMENT_ADMIN_KEY",
+    "MEASUREMENT_RUN_ID",
+  ];
+  const prior = Object.fromEntries(required.map((name) => [name, process.env[name]]));
   try {
-    assert.throws(() => getConfig(), /missing_env:MEASUREMENT_RUN_ID/);
+    for (const missing of required) {
+      for (const name of required) process.env[name] = `configured-${name}`;
+      delete process.env[missing];
+      assert.throws(() => getConfig(), new RegExp(`missing_env:${missing}`));
+    }
   } finally {
-    if (prior === undefined) delete process.env.MEASUREMENT_RUN_ID;
-    else process.env.MEASUREMENT_RUN_ID = prior;
+    for (const name of required) {
+      if (prior[name] === undefined) delete process.env[name];
+      else process.env[name] = prior[name];
+    }
+  }
+});
+
+test("server secret validation cannot be disabled", async () => {
+  const names = [
+    "MEASUREMENT_DATABASE_URL",
+    "MEASUREMENT_HMAC_SECRET",
+    "MEASUREMENT_CLIENT_SALT",
+    "MEASUREMENT_ADMIN_KEY",
+    "MEASUREMENT_ALLOWED_ORIGIN",
+    "MEASUREMENT_RUN_ID",
+    "MEASUREMENT_REQUIRE_SECRETS",
+  ];
+  const prior = Object.fromEntries(names.map((name) => [name, process.env[name]]));
+  try {
+    process.env.MEASUREMENT_DATABASE_URL = "postgres://unused.example/unused";
+    process.env.MEASUREMENT_CLIENT_SALT = "configured-salt";
+    process.env.MEASUREMENT_ADMIN_KEY = "configured-admin";
+    process.env.MEASUREMENT_ALLOWED_ORIGIN = "https://example.test";
+    process.env.MEASUREMENT_RUN_ID = RUN;
+    process.env.MEASUREMENT_REQUIRE_SECRETS = "false";
+    delete process.env.MEASUREMENT_HMAC_SECRET;
+    await assert.rejects(createServer(), /missing_env:MEASUREMENT_HMAC_SECRET/);
+  } finally {
+    for (const name of names) {
+      if (prior[name] === undefined) delete process.env[name];
+      else process.env[name] = prior[name];
+    }
   }
 });
 
 test("health binding evidence binds build/config/database without raw secrets", () => {
   const cfg = {
+    hmacSecret: "health-hmac-a",
+    clientSalt: "health-salt-a",
+    adminKey: "health-admin-a",
     runId: RUN,
     tokenTtlSeconds: 1209600,
     viewDedupeSeconds: 21600,
@@ -135,6 +178,16 @@ test("health binding evidence binds build/config/database without raw secrets", 
   assert.match(evidence.buildFingerprint, /^sha256:[0-9a-f]{64}$/);
   assert.equal(JSON.stringify(evidence).includes("super-secret"), false);
   assert.equal(JSON.stringify(evidence).includes(databaseUrl), false);
+  for (const field of ["hmacSecret", "clientSalt", "adminKey"]) {
+    assert.notEqual(
+      evidence.configFingerprint,
+      getBindingEvidence({
+        cfg: { ...cfg, [field]: `${cfg[field]}-rotated` },
+        databaseUrl,
+        env,
+      }).configFingerprint,
+    );
+  }
   assert.notEqual(
     evidence.databaseBindingFingerprint,
     getBindingEvidence({

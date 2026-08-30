@@ -10,8 +10,8 @@ export const ALLOWED_SLUGS = new Set([
   "if-youre-not-paying-you-are-the-product",
 ]);
 
-export function requireEnv(name, fallback) {
-  const v = process.env[name] ?? fallback;
+export function requireEnv(name) {
+  const v = process.env[name];
   if (v === undefined || v === "") {
     throw new Error(`missing_env:${name}`);
   }
@@ -20,15 +20,9 @@ export function requireEnv(name, fallback) {
 
 export function getConfig() {
   return {
-    hmacSecret: requireEnv(
-      "MEASUREMENT_HMAC_SECRET",
-      "dev-only-hmac-secret-change-me",
-    ),
-    clientSalt: requireEnv(
-      "MEASUREMENT_CLIENT_SALT",
-      "dev-only-client-salt-change-me",
-    ),
-    adminKey: requireEnv("MEASUREMENT_ADMIN_KEY", "dev-only-admin-key"),
+    hmacSecret: requireEnv("MEASUREMENT_HMAC_SECRET"),
+    clientSalt: requireEnv("MEASUREMENT_CLIENT_SALT"),
+    adminKey: requireEnv("MEASUREMENT_ADMIN_KEY"),
     tokenTtlSeconds: Number(process.env.MEASUREMENT_TOKEN_TTL_SECONDS || 1209600),
     viewDedupeSeconds: Number(process.env.MEASUREMENT_VIEW_DEDUPE_SECONDS || 21600),
     operatorHashes: new Set(
@@ -77,6 +71,13 @@ export function getBindingEvidence({ cfg, databaseUrl, env = process.env }) {
     tokenTtlSeconds: cfg.tokenTtlSeconds,
     viewDedupeSeconds: cfg.viewDedupeSeconds,
     operatorHashes: [...cfg.operatorHashes].sort(),
+    secretSetFingerprint: sha256Fingerprint(
+      JSON.stringify({
+        hmacSecret: cfg.hmacSecret,
+        clientSalt: cfg.clientSalt,
+        adminKey: cfg.adminKey,
+      }),
+    ),
   };
   return {
     runId: cfg.runId,
