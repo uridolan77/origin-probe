@@ -11,7 +11,7 @@
  *   MEASUREMENT_RESTART_CMD (optional shell command to bounce api-a)
  */
 import crypto from "node:crypto";
-import { execSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { hashClientId } from "../lib/config.js";
 import { reduceWindowEvents } from "../lib/reducer.js";
 import { issueShareToken } from "../lib/tokens.js";
@@ -34,7 +34,7 @@ const HMAC = requiredEnv("MEASUREMENT_HMAC_SECRET");
 const SALT = requiredEnv("MEASUREMENT_CLIENT_SALT");
 const RUN = requiredEnv("MEASUREMENT_RUN_ID");
 const ORIGIN = requiredEnv("MEASUREMENT_ALLOWED_ORIGIN");
-const RESTART_CMD = requiredEnv("MEASUREMENT_RESTART_CMD");
+const RESTART_SPEC_JSON = requiredEnv("MEASUREMENT_RESTART_SPEC_JSON");
 const TOPOLOGY_JSON = requiredEnv("MEASUREMENT_TOPOLOGY_EVIDENCE_JSON");
 const slug = "culture-eats-strategy-for-breakfast";
 
@@ -62,6 +62,22 @@ if (
   topology.apiA.imageId !== topology?.apiB?.imageId
 ) {
   block("topology_does_not_prove_distinct_containers_on_one_image");
+}
+
+let restartSpec;
+try {
+  restartSpec = JSON.parse(RESTART_SPEC_JSON);
+} catch {
+  block("invalid_restart_spec_json");
+}
+if (
+  typeof restartSpec?.command !== "string" ||
+  restartSpec.command.length === 0 ||
+  !Array.isArray(restartSpec?.args) ||
+  restartSpec.args.length === 0 ||
+  restartSpec.args.some((value) => typeof value !== "string" || value.length === 0)
+) {
+  block("invalid_restart_spec");
 }
 
 function canonicalize(value) {
@@ -509,9 +525,11 @@ let seedFixture = null;
   const beforeHealthB = (await readHealth(API_B)).json;
   const beforeA = await exportSnapshot(API_A);
   const beforeB = await exportSnapshot(API_B);
-  try {
-    execSync(RESTART_CMD, { stdio: "inherit", shell: true });
-  } catch {
+  const restart = spawnSync(restartSpec.command, restartSpec.args, {
+    stdio: "inherit",
+    shell: false,
+  });
+  if (restart.error || restart.status !== 0) {
     block("restart_command_failed");
   }
   const restartedA = await waitForBootChange(API_A, beforeHealthA?.instance?.bootId);

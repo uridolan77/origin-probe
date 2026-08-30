@@ -114,16 +114,17 @@ try {
         apiA: { containerId: containerA, imageId: imageA },
         apiB: { containerId: containerB, imageId: imageB },
       });
-      const restartCmd =
-        `docker compose --project-name "${projectName}" ` +
-        `--env-file "${envPath}" restart api-a`;
+      const restartSpec = JSON.stringify({
+        command: "docker",
+        args: [...composePrefix, "restart", "api-a"],
+      });
       result = spawnSync(process.execPath, ["scripts/hosted-acceptance.mjs"], {
         cwd: root,
         env: {
           ...composeEnv,
           MEASUREMENT_API_URL_A: "http://127.0.0.1:8787",
           MEASUREMENT_API_URL_B: "http://127.0.0.1:8788",
-          MEASUREMENT_RESTART_CMD: restartCmd,
+          MEASUREMENT_RESTART_SPEC_JSON: restartSpec,
           MEASUREMENT_TOPOLOGY_EVIDENCE_JSON: topology,
         },
         encoding: "utf8",
