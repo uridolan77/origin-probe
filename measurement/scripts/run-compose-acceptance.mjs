@@ -13,6 +13,7 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "origin-g2-acceptance-"));
 const envPath = path.join(tempRoot, "compose.env");
 const projectName = `origin-g2-accept-${process.pid}-${crypto.randomBytes(4).toString("hex")}`;
+const imageName = `${projectName}:local`;
 
 function ensureAcceptanceEnv() {
   const env = {
@@ -51,6 +52,7 @@ const operatorHash = createHmac("sha256", env.MEASUREMENT_CLIENT_SALT)
 const composeEnv = {
   ...process.env,
   ...env,
+  MEASUREMENT_ACCEPTANCE_IMAGE: imageName,
   MEASUREMENT_OPERATOR_HASHES: operatorHash,
 };
 
@@ -135,6 +137,10 @@ try {
 } finally {
   const cleanup = docker([...composePrefix, "down", "--volumes", "--remove-orphans"]);
   if (cleanup.status !== 0) process.stderr.write(cleanup.stderr || "compose cleanup failed\n");
+  const imageCleanup = docker(["image", "rm", imageName]);
+  if (imageCleanup.status !== 0) {
+    process.stderr.write(imageCleanup.stderr || "acceptance image cleanup failed\n");
+  }
   const resolvedTempRoot = path.resolve(tempRoot);
   const resolvedSystemTemp = `${path.resolve(os.tmpdir())}${path.sep}`;
   if (
