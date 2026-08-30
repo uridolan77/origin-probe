@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
+import { generateShareToken } from "@/lib/events";
 import {
   createSignedShare,
   measurementEnabled,
@@ -40,15 +41,17 @@ export function ShareActions({ slug, phrase }: Props) {
     if (arrivalToken?.trim()) {
       return { token: arrivalToken, url: buildShareUrl(slug, arrivalToken) };
     }
-    if (!measurementEnabled()) {
-      setStatus("Sharing measurement offline (preview mode).");
-      return null;
+    if (measurementEnabled()) {
+      const token = await createSignedShare(slug, false);
+      if (!token) {
+        setStatus("Could not create share token.");
+        return null;
+      }
+      setArrivalToken(token);
+      return { token, url: buildShareUrl(slug, token) };
     }
-    const token = await createSignedShare(slug, false);
-    if (!token) {
-      setStatus("Could not create share token.");
-      return null;
-    }
+    // Preview / offline: local opaque token for UX only — not measurement-grade.
+    const token = generateShareToken();
     setArrivalToken(token);
     return { token, url: buildShareUrl(slug, token) };
   }
