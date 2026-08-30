@@ -7,12 +7,15 @@ export function sanitizeQueryParam(value: string, max = MAX_QUERY_PARAM_LENGTH):
 export function buildShareUrl(slug: string, token: string, base?: string): string {
   const safeSlug = sanitizeQueryParam(slug, 80);
   const safeToken = sanitizeQueryParam(token, 64);
+  const basePath =
+    (typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_PATH) || "";
   const origin =
     base || (typeof window !== "undefined" ? window.location.origin : "") || "";
+  const path = `${basePath}/g/${safeSlug}/`;
   if (!origin) {
-    return `/g/${safeSlug}/?s=${encodeURIComponent(safeToken)}`;
+    return `${path}?s=${encodeURIComponent(safeToken)}`;
   }
-  const url = new URL(`/g/${safeSlug}/`, origin);
+  const url = new URL(path, origin);
   url.searchParams.set("s", safeToken);
   return url.toString();
 }
