@@ -1,0 +1,76 @@
+name: Origin G2 event mirror
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Poll ntfy and append to tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NTFY_TOPIC: ${{ secrets.ORIGIN_G2_NTFY_TOPIC }}
+          ISSUE_NUMBER: "2"
+        run: |
+          set -euo pipefail
+          if [ -z "${NTFY_TOPIC}" ]; then
+            echo "ORIGIN_G2_NTFY_TOPIC secret missing"
+            exit 1
+          fi
+          mkdir -p .origin-g2
+          STATE_FILE=".origin-g2/ntfy-since.txt"
+          SINCE="1h"
+          if [ -f "$STATE_FILE" ]; then
+            SINCE="$(cat "$STATE_FILE")"
+          fi
+          # ntfy poll returns NDJSON when multiple; single object when one
+          curl -fsSL "https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=${SINCE}" -o /tmp/ntfy.json || true
+          if [ ! -s /tmp/ntfy.json ]; then
+            echo "no messages"
+            date -u +%Y-%m-%dT%H:%M:%SZ > "$STATE_FILE"
+            exit 0
+          fi
+          python3 <<'PY'
+          import json, os, subprocess, pathlib, datetime
+          raw = pathlib.Path("/tmp/ntfy.json").read_text(encoding="utf-8").strip()
+          msgs = []
+          if not raw:
+              raise SystemExit(0)
+          # NDJSON or single JSON
+          if "\n" in raw:
+              for line in raw.splitlines():
+                  line=line.strip()
+                  if line:
+                      msgs.append(json.loads(line))
+          else:
+              obj=json.loads(raw)
+              msgs = obj if isinstance(obj, list) else [obj]
+          issue = os.environ["ISSUE_NUMBER"]
+          for m in msgs:
+              if m.get("event") != "message":
+                  continue
+              envelope = {
+                  "ingestedAtUtc": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                  "runId": "ORIGIN-G2-PUBLIC-PROBE-AUTH-001",
+                  "sink": "ntfy.sh",
+                  "ntfyId": m.get("id"),
+                  "message": m.get("message"),
+              }
+              body = "```json\n" + json.dumps(envelope, indent=2) + "\n```"
+              subprocess.check_call([
+                  "gh", "api", f"repos/uridolan77/origin-probe/issues/{issue}/comments",
+                  "-f", f"body={body}",
+              ])
+              print("mirrored", m.get("id"))
+          pathlib.Path(".origin-g2").mkdir(exist_ok=True)
+          pathlib.Path(".origin-g2/ntfy-since.txt").write_text(
+              datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), encoding="utf-8"
+          )
+          PY

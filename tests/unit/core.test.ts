@@ -6,6 +6,8 @@ import {
   generateShareToken,
   LIVE_ANALYTICS,
   CRAWLER_EXCLUSION_NOTE,
+  isCrawlerUserAgent,
+  shouldEmitAnalyticsEvent,
 } from "@/lib/events";
 import { sanitizeQueryParam, buildShareUrl } from "@/lib/share";
 
@@ -73,12 +75,24 @@ describe("GenealogySchema", () => {
 });
 
 describe("events", () => {
-  it("keeps live analytics off", () => {
+  it("keeps live analytics off by default in unit tests", () => {
     expect(LIVE_ANALYTICS).toBe(false);
   });
 
   it("documents crawler exclusion", () => {
     expect(CRAWLER_EXCLUSION_NOTE.toLowerCase()).toContain("crawler");
+  });
+
+  it("detects crawler and preview user agents", () => {
+    expect(isCrawlerUserAgent("Mozilla/5.0 (compatible; Googlebot/2.1)")).toBe(true);
+    expect(isCrawlerUserAgent("Twitterbot/1.0")).toBe(true);
+    expect(isCrawlerUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")).toBe(false);
+  });
+
+  it("drops qualified events for crawlers but keeps share_created", () => {
+    expect(shouldEmitAnalyticsEvent("qualified_result_view", "Slackbot")).toBe(false);
+    expect(shouldEmitAnalyticsEvent("share_created", "Slackbot")).toBe(true);
+    expect(shouldEmitAnalyticsEvent("qualified_propagation", "Mozilla/5.0")).toBe(true);
   });
 
   it("generates opaque share tokens", () => {
