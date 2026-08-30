@@ -71,7 +71,9 @@
         ".gitignore",
         ".github/workflows/**",
         "tools/**",
-        "tests/**"
+        "tests/**",
+        "measurement/**",
+        "vercel.json"
       ]
     }
   }
