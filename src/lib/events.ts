@@ -6,13 +6,64 @@
  * See `CRAWLER_EXCLUSION_NOTE` and docs/EVENT_CONTRACT.md.
  */
 
-export const LIVE_ANALYTICS = false as const;
+/** Live shipping is off unless the public build explicitly enables it. */
+export const LIVE_ANALYTICS =
+  typeof process !== "undefined" &&
+  process.env.NEXT_PUBLIC_ORIGIN_LIVE_ANALYTICS === "true";
 
 /** Exported for G2: crawlers and preview bots must be excluded from measurement. */
 export const CRAWLER_EXCLUSION_NOTE =
   "Qualified views and propagation events must exclude known crawler and link-preview user agents. Bot fetches of shared URLs must never count as human arrival or qualified propagation.";
 
 export const CLIENT_ID_STORAGE_KEY = "origin_cid";
+
+const CRAWLER_UA_PATTERNS: RegExp[] = [
+  /bot/i,
+  /crawl/i,
+  /spider/i,
+  /slurp/i,
+  /facebookexternalhit/i,
+  /Facebot/i,
+  /Twitterbot/i,
+  /LinkedInBot/i,
+  /Slackbot/i,
+  /Discordbot/i,
+  /WhatsApp/i,
+  /TelegramBot/i,
+  /Applebot/i,
+  /Googlebot/i,
+  /Bingbot/i,
+  /preview/i,
+  /Embedly/i,
+  /Quora Link Preview/i,
+  /Showyoubot/i,
+  /outbrain/i,
+  /vkShare/i,
+  /W3C_Validator/i,
+];
+
+const QUALIFIED_TYPES = new Set([
+  "qualified_result_view",
+  "propagated_visit",
+  "qualified_propagation",
+]);
+
+export function isCrawlerUserAgent(ua: string | null | undefined): boolean {
+  if (!ua || ua.trim().length === 0) return false;
+  return CRAWLER_UA_PATTERNS.some((re) => re.test(ua));
+}
+
+/**
+ * Returns false when a qualified measurement event must be dropped because the
+ * caller looks like a crawler or link-preview agent.
+ */
+export function shouldEmitAnalyticsEvent(
+  eventType: AnalyticsEvent["type"],
+  userAgent: string | null | undefined,
+): boolean {
+  if (!QUALIFIED_TYPES.has(eventType)) return true;
+  return !isCrawlerUserAgent(userAgent);
+}
 
 export type QualifiedResultViewEvent = {
   type: "qualified_result_view";
@@ -133,13 +184,49 @@ export class LocalEventSink implements EventSink {
 }
 
 export class ProductionEventSink implements EventSink {
+  private readonly endpoint: string;
+  private readonly token: string | undefined;
+
+  constructor(
+    endpoint = typeof process !== "undefined"
+      ? process.env.NEXT_PUBLIC_ORIGIN_EVENT_INGEST_URL
+      : undefined,
+    token = typeof process !== "undefined"
+      ? process.env.NEXT_PUBLIC_ORIGIN_EVENT_INGEST_TOKEN
+      : undefined,
+  ) {
+    this.endpoint = (endpoint || "").replace(/\/$/, "");
+    this.token = token || undefined;
+  }
+
   emit(event: AnalyticsEvent): void {
-    void event;
-    if (LIVE_ANALYTICS) {
+    if (!LIVE_ANALYTICS) return;
+
+    const ua =
+      typeof navigator !== "undefined" ? navigator.userAgent : undefined;
+    if (!shouldEmitAnalyticsEvent(event.type, ua)) return;
+
+    if (!this.endpoint) {
       throw new Error(
-        "ProductionEventSink is unconfigured. LIVE_ANALYTICS must remain false until an approved endpoint exists.",
+        "ProductionEventSink is unconfigured. Set NEXT_PUBLIC_ORIGIN_EVENT_INGEST_URL before enabling LIVE_ANALYTICS.",
       );
     }
+
+    const headers: Record<string, string> = {
+      "content-type": "application/json",
+    };
+    if (this.token) headers.authorization = `Bearer ${this.token}`;
+
+    void fetch(this.endpoint, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(event),
+      keepalive: true,
+      mode: "cors",
+      credentials: "omit",
+    }).catch(() => {
+      // Fail closed on the client: do not throw into UI; drop on network error.
+    });
   }
 }
 

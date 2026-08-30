@@ -21,7 +21,7 @@ Typed product events for Origin measurement. Live shipping stays off (`LIVE_ANAL
 ## Sinks
 
 - `LocalEventSink` — memory plus optional `localStorage` ring buffer for probe builds.
-- `ProductionEventSink` — no-ops while `LIVE_ANALYTICS` is false; throws if live mode is flipped without configuration.
+- `ProductionEventSink` — no-ops while `LIVE_ANALYTICS` is false; when live, POSTs typed JSON to `NEXT_PUBLIC_ORIGIN_EVENT_INGEST_URL` (optional bearer token). Qualified events are dropped client-side when the user agent matches crawler/preview patterns. Network failures are swallowed so the UI never throws.
 
 ## Crawler exclusion (G2)
 
