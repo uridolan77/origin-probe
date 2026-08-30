@@ -64,6 +64,59 @@ if (
   block("topology_does_not_prove_distinct_containers_on_one_image");
 }
 
+function endpointPort(api) {
+  const url = new URL(api);
+  if (
+    url.protocol !== "http:" ||
+    (url.hostname !== "127.0.0.1" && url.hostname !== "localhost") ||
+    !url.port
+  ) {
+    block("compose_api_endpoint_must_be_loopback_with_explicit_port");
+  }
+  return url.port;
+}
+
+function inspectContainer(containerId) {
+  const format = [
+    "{{.Id}}",
+    "{{.Image}}",
+    '{{index .Config.Labels "com.docker.compose.project"}}',
+    '{{index .Config.Labels "com.docker.compose.service"}}',
+    '{{(index (index .NetworkSettings.Ports "8787/tcp") 0).HostPort}}',
+  ].join("|");
+  const inspection = spawnSync(
+    "docker",
+    ["inspect", `--format=${format}`, containerId],
+    { encoding: "utf8", shell: false },
+  );
+  if (inspection.error || inspection.status !== 0) return null;
+  const [id, imageId, project, service, hostPort] = (inspection.stdout || "")
+    .trim()
+    .split("|");
+  return { id, imageId, project, service, hostPort };
+}
+
+const inspectedA = inspectContainer(topology.apiA.containerId);
+const inspectedB = inspectContainer(topology.apiB.containerId);
+if (
+  !inspectedA ||
+  !inspectedB ||
+  inspectedA.id !== topology.apiA.containerId ||
+  inspectedB.id !== topology.apiB.containerId ||
+  inspectedA.id === inspectedB.id ||
+  inspectedA.imageId !== topology.apiA.imageId ||
+  inspectedB.imageId !== topology.apiB.imageId ||
+  inspectedA.imageId !== inspectedB.imageId ||
+  !inspectedA.project?.startsWith("origin-g2-accept-") ||
+  inspectedA.project !== inspectedB.project ||
+  inspectedA.service !== "api-a" ||
+  inspectedB.service !== "api-b" ||
+  inspectedA.hostPort !== endpointPort(API_A) ||
+  inspectedB.hostPort !== endpointPort(API_B)
+) {
+  block("docker_topology_is_not_bound_to_api_endpoints");
+}
+
 let restartSpec;
 try {
   restartSpec = JSON.parse(RESTART_SPEC_JSON);
@@ -78,6 +131,17 @@ if (
   restartSpec.args.some((value) => typeof value !== "string" || value.length === 0)
 ) {
   block("invalid_restart_spec");
+}
+const projectIndex = restartSpec.args.indexOf("--project-name");
+if (
+  restartSpec.command !== "docker" ||
+  restartSpec.args[0] !== "compose" ||
+  projectIndex < 0 ||
+  restartSpec.args[projectIndex + 1] !== inspectedA.project ||
+  restartSpec.args.at(-2) !== "restart" ||
+  restartSpec.args.at(-1) !== "api-a"
+) {
+  block("restart_spec_is_not_bound_to_api_a_project");
 }
 
 function canonicalize(value) {
@@ -247,7 +311,12 @@ if (
   block("hosted_acceptance_requires_identical_empty_baseline");
 }
 
-console.log("topologyEvidenceSha256", sha256(canonicalJson(topology)));
+console.log(
+  "COMPOSE_TOPOLOGY_VERIFIED",
+  `project=${inspectedA.project}`,
+  `image=${inspectedA.imageId}`,
+  `evidenceSha256=${sha256(canonicalJson(topology))}`,
+);
 console.log("operatorHash", hashClientId(O, SALT).slice(0, 12) + "…");
 
 // 1 operator view excluded
