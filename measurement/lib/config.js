@@ -37,7 +37,7 @@ export function getConfig() {
         .map((s) => s.trim())
         .filter(Boolean),
     ),
-    runId: process.env.MEASUREMENT_RUN_ID || "ORIGIN-G2R-LOCAL",
+    runId: requireEnv("MEASUREMENT_RUN_ID"),
     storePath: process.env.MEASUREMENT_STORE_PATH || "",
   };
 }
@@ -47,6 +47,44 @@ export function hashClientId(rawClientId, salt) {
     .createHmac("sha256", salt)
     .update(String(rawClientId || ""))
     .digest("hex");
+}
+
+function sha256Fingerprint(value) {
+  return `sha256:${crypto.createHash("sha256").update(value).digest("hex")}`;
+}
+
+function optionalEnv(env, name) {
+  const value = env[name];
+  return typeof value === "string" && value.length > 0 ? value : null;
+}
+
+/**
+ * Public, non-secret evidence that binds a health response to one configuration,
+ * database binding, and Vercel build. Raw secrets and the database URL are never
+ * returned.
+ */
+export function getBindingEvidence({ cfg, databaseUrl, env = process.env }) {
+  const build = {
+    deploymentId: optionalEnv(env, "VERCEL_DEPLOYMENT_ID"),
+    commitSha: optionalEnv(env, "VERCEL_GIT_COMMIT_SHA"),
+    url: optionalEnv(env, "VERCEL_URL"),
+    productionUrl: optionalEnv(env, "VERCEL_PROJECT_PRODUCTION_URL"),
+    environment: optionalEnv(env, "VERCEL_ENV"),
+  };
+  const configMaterial = {
+    runId: cfg.runId,
+    allowedOrigin: optionalEnv(env, "MEASUREMENT_ALLOWED_ORIGIN"),
+    tokenTtlSeconds: cfg.tokenTtlSeconds,
+    viewDedupeSeconds: cfg.viewDedupeSeconds,
+    operatorHashes: [...cfg.operatorHashes].sort(),
+  };
+  return {
+    runId: cfg.runId,
+    configFingerprint: sha256Fingerprint(JSON.stringify(configMaterial)),
+    databaseBindingFingerprint: sha256Fingerprint(String(databaseUrl || "")),
+    buildFingerprint: sha256Fingerprint(JSON.stringify(build)),
+    build,
+  };
 }
 
 export function b64url(buf) {

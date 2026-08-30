@@ -5,6 +5,7 @@
  *   MEASUREMENT_API_URL_B (default http://127.0.0.1:8788)
  *   MEASUREMENT_ADMIN_KEY
  *   MEASUREMENT_HMAC_SECRET
+ *   MEASUREMENT_RUN_ID
  *   MEASUREMENT_ALLOWED_ORIGIN
  *   MEASUREMENT_OPERATOR_RAW (raw client id for operator profile)
  *   MEASUREMENT_RESTART_CMD (optional shell command to bounce api-a)
@@ -19,6 +20,7 @@ const API_B = (process.env.MEASUREMENT_API_URL_B || "http://127.0.0.1:8788").rep
 const ADMIN = process.env.MEASUREMENT_ADMIN_KEY || "";
 const HMAC = process.env.MEASUREMENT_HMAC_SECRET || "";
 const SALT = process.env.MEASUREMENT_CLIENT_SALT || "";
+const RUN = process.env.MEASUREMENT_RUN_ID || "";
 const ORIGIN = process.env.MEASUREMENT_ALLOWED_ORIGIN || "https://uridolan77.github.io";
 const slug = "culture-eats-strategy-for-breakfast";
 
@@ -69,6 +71,25 @@ async function waitHealthy(api, attempts = 40) {
 
 if (!(await waitHealthy(API_A)) || !(await waitHealthy(API_B))) {
   console.error("APIs not healthy");
+  process.exit(1);
+}
+
+const healthResponse = await fetch(`${API_A}/v1/health`);
+const health = await healthResponse.json();
+const healthText = JSON.stringify(health);
+if (
+  healthResponse.status !== 200 ||
+  health.ledgerSchemaVersion !== "v1" ||
+  health.ledgerSchemaReady !== true ||
+  health.runId !== RUN ||
+  health.bindings?.runId !== RUN ||
+  !/^sha256:[0-9a-f]{64}$/.test(
+    health.bindings?.databaseBindingFingerprint || "",
+  ) ||
+  healthText.includes("origin_measure_dev") ||
+  healthText.includes("postgres://")
+) {
+  console.error("health binding/schema evidence invalid", health);
   process.exit(1);
 }
 
@@ -178,49 +199,120 @@ let tokenA;
   );
 }
 
-// 9 seed token arrival excluded
+// 9 seed token issuance is idempotent and its arrival is excluded
 {
+  const seedBody = {
+    slug,
+    seedKind: "operator",
+    idempotencyKey: "ORIGIN_G2R_UI_REACCEPTANCE_OPERATOR_SEED_001",
+  };
   const seed = await call(API_A, "POST", "/v1/admin/create-seed", {
     client: O,
     admin: true,
-    body: { slug },
+    body: seedBody,
+  });
+  const replay = await call(API_B, "POST", "/v1/admin/create-seed", {
+    client: O,
+    admin: true,
+    body: seedBody,
+  });
+  const conflict = await call(API_A, "POST", "/v1/admin/create-seed", {
+    client: O,
+    admin: true,
+    body: { ...seedBody, idempotencyKey: seedBody.idempotencyKey + "-CONFLICT" },
   });
   const r = await call(API_A, "POST", "/v1/share-arrival", {
-    client: C,
+    client: B,
     body: { slug, token: seed.json?.token },
   });
   record(
-    "9_seed_token_excluded",
-    seed.status === 201 &&
+    "9_seed_idempotent_and_arrival_excluded",
+      seed.status === 201 &&
+      seed.json?.replayed === false &&
+      seed.json?.eventId === seed.json?.rawEventId &&
+      replay.status === 200 &&
+      replay.json?.replayed === true &&
+      replay.json?.token === seed.json?.token &&
+      replay.json?.rawEventId === seed.json?.rawEventId &&
+      replay.json?.eventId === seed.json?.eventId &&
+      conflict.status === 409 &&
       r.status === 201 &&
       r.json?.exclusions?.includes("seed_token_excluded"),
+    `first=${seed.status} replay=${replay.status} conflict=${conflict.status}`,
   );
 }
 
-// 10 operator arrival excluded
+// 10 a seed recipient can create a fresh ordinary share that qualifies later
 {
-  const share = await call(API_A, "POST", "/v1/create-share", {
-    client: C,
+  const share = await call(API_B, "POST", "/v1/create-share", {
+    client: B,
     body: { slug },
   });
-  const r = await call(API_A, "POST", "/v1/share-arrival", {
+  const propagated = await call(API_A, "POST", "/v1/share-arrival", {
+    client: C,
+    body: { slug, token: share.json?.token },
+  });
+  const operator = await call(API_A, "POST", "/v1/share-arrival", {
     client: O,
     body: { slug, token: share.json?.token },
   });
   record(
-    "10_operator_arrival_excluded",
-    r.status === 201 && r.json?.exclusions?.includes("operator_excluded"),
+    "10_seed_recipient_multihop_and_operator_exclusion",
+    propagated.status === 201 &&
+      propagated.json?.qualifiedPropagation === true &&
+      operator.status === 201 &&
+      operator.json?.exclusions?.includes("operator_excluded"),
   );
 }
 
-// 11 modified token
+// 11 modified, wrong-run, and legacy tokens are rejected
 {
-  const bad = tokenA.slice(0, -3) + "zzz";
-  const r = await call(API_A, "POST", "/v1/share-arrival", {
+  const [body, signature] = tokenA.split(".");
+  const bad = `${body[0] === "A" ? "B" : "A"}${body.slice(1)}.${signature}`;
+  const modified = await call(API_A, "POST", "/v1/share-arrival", {
     client: C,
     body: { slug, token: bad },
   });
-  record("11_modified_token_rejected", r.status === 400 && r.json?.reason === "bad_signature");
+  const wrongRunToken = issueShareToken({
+    slug,
+    creatorHash: hashClientId(A, SALT),
+    seed: false,
+    runId: `${RUN}-WRONG`,
+    hmacSecret: HMAC,
+    ttlSeconds: 3600,
+  });
+  const wrongRun = await call(API_A, "POST", "/v1/share-arrival", {
+    client: C,
+    body: { slug, token: wrongRunToken },
+  });
+  const legacyBody = Buffer.from(
+    JSON.stringify({
+      v: 1,
+      slug,
+      creatorHash: hashClientId(A, SALT),
+      seed: false,
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + 3600,
+      nonce: "legacy-acceptance-token",
+    }),
+  ).toString("base64url");
+  const legacySig = crypto
+    .createHmac("sha256", HMAC)
+    .update(legacyBody)
+    .digest("base64url");
+  const legacy = await call(API_A, "POST", "/v1/share-arrival", {
+    client: C,
+    body: { slug, token: `${legacyBody}.${legacySig}` },
+  });
+  record(
+    "11_modified_wrong_run_and_legacy_tokens_rejected",
+    modified.status === 400 &&
+      modified.json?.reason === "bad_signature" &&
+      wrongRun.status === 400 &&
+      wrongRun.json?.reason === "run_mismatch" &&
+      legacy.status === 400 &&
+      legacy.json?.reason === "unsupported_version",
+  );
 }
 
 // 12 slug substitution
@@ -241,6 +333,7 @@ let tokenA;
     slug,
     creatorHash: hashClientId(A, SALT),
     seed: false,
+    runId: RUN,
     hmacSecret: HMAC,
     ttlSeconds: 1,
     nowMs: Date.now() - 60_000,
@@ -360,10 +453,28 @@ record("17_parallel_instances_shared_dedupe", true, "exercised via api-a + api-b
     client: A,
     body: { slug, seed: true },
   });
+  const operatorSeedImpostor = await call(
+    API_A,
+    "POST",
+    "/v1/admin/create-seed",
+    {
+      client: A,
+      admin: true,
+      body: {
+        slug,
+        seedKind: "operator",
+        idempotencyKey: "IMPOSTOR-OPERATOR-SEED",
+      },
+    },
+  );
   record(
-    "20_origin_and_public_seed_rejected",
-    badOrigin.status === 403 && seedPublic.status === 403,
-    `origin=${badOrigin.status} seed=${seedPublic.status}`,
+    "20_origin_public_seed_and_operator_impostor_rejected",
+    badOrigin.status === 403 &&
+      seedPublic.status === 403 &&
+      operatorSeedImpostor.status === 403 &&
+      operatorSeedImpostor.json?.error ===
+        "operator_seed_requires_operator_client",
+    `origin=${badOrigin.status} seed=${seedPublic.status} impostor=${operatorSeedImpostor.status}`,
   );
 }
 

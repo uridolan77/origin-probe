@@ -3,10 +3,15 @@
  * Requires MEASUREMENT_DATABASE_URL + server-only secrets (never NEXT_PUBLIC_*).
  */
 import crypto from "node:crypto";
-import { ALLOWED_SLUGS, getConfig, hashClientId } from "../lib/config.js";
+import {
+  ALLOWED_SLUGS,
+  getBindingEvidence,
+  getConfig,
+  hashClientId,
+} from "../lib/config.js";
 import { issueShareToken, verifyShareToken } from "../lib/tokens.js";
 import { PostgresLedger, LEDGER_SCHEMA_VERSION } from "../lib/ledger.js";
-import { reduceEvents } from "../lib/reducer.js";
+import { reduceEvents, reduceWindowEvents } from "../lib/reducer.js";
 
 const CRAWLER_UA =
   /bot|crawl|spider|slurp|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|TelegramBot|Applebot|Googlebot|Bingbot|preview|Embedly|outbrain|vkShare|W3C_Validator/i;
@@ -98,6 +103,7 @@ function requireSecrets() {
     "MEASUREMENT_CLIENT_SALT",
     "MEASUREMENT_ADMIN_KEY",
     "MEASUREMENT_ALLOWED_ORIGIN",
+    "MEASUREMENT_RUN_ID",
   ]) {
     if (!process.env[k]) throw new Error(`missing_env:${k}`);
   }
@@ -142,11 +148,15 @@ export default async function handler(req, res) {
     const path = pathOf(req);
 
     if (req.method === "GET" && (path === "/" || path === "/v1/health")) {
+      const schema = await ledger.probeSchema();
       return json(res, 200, {
         ok: true,
         service: "origin-probe-measure",
         gate: "ORIGIN_G2R_MEASUREMENT_INTEGRITY_REPAIR",
-        ledgerSchemaVersion: LEDGER_SCHEMA_VERSION,
+        ledgerSchemaVersion: schema.version,
+        ledgerSchemaReady: schema.ready,
+        runId: cfg.runId,
+        bindings: getBindingEvidence({ cfg, databaseUrl: databaseUrl() }),
         durable: true,
         runtime: "vercel",
       });
@@ -164,21 +174,38 @@ export default async function handler(req, res) {
       if (!requireAdmin(req, cfg)) {
         return json(res, 401, { ok: false, error: "unauthorized" });
       }
-      const events = await ledger.listEvents(cfg.runId);
+      const requestUrl = new URL(req.url || "/", "http://local");
+      const startUtc = requestUrl.searchParams.get("startUtc");
+      const endUtc = requestUrl.searchParams.get("endUtc");
+      if (Boolean(startUtc) !== Boolean(endUtc)) {
+        return json(res, 400, {
+          ok: false,
+          error: "window_boundaries_must_be_paired",
+        });
+      }
+      const events = await ledger.listEvents(startUtc ? null : cfg.runId);
+      const reducerEvents = events.map((e) => ({
+        id: e.id,
+        type: e.type,
+        runId: e.runId,
+        at: e.at instanceof Date ? e.at.toISOString() : e.at,
+        slug: e.slug,
+        clientHash: e.clientHash,
+        creatorHash: e.creatorHash,
+        shareTokenFingerprint: e.shareTokenFingerprint,
+        seed: e.seed,
+        derivedFrom: e.derivedFrom,
+        exclusions: e.exclusions,
+      }));
       return json(res, 200, {
         ok: true,
-        reduction: reduceEvents(
-          events.map((e) => ({
-            id: e.id,
-            type: e.type,
-            runId: e.runId,
-            at: e.at,
-            clientHash: e.clientHash,
-            creatorHash: e.creatorHash,
-            exclusions: e.exclusions,
-          })),
-          cfg.runId,
-        ),
+        reduction: startUtc
+          ? reduceWindowEvents(reducerEvents, {
+              runId: cfg.runId,
+              startUtc,
+              endUtc,
+            })
+          : reduceEvents(reducerEvents, cfg.runId),
       });
     }
 
@@ -275,6 +302,7 @@ export default async function handler(req, res) {
         slug: body.slug,
         creatorHash: clientHash,
         seed: false,
+        runId: cfg.runId,
         hmacSecret: cfg.hmacSecret,
         ttlSeconds: cfg.tokenTtlSeconds,
       });
@@ -309,41 +337,72 @@ export default async function handler(req, res) {
       if (!ALLOWED_SLUGS.has(body.slug)) {
         return json(res, 400, { ok: false, error: "invalid_slug" });
       }
+      if (
+        (body.seedKind !== "operator" && body.seedKind !== "community") ||
+        !fieldLenOk(body.idempotencyKey, 200)
+      ) {
+        return json(res, 400, {
+          ok: false,
+          error: "invalid_seed_request",
+        });
+      }
+      if (body.seedKind === "operator" && !cfg.operatorHashes.has(clientHash)) {
+        await ledger.recordRejection({
+          runId: cfg.runId,
+          reasonCode: "operator_seed_requires_operator_client",
+          route: path,
+          clientHash,
+        });
+        return json(res, 403, {
+          ok: false,
+          error: "operator_seed_requires_operator_client",
+        });
+      }
       const token = issueShareToken({
         slug: body.slug,
         creatorHash: clientHash,
         seed: true,
+        runId: cfg.runId,
         hmacSecret: cfg.hmacSecret,
         ttlSeconds: cfg.tokenTtlSeconds,
       });
-      const result = await ledger.appendRawAndMaybeQualified({
+      const result = await ledger.createOrReplaySeedIssuance({
         runId: cfg.runId,
-        viewDedupeSeconds: cfg.viewDedupeSeconds,
-        raw: {
-          event_type: "share_created",
-          slug: body.slug,
-          client_hash: clientHash,
-          share_token_fingerprint: fingerprint(token),
-          seed: true,
-          exclusions: ["admin_seed_issuance"],
-          ua_class: uaClass,
-          payload: { operatorAction: "create_seed" },
-        },
-        qualified: null,
-      });
-      return json(res, 201, {
-        ok: true,
+        seedKind: body.seedKind,
+        idempotencyKey: body.idempotencyKey,
+        slug: body.slug,
+        creatorHash: clientHash,
         token,
+        tokenFingerprint: fingerprint(token),
+        uaClass,
+      });
+      if (result.conflict) {
+        return json(res, 409, {
+          ok: false,
+          error: result.reason,
+          seedKind: result.seedKind,
+        });
+      }
+      return json(res, result.replayed ? 200 : 201, {
+        ok: true,
+        token: result.token,
         rawEventId: result.rawId,
+        eventId: result.rawId,
         seed: true,
+        seedKind: result.seedKind,
+        replayed: result.replayed,
       });
     }
 
     if (path === "/v1/share-arrival") {
-      if (!ALLOWED_SLUGS.has(body.slug) || !fieldLenOk(String(body.token || ""), 4096)) {
+      if (!ALLOWED_SLUGS.has(body.slug)) {
         return json(res, 400, { ok: false, error: "invalid_request" });
       }
-      const verified = verifyShareToken(body.token, cfg.hmacSecret);
+      const verified = verifyShareToken(
+        body.token,
+        cfg.hmacSecret,
+        cfg.runId,
+      );
       if (!verified.ok) {
         await ledger.recordRejection({
           runId: cfg.runId,

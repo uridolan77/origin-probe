@@ -1,16 +1,40 @@
 import crypto from "node:crypto";
 import { b64url, fromB64url } from "./config.js";
 
+export const MAX_SHARE_TOKEN_LENGTH = 4096;
+
+const BASE64URL_SEGMENT = /^[A-Za-z0-9_-]+$/;
+
+function isCanonicalBase64url(segment) {
+  if (
+    typeof segment !== "string" ||
+    !BASE64URL_SEGMENT.test(segment) ||
+    segment.length % 4 === 1
+  ) {
+    return false;
+  }
+  try {
+    return b64url(fromB64url(segment)) === segment;
+  } catch {
+    return false;
+  }
+}
+
 export function issueShareToken({
   slug,
   creatorHash,
   seed,
+  runId,
   hmacSecret,
   ttlSeconds,
   nowMs = Date.now(),
 }) {
+  if (typeof runId !== "string" || runId.length === 0) {
+    throw new Error("missing_run_id");
+  }
   const payload = {
-    v: 1,
+    v: 2,
+    runId,
     slug,
     creatorHash,
     seed: Boolean(seed),
@@ -22,15 +46,35 @@ export function issueShareToken({
   const sig = b64url(
     crypto.createHmac("sha256", hmacSecret).update(body).digest(),
   );
-  return `${body}.${sig}`;
+  const token = `${body}.${sig}`;
+  if (token.length > MAX_SHARE_TOKEN_LENGTH) {
+    throw new Error("token_too_large");
+  }
+  return token;
 }
 
-export function verifyShareToken(token, hmacSecret, nowMs = Date.now()) {
-  if (!token || typeof token !== "string" || !token.includes(".")) {
+export function verifyShareToken(
+  token,
+  hmacSecret,
+  runId,
+  nowMs = Date.now(),
+) {
+  if (
+    typeof token !== "string" ||
+    token.length === 0 ||
+    token.length > MAX_SHARE_TOKEN_LENGTH
+  ) {
     return { ok: false, reason: "malformed_token" };
   }
-  const [body, sig] = token.split(".");
-  if (!body || !sig) return { ok: false, reason: "malformed_token" };
+  const segments = token.split(".");
+  if (
+    segments.length !== 2 ||
+    !isCanonicalBase64url(segments[0]) ||
+    !isCanonicalBase64url(segments[1])
+  ) {
+    return { ok: false, reason: "malformed_token" };
+  }
+  const [body, sig] = segments;
   const expected = b64url(
     crypto.createHmac("sha256", hmacSecret).update(body).digest(),
   );
@@ -45,8 +89,19 @@ export function verifyShareToken(token, hmacSecret, nowMs = Date.now()) {
   } catch {
     return { ok: false, reason: "bad_payload" };
   }
-  if (payload.v !== 1) return { ok: false, reason: "unsupported_version" };
-  if (!payload.slug || !payload.creatorHash || !payload.nonce) {
+  if (payload.v !== 2) return { ok: false, reason: "unsupported_version" };
+  if (typeof runId !== "string" || runId.length === 0) {
+    return { ok: false, reason: "missing_run_id" };
+  }
+  if (payload.runId !== runId) {
+    return { ok: false, reason: "run_mismatch" };
+  }
+  if (
+    !payload.slug ||
+    !payload.creatorHash ||
+    !payload.nonce ||
+    typeof payload.seed !== "boolean"
+  ) {
     return { ok: false, reason: "incomplete_payload" };
   }
   const now = Math.floor(nowMs / 1000);
