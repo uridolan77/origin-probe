@@ -13,3 +13,7 @@ test-results/
 .vercel
 *.tsbuildinfo
 tools/fonts/
+
+measurement/api/_env.deploy.js
+measurement/.local-store/
+
