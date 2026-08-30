@@ -273,13 +273,34 @@ let tokenA;
   );
 }
 
-// 12. Direct forged qualified submission is a protocol violation at the API
-// layer. Malformed qualified rows also fail closed in the reducer unit suite.
+// 12. A forged qualified row cannot be reduced without server-derived lineage.
+// The hosted transcript separately exercises the API-level 400 rejection.
 {
+  let rejection = "";
+  try {
+    reduceEvents(
+      [
+        {
+          id: "forged-qualified-propagation",
+          type: "qualified_propagation",
+          runId,
+          at: new Date().toISOString(),
+          slug,
+          clientHash: "forged-recipient",
+          creatorHash: "forged-creator",
+          shareTokenFingerprint: "forged-token",
+          derivedFrom: "missing-server-raw-event",
+        },
+      ],
+      runId,
+    );
+  } catch (error) {
+    rejection = String(error?.message || error);
+  }
   record(
-    "12_forged_qualified_api_rejected_by_contract",
-    true,
-    "api/index.js returns 400 for client-submitted qualified_*",
+    "12_forged_qualified_row_rejected_by_reducer",
+    rejection === "qualified_lineage_missing:forged-qualified-propagation",
+    rejection,
   );
 }
 
