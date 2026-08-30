@@ -438,3 +438,46 @@ test("window reducer validates complete server-derived lineage", () => {
     );
   }
 });
+
+test("pseudonymous sessions are not human uniqueness: one process can manufacture PASS", () => {
+  const creators = ["synthetic-a", "synthetic-b", "synthetic-c", "synthetic-a", "synthetic-b"];
+  const events = [];
+  for (const [index, creatorHash] of creators.entries()) {
+    const rawId = `synthetic-raw-${index}`;
+    const atMs = Date.parse("2026-08-30T12:10:00.000Z") + index * 2000;
+    events.push(
+      {
+        id: rawId,
+        type: "propagated_visit",
+        runId: "r",
+        at: new Date(atMs).toISOString(),
+        slug: SLUG,
+        clientHash: `synthetic-recipient-${index}`,
+        creatorHash,
+        shareTokenFingerprint: `synthetic-token-${index}`,
+        seed: false,
+        exclusions: [],
+      },
+      {
+        id: `synthetic-qualified-${index}`,
+        type: "qualified_propagation",
+        runId: "r",
+        at: new Date(atMs + 1).toISOString(),
+        slug: SLUG,
+        clientHash: `synthetic-recipient-${index}`,
+        creatorHash,
+        shareTokenFingerprint: `synthetic-token-${index}`,
+        derivedFrom: rawId,
+      },
+    );
+  }
+
+  const reduction = reduceWindowEvents(events, {
+    runId: "r",
+    startUtc: "2026-08-30T12:00:00Z",
+    endUtc: "2026-08-30T13:00:00Z",
+  });
+  assert.equal(reduction.qualifiedPropagations, 5);
+  assert.equal(reduction.distinctSharerSessions, 3);
+  assert.equal(reduction.disposition, "PASS");
+});
