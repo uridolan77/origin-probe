@@ -24,7 +24,11 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - name: Build static export for GitHub Pages
+        env:
+          ORIGIN_PAGES_BASE_PATH: /origin-probe
+          SITE_URL: https://uridolan77.github.io/origin-probe
+        run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out
