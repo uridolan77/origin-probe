@@ -118,8 +118,8 @@ describe("share helpers", () => {
   });
 
   it("builds share urls", () => {
-    const url = buildShareUrl("sample-phrase", "deadbeefcafebabe");
+    const url = buildShareUrl("sample-phrase", "payload.deadbeefcafebabe");
     expect(url).toContain("/g/sample-phrase/");
-    expect(url).toContain("s=deadbeefcafebabe");
+    expect(url).toContain("s=payload.deadbeefcafebabe");
   });
 });

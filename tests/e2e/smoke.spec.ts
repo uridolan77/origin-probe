@@ -83,6 +83,8 @@ test("method privacy corrections pages", async ({ page }) => {
   await page.goto("/privacy/", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Privacy" })).toBeVisible();
   await expect(page.getByText(/No account/i)).toBeVisible();
+  await expect(page.getByText(/authorized 14-day public decision window/i)).toBeVisible();
+  await expect(page.getByText(/private durable ledger stores/i)).toBeVisible();
   await page.goto("/corrections/", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Corrections" })).toBeVisible();
 });
@@ -92,6 +94,28 @@ test("copy link updates status", async ({ page, context }) => {
   await page.goto("/g/the-medium-is-the-message/", { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "Copy link" }).click();
   await expect(page.getByRole("status")).toContainText(/copied|Share unavailable|Could not/i);
+});
+
+test("offline copy UX creates a distinct outbound token", async ({
+  page,
+  context,
+}) => {
+  // This is an offline UX regression. Live browser-to-ledger acceptance must
+  // separately prove that the measurement service mints and records B's token.
+  const inboundToken = "arrival_payload.arrival_signature_x";
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto(
+    `/g/culture-eats-strategy-for-breakfast/?s=${encodeURIComponent(inboundToken)}`,
+    { waitUntil: "domcontentloaded" },
+  );
+
+  await page.getByRole("button", { name: "Copy link" }).click();
+  await expect(page.getByRole("status")).toHaveText("Link copied.");
+
+  const clipboardUrl = await page.evaluate(() => navigator.clipboard.readText());
+  const outboundToken = new URL(clipboardUrl).searchParams.get("s");
+  expect(outboundToken).toMatch(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
+  expect(outboundToken).not.toBe(inboundToken);
 });
 
 test("social card asset exists for each slug", async ({ request }) => {

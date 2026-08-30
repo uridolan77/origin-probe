@@ -1,25 +1,42 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { generateShareToken } from "@/lib/events";
 import {
   createSignedShare,
   measurementEnabled,
   reportShareArrival,
 } from "@/lib/measurement";
-import { buildShareUrl, copyLink, nativeShare } from "@/lib/share";
+import {
+  buildShareUrl,
+  copyLink,
+  isValidSignedShareToken,
+  nativeShare,
+} from "@/lib/share";
 
 type Props = {
   slug: string;
   phrase: string;
 };
 
+const MAX_REPORTED_INBOUND_ARRIVALS = 128;
+const reportedInboundArrivals = new Set<string>();
+
+function consumeInboundArrival(arrivalKey: string): boolean {
+  if (reportedInboundArrivals.has(arrivalKey)) return false;
+  reportedInboundArrivals.add(arrivalKey);
+  if (reportedInboundArrivals.size > MAX_REPORTED_INBOUND_ARRIVALS) {
+    const oldest = reportedInboundArrivals.values().next().value;
+    if (oldest) reportedInboundArrivals.delete(oldest);
+  }
+  return true;
+}
+
 function readInitialShareToken(): string | null {
   if (typeof window === "undefined") return null;
   try {
     const token = new URLSearchParams(window.location.search).get("s");
-    if (!token || token.length < 16) return null;
-    return token;
+    return isValidSignedShareToken(token) ? token : null;
   } catch {
     return null;
   }
@@ -27,44 +44,84 @@ function readInitialShareToken(): string | null {
 
 export function ShareActions({ slug, phrase }: Props) {
   const [status, setStatus] = useState<string | null>(null);
-  const [arrivalToken, setArrivalToken] = useState<string | null>(() =>
-    readInitialShareToken(),
-  );
+  const outboundSlugRef = useRef(slug);
+  const outboundGenerationRef = useRef(0);
+  const outboundTokenRef = useRef<string | null>(null);
+  const outboundTokenPromiseRef = useRef<Promise<string | null> | null>(null);
+
+  useEffect(() => {
+    if (outboundSlugRef.current === slug) return;
+    outboundSlugRef.current = slug;
+    outboundGenerationRef.current += 1;
+    outboundTokenRef.current = null;
+    outboundTokenPromiseRef.current = null;
+  }, [slug]);
 
   useEffect(() => {
     const token = readInitialShareToken();
     if (!token || !measurementEnabled()) return;
+    const arrivalKey = `${slug}\u0000${token}`;
+    if (!consumeInboundArrival(arrivalKey)) return;
     void reportShareArrival(slug, token);
   }, [slug]);
 
-  async function ensureToken(): Promise<{ token: string; url: string } | null> {
-    if (arrivalToken?.trim()) {
-      return { token: arrivalToken, url: buildShareUrl(slug, arrivalToken) };
+  async function createOutboundToken(): Promise<string | null> {
+    if (outboundSlugRef.current !== slug) {
+      outboundSlugRef.current = slug;
+      outboundGenerationRef.current += 1;
+      outboundTokenRef.current = null;
+      outboundTokenPromiseRef.current = null;
     }
-    if (measurementEnabled()) {
-      const token = await createSignedShare(slug, false);
-      if (!token) {
+
+    if (outboundTokenRef.current) return outboundTokenRef.current;
+    if (outboundTokenPromiseRef.current) return outboundTokenPromiseRef.current;
+
+    const requestSlug = slug;
+    const requestGeneration = outboundGenerationRef.current;
+    const pending = (async () => {
+      const token = measurementEnabled()
+        ? await createSignedShare(requestSlug, false)
+        : `offline.${generateShareToken()}`;
+      if (
+        outboundSlugRef.current !== requestSlug ||
+        outboundGenerationRef.current !== requestGeneration
+      ) {
+        return null;
+      }
+      if (!isValidSignedShareToken(token)) {
         setStatus("Could not create share token.");
         return null;
       }
-      setArrivalToken(token);
-      return { token, url: buildShareUrl(slug, token) };
+      outboundTokenRef.current = token;
+      return token;
+    })();
+
+    outboundTokenPromiseRef.current = pending;
+    const token = await pending;
+    if (outboundTokenPromiseRef.current === pending) {
+      outboundTokenPromiseRef.current = null;
     }
-    // Preview / offline: local opaque token for UX only — not measurement-grade.
-    const token = generateShareToken();
-    setArrivalToken(token);
+    return token;
+  }
+
+  async function ensureOutboundShare(): Promise<{
+    token: string;
+    url: string;
+  } | null> {
+    const token = await createOutboundToken();
+    if (!token) return null;
     return { token, url: buildShareUrl(slug, token) };
   }
 
   async function onCopy() {
-    const created = await ensureToken();
+    const created = await ensureOutboundShare();
     if (!created) return;
     const ok = await copyLink(created.url);
     setStatus(ok ? "Link copied." : "Could not copy link.");
   }
 
   async function onShare() {
-    const created = await ensureToken();
+    const created = await ensureOutboundShare();
     if (!created) return;
     const result = await nativeShare({
       title: `Origin: ${phrase}`,
