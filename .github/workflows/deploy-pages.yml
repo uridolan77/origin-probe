@@ -28,6 +28,9 @@ jobs:
         env:
           ORIGIN_PAGES_BASE_PATH: /origin-probe
           SITE_URL: https://uridolan77.github.io/origin-probe
+          # Public build-time binding only — no server secrets.
+          NEXT_PUBLIC_ORIGIN_MEASUREMENT_API_URL: https://origin-probe-measure.vercel.app
+          NEXT_PUBLIC_ORIGIN_LIVE_ANALYTICS: "false"
         run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+.env.acceptance
+!.env.example
+*.log
+.vercel
+.agents/
+skills-lock.json
