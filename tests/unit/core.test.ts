@@ -118,8 +118,11 @@ describe("share helpers", () => {
   });
 
   it("builds share urls", () => {
-    const url = buildShareUrl("sample-phrase", "payload.deadbeefcafebabe");
+    const token = `${Buffer.from("payload", "utf8").toString(
+      "base64url",
+    )}.${Buffer.alloc(32).toString("base64url")}`;
+    const url = buildShareUrl("sample-phrase", token);
     expect(url).toContain("/g/sample-phrase/");
-    expect(url).toContain("s=payload.deadbeefcafebabe");
+    expect(new URL(url, "https://example.test").searchParams.get("s")).toBe(token);
   });
 });
