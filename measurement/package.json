@@ -1,13 +1,19 @@
 {
   "name": "origin-probe-measure",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
-  "description": "Trusted Origin G2R measurement endpoint — HMAC share tokens, server-side qualification",
+  "description": "Trusted Origin G2R measurement endpoint with durable Postgres ledger",
   "scripts": {
     "test": "node --test test/*.test.js",
     "acceptance": "node scripts/acceptance.mjs",
-    "start": "node scripts/local-server.mjs"
+    "acceptance:hosted": "node scripts/hosted-acceptance.mjs",
+    "acceptance:compose": "node scripts/run-compose-acceptance.mjs",
+    "start": "node scripts/server.mjs",
+    "migrate": "node scripts/migrate.mjs"
+  },
+  "dependencies": {
+    "pg": "8.16.3"
   },
   "engines": {
     "node": ">=20"
