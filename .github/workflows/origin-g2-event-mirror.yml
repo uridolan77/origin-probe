@@ -24,53 +24,73 @@ jobs:
             echo "ORIGIN_G2_NTFY_TOPIC secret missing"
             exit 1
           fi
-          mkdir -p .origin-g2
-          STATE_FILE=".origin-g2/ntfy-since.txt"
-          SINCE="1h"
-          if [ -f "$STATE_FILE" ]; then
-            SINCE="$(cat "$STATE_FILE")"
-          fi
-          # ntfy poll returns NDJSON when multiple; single object when one
-          curl -fsSL "https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=${SINCE}" -o /tmp/ntfy.json || true
+          curl -fsSL "https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=20m" -o /tmp/ntfy.json || true
           if [ ! -s /tmp/ntfy.json ]; then
             echo "no messages"
-            date -u +%Y-%m-%dT%H:%M:%SZ > "$STATE_FILE"
             exit 0
           fi
           python3 <<'PY'
           import json, os, subprocess, pathlib, datetime
           raw = pathlib.Path("/tmp/ntfy.json").read_text(encoding="utf-8").strip()
-          msgs = []
           if not raw:
               raise SystemExit(0)
-          # NDJSON or single JSON
+          msgs = []
           if "\n" in raw:
               for line in raw.splitlines():
-                  line=line.strip()
+                  line = line.strip()
                   if line:
                       msgs.append(json.loads(line))
           else:
-              obj=json.loads(raw)
+              obj = json.loads(raw)
               msgs = obj if isinstance(obj, list) else [obj]
+
           issue = os.environ["ISSUE_NUMBER"]
+          existing = subprocess.check_output(
+              ["gh", "api", f"repos/uridolan77/origin-probe/issues/{issue}/comments?per_page=100"],
+              text=True,
+          )
+          existing_ids = set()
+          for c in json.loads(existing):
+              body = c.get("body") or ""
+              if "ntfyId" in body:
+                  try:
+                      # naive extract
+                      for token in body.replace("\n", " ").split():
+                          if token.startswith('"') and token.endswith('",'):
+                              pass
+                      if '"ntfyId"' in body:
+                          start = body.index('"ntfyId"')
+                          frag = body[start:start+80]
+                          for part in frag.split('"'):
+                              if part and part not in ("ntfyId", ": ", ", ", " ", ":") and len(part) > 5 and part[0].isalnum():
+                                  existing_ids.add(part)
+                                  break
+                  except Exception:
+                      pass
+
           for m in msgs:
               if m.get("event") != "message":
                   continue
+              mid = m.get("id") or ""
+              if mid and mid in existing_ids:
+                  print("skip duplicate", mid)
+                  continue
               envelope = {
-                  "ingestedAtUtc": datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                  "ingestedAtUtc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                   "runId": "ORIGIN-G2-PUBLIC-PROBE-AUTH-001",
                   "sink": "ntfy.sh",
-                  "ntfyId": m.get("id"),
+                  "ntfyId": mid,
                   "message": m.get("message"),
               }
-              body = "```json\n" + json.dumps(envelope, indent=2) + "\n```"
-              subprocess.check_call([
-                  "gh", "api", f"repos/uridolan77/origin-probe/issues/{issue}/comments",
-                  "-f", f"body={body}",
-              ])
-              print("mirrored", m.get("id"))
-          pathlib.Path(".origin-g2").mkdir(exist_ok=True)
-          pathlib.Path(".origin-g2/ntfy-since.txt").write_text(
-              datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), encoding="utf-8"
-          )
+              body = "```json\n" + json.dumps(envelope, indent=2) + "\n```\n"
+              subprocess.check_call(
+                  [
+                      "gh",
+                      "api",
+                      f"repos/uridolan77/origin-probe/issues/{issue}/comments",
+                      "-f",
+                      f"body={body}",
+                  ]
+              )
+              print("mirrored", mid)
           PY
