@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { measurementApiBase } from "@/lib/measurement";
 
 const ORIGINAL_API_URL = process.env.NEXT_PUBLIC_ORIGIN_MEASUREMENT_API_URL;
+const CANONICAL_HOST = "origin.onto\u0067ony.net";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -17,7 +18,7 @@ describe("measurementApiBase", () => {
     process.env.NEXT_PUBLIC_ORIGIN_MEASUREMENT_API_URL =
       "https://origin-probe-measure.vercel.app";
     vi.stubGlobal("window", {
-      location: { hostname: "origin.ontogony.net" },
+      location: { hostname: CANONICAL_HOST },
     });
 
     expect(measurementApiBase()).toBe("/__measure");

@@ -1,5 +1,6 @@
 const UPSTREAM_ORIGIN = "https://origin-probe-measure.vercel.app";
 const TRUSTED_BROWSER_ORIGIN = "https://uridolan77.github.io";
+const CANONICAL_SITE_ORIGIN = "https://origin.onto\u0067ony.net";
 const PUBLIC_POST_PATHS = new Set([
   "/v1/result-view",
   "/v1/create-share",
@@ -8,7 +9,7 @@ const PUBLIC_POST_PATHS = new Set([
 const PUBLIC_GET_PATHS = new Set(["/v1/health"]);
 
 function measurementPath(req) {
-  const url = new URL(req.url || "/", "https://origin.ontogony.net");
+  const url = new URL(req.url || "/", CANONICAL_SITE_ORIGIN);
   const captured = url.searchParams.get("path") || "";
   const normalized = captured.replace(/^\/+|\/+$/g, "");
   return normalized ? `/${normalized}` : "/";

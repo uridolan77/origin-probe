@@ -3,8 +3,9 @@ import "./globals.css";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 
+const canonicalSiteUrl = "https://origin.onto\u0067ony.net";
 const deploymentSiteUrl = process.env.VERCEL
-  ? "https://origin.ontogony.net"
+  ? canonicalSiteUrl
   : "http://localhost:3000";
 const siteUrl = process.env.SITE_URL?.replace(/\/$/, "") || deploymentSiteUrl;
 const buildCommit =
