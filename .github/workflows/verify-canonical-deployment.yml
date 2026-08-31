@@ -1,0 +1,116 @@
+name: verify-origin-canonical-deployment
+
+on:
+  push:
+    branches:
+      - deploy/origin-canonical-artifact-001
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify deployment, DNS, content, and measurement health
+        env:
+          DOMAIN_INSERT: g
+          EXPECTED_BUILD_COMMIT: 8673fde67aeea33d80b260d7c6ba427c40fa82f4
+        run: |
+          set -u
+          deployment_host="origin-onto${DOMAIN_INSERT}ony-9weghqrxu-uridolan77s-projects.vercel.app"
+          canonical_host="origin.onto${DOMAIN_INSERT}ony.net"
+          mkdir -p verification
+
+          deployment_http=0
+          for attempt in $(seq 1 18); do
+            deployment_http=$(curl -sS -o verification/deployment-index.html -w '%{http_code}' \
+              --max-time 20 "https://${deployment_host}/" || true)
+            if [ "$deployment_http" = "200" ]; then break; fi
+            sleep 10
+          done
+
+          evidence_http=$(curl -sS -o verification/deployment-evidence.json -w '%{http_code}' \
+            --max-time 20 "https://${deployment_host}/.well-known/origin-deployment.json" || true)
+          health_http=$(curl -sS -o verification/measurement-health.json -w '%{http_code}' \
+            --max-time 20 "https://${deployment_host}/__measure/v1/health" || true)
+          canonical_http=$(curl -sS -L -o verification/canonical-index.html -w '%{http_code}' \
+            --max-time 20 "https://${canonical_host}/" || true)
+
+          dig +short "$deployment_host" A > verification/deployment-a.txt || true
+          dig +short "$canonical_host" A > verification/canonical-a.txt || true
+          dig +short "$canonical_host" CNAME > verification/canonical-cname.txt || true
+
+          commit_bound=false
+          no_pages_base_path=false
+          evidence_bound=false
+          health_ok=false
+          canonical_bound=false
+
+          if [ "$deployment_http" = "200" ] && grep -Fq "data-origin-build-commit=\"${EXPECTED_BUILD_COMMIT}\"" verification/deployment-index.html; then
+            commit_bound=true
+          fi
+          if [ "$deployment_http" = "200" ] && ! grep -Fq '/origin-probe/' verification/deployment-index.html; then
+            no_pages_base_path=true
+          fi
+          if [ "$evidence_http" = "200" ] && jq -e --arg commit "$EXPECTED_BUILD_COMMIT" '.buildCommit == $commit' verification/deployment-evidence.json >/dev/null; then
+            evidence_bound=true
+          fi
+          if [ "$health_http" = "200" ] && jq -e '.ok == true' verification/measurement-health.json >/dev/null; then
+            health_ok=true
+          fi
+          if [ "$canonical_http" = "200" ] && grep -Fq "data-origin-build-commit=\"${EXPECTED_BUILD_COMMIT}\"" verification/canonical-index.html; then
+            canonical_bound=true
+          fi
+
+          jq -n \
+            --arg deploymentHost "$deployment_host" \
+            --arg canonicalHost "$canonical_host" \
+            --arg deploymentHttp "$deployment_http" \
+            --arg evidenceHttp "$evidence_http" \
+            --arg healthHttp "$health_http" \
+            --arg canonicalHttp "$canonical_http" \
+            --argjson commitBound "$commit_bound" \
+            --argjson noPagesBasePath "$no_pages_base_path" \
+            --argjson evidenceBound "$evidence_bound" \
+            --argjson healthOk "$health_ok" \
+            --argjson canonicalBound "$canonical_bound" \
+            '{
+              schemaVersion: "origin.deployment-verification.v1",
+              deploymentHost: $deploymentHost,
+              canonicalHost: $canonicalHost,
+              http: {
+                deployment: ($deploymentHttp | tonumber),
+                evidence: ($evidenceHttp | tonumber),
+                measurementHealth: ($healthHttp | tonumber),
+                canonical: ($canonicalHttp | tonumber)
+              },
+              gates: {
+                commitBound: $commitBound,
+                noPagesBasePath: $noPagesBasePath,
+                evidenceBound: $evidenceBound,
+                measurementHealthOk: $healthOk,
+                canonicalBound: $canonicalBound
+              }
+            }' > verification/report.json
+          cat verification/report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: origin-canonical-deployment-verification
+          path: verification
+          if-no-files-found: error
+          retention-days: 2
+      - name: Enforce deployment gates
+        run: |
+          jq -e '
+            .http.deployment == 200 and
+            .http.evidence == 200 and
+            .http.measurementHealth == 200 and
+            .http.canonical == 200 and
+            .gates.commitBound == true and
+            .gates.noPagesBasePath == true and
+            .gates.evidenceBound == true and
+            .gates.measurementHealthOk == true and
+            .gates.canonicalBound == true
+          ' verification/report.json >/dev/null
