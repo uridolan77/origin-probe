@@ -1,17 +1,10 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import "./globals.css";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 
-const canonicalSiteUrl = "https://origin.onto\u0067ony.net";
-const deploymentSiteUrl = process.env.VERCEL
-  ? canonicalSiteUrl
-  : "http://localhost:3000";
-const siteUrl = process.env.SITE_URL?.replace(/\/$/, "") || deploymentSiteUrl;
-const buildCommit =
-  process.env.ORIGIN_BUILD_COMMIT ||
-  process.env.VERCEL_GIT_COMMIT_SHA ||
-  "local-unbound";
+const siteUrl = process.env.SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
+const buildCommit = process.env.ORIGIN_BUILD_COMMIT || "local-unbound";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
