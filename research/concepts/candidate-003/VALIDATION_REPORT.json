@@ -1,7 +1,7 @@
 {
   "packageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-003",
   "validatedAt": "2026-08-31",
-  "validator": "validate_candidate_003.py",
+  "validatorVersion": "3.0.0",
   "schemaDraft": "2020-12",
   "result": "PASS_INTERNAL_RESEARCH_QUEUE_ONLY",
   "coverageAudit": {
@@ -9,15 +9,16 @@
     "assertionCount": 441,
     "acceptedAssertionCount": 0,
     "sourcedAssertionCount": 0,
-    "assertionsWithEvidenceItems": 73,
-    "assertionsNeedingSources": 368,
-    "sourceCount": 67,
-    "sourcesWithUrl": 29,
-    "sourcesWithStableIdentifier": 11,
-    "evidenceItemCount": 120,
-    "stableLocatorCount": 54,
-    "provisionalLocatorCount": 66,
-    "relationEdgeCount": 25,
+    "assertionsWithEvidenceItems": 65,
+    "assertionsNeedingSources": 376,
+    "sourceCount": 55,
+    "sourcesWithUrl": 1,
+    "sourcesWithStableIdentifier": 2,
+    "evidenceItemCount": 105,
+    "verifiedEvidenceItemCount": 0,
+    "stableLocatorCount": 13,
+    "provisionalLocatorCount": 92,
+    "relationEdgeCount": 21,
     "recordsWithCrossTraditionLinks": 12,
     "recordsTouchingMedievalEra": 18,
     "recordsWithMedievalPrimaryAnchor": 6,
@@ -28,9 +29,9 @@
       "contested__medium": 8,
       "direct__low": 15,
       "direct__medium": 3,
-      "layered__high": 9,
+      "layered__high": 10,
       "layered__low": 13,
-      "layered__medium": 49
+      "layered__medium": 48
     },
     "primaryAnchorEraCounts": {
       "ancientBCE": 30,
@@ -45,62 +46,40 @@
     "objectKindCounts": {
       "argument": 3,
       "case_family": 1,
-      "distinction": 9,
-      "doctrine": 18,
-      "framework": 10,
-      "lexeme_concept": 20,
-      "method": 7,
+      "distinction": 8,
+      "doctrine": 14,
+      "framework": 13,
+      "lexeme_concept": 21,
+      "method": 6,
       "paradox": 2,
-      "principle": 9,
+      "principle": 7,
       "problem_family": 6,
-      "reception_formula": 9,
-      "theory": 3,
-      "thought_experiment": 3
+      "reception_formula": 10,
+      "theory": 5,
+      "thought_experiment": 4
     },
-    "assertionRoleCounts": {
-      "CANONICAL_SYSTEMATIZATION": 98,
-      "CLAIMED_COINAGE": 1,
-      "CONCEPTUAL_ANTECEDENT": 88,
-      "CONTESTED_INCOMPLETE": 26,
-      "CRITIQUED_BY": 2,
-      "EARLIEST_SURVIVING_FORMULATION": 90,
-      "EARLIEST_VERIFIED_ENGLISH_ATTESTATION": 1,
-      "EDITORIAL_RETITLING": 1,
-      "FIRST_ATTESTED_SENSE": 1,
-      "FIRST_ATTESTED_STRING": 2,
-      "FIRST_CASE_FORMULATION": 1,
-      "FIRST_TECHNICAL_USE": 4,
-      "FUNCTIONAL_ANTECEDENT": 1,
-      "LEXICAL_PREHISTORY": 3,
-      "MISATTRIBUTED_TO": 6,
-      "POPULARIZED_BY": 6,
-      "RECEPTION_SCHEMA": 1,
-      "RETROSPECTIVE_LABEL": 2,
-      "SEMANTIC_SHIFT": 60,
-      "TERM_COINAGE": 3,
-      "TEXTBOOK_CANONIZATION": 1,
-      "TRANSFORMATIVE_RECEPTION": 3,
-      "TRANSMISSION_TRANSLATION": 40
-    },
-    "reviewStateCounts": {
-      "candidate": 441
-    },
-    "sourceVerificationStateCounts": {
-      "research_lead": 67
-    },
+    "reviewStateCounts": {"candidate": 441},
+    "sourceVerificationStateCounts": {"research_lead": 55},
     "claimTemporalDuplicateCount": 0,
     "singleInitialClaimCount": 0,
     "editorialArtifactClaimCount": 0,
     "gate": "PASS_INTERNAL_RESEARCH_QUEUE_ONLY"
   },
-  "tests": {
-    "validatorContractSuite": "PASS"
-  },
-  "authorizations": {
-    "productMutation": false,
-    "publication": false,
-    "deployment": false,
-    "measurementInclusion": false,
-    "merge": false
-  }
+  "checks": [
+    "draft_2020_12_schema_meta_validation",
+    "instance_schema_validation_with_format_checker",
+    "exact_set_fail_closed_manifest_validation",
+    "deterministic_json_to_markdown_byte_parity",
+    "assertion_source_evidence_bidirectional_closure",
+    "explicit_source_gap_or_evidence_exclusive_or",
+    "state_transition_and_named_review_requirements",
+    "typed_assertion_relation_closure",
+    "candidate_view_derivation_and_null_publication_views",
+    "computed_coverage_audit_parity",
+    "corruption_and_editorial_artifact_lint"
+  ],
+  "validatorContractSuite": "PASS",
+  "validatorContractTests": 19,
+  "productPublicationReadiness": "NO_GO",
+  "historicalTruthCertified": false
 }
