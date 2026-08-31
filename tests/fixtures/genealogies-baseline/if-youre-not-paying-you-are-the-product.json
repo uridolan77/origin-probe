@@ -11,20 +11,6 @@
   "reviewedAt": "2026-08-29",
   "status": "provisional",
   "finding": "Popular 2010 MetaFilter wording is distinct from a 1973 video-art antecedent; popularization and origin are separate, and the TV critique is related rather than identical wording.",
-  "index": {
-    "earliest": {
-      "date": {
-        "display": "2010",
-        "startYear": 2010,
-        "precision": "year",
-        "calendar": "proleptic-gregorian"
-      },
-      "assertionId": "a-yap-earliest-modern"
-    },
-    "shortFinding": "A MetaFilter comment; a 1973 video-art line is related, not identical.",
-    "verdict": "popularized",
-    "verdictAssertionId": "a-yap-pop"
-  },
   "searchScope": "Quote Investigator dossier, MetaFilter 2010 comment trail via QI, and Richard Serra / Carlota Fay Schoolman 1973 video documentation.",
   "evidenceReviewed": "QI (2017) on Television Delivers People (1973) and Andrew Lewis / blue_beetle MetaFilter (2010); MoMA/video documentation summaries.",
   "supersedesRevision": null,
@@ -50,14 +36,7 @@
         "src-yap-metafilter-2010"
       ],
       "supportKind": "direct",
-      "caveat": "Earlier near-matches (for example 2001 Usenet “You’re not the customer, you’re the product”) exist without the payment clause; this page separates those roles.",
-      "occurrenceDate": {
-        "display": "2010",
-        "startYear": 2010,
-        "precision": "year",
-        "calendar": "proleptic-gregorian"
-      },
-      "earlierUseStatus": "none_located_within_scope"
+      "caveat": "Earlier near-matches (for example 2001 Usenet “You’re not the customer, you’re the product”) exist without the payment clause; this page separates those roles."
     },
     {
       "assertionId": "a-yap-pop",

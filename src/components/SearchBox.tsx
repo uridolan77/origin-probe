@@ -7,6 +7,7 @@ export type SearchItem = {
   slug: string;
   phrase: string;
   aliases: string[];
+  searchTerms: string[];
 };
 
 type Props = {
@@ -20,10 +21,7 @@ export function SearchBox({ items }: Props) {
     const q = query.trim().toLowerCase();
     if (!q) return [];
     return items
-      .filter((item) => {
-        if (item.phrase.toLowerCase().includes(q)) return true;
-        return item.aliases.some((a) => a.toLowerCase().includes(q));
-      })
+      .filter((item) => item.searchTerms.some((term) => term.toLowerCase().includes(q)))
       .slice(0, 8);
   }, [items, query]);
 
@@ -31,7 +29,7 @@ export function SearchBox({ items }: Props) {
 
   return (
     <div className="search-box">
-      <label htmlFor="collection-search">Search the traced collection</label>
+      <label htmlFor="collection-search">Search the collection</label>
       <input
         id="collection-search"
         type="search"
@@ -39,12 +37,17 @@ export function SearchBox({ items }: Props) {
         autoComplete="off"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Type a phrase…"
+        placeholder="A phrase, a name, a year."
       />
+      {!showUnsupported ? (
+        <p className="search-hint">
+          Not traced yet? <Link href="/corrections/">Request a phrase</Link>.
+        </p>
+      ) : null}
       {matches.length > 0 ? (
-        <ul className="search-suggestions" role="listbox" aria-label="Matching phrases">
+        <ul className="search-suggestions" aria-label="Matching phrases">
           {matches.map((item) => (
-            <li key={item.slug} role="option" aria-selected="false">
+            <li key={item.slug}>
               <Link href={`/g/${item.slug}/`}>{item.phrase}</Link>
             </li>
           ))}
@@ -52,7 +55,7 @@ export function SearchBox({ items }: Props) {
       ) : null}
       {showUnsupported ? (
         <p className="search-empty">
-          Not traced yet.{" "}
+          No matches in the collection.{" "}
           <Link href="/corrections/">Request this phrase.</Link>
         </p>
       ) : null}

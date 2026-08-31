@@ -23,12 +23,20 @@ export default function MethodPage() {
       <ul>
         <li>
           <strong>Earliest verified occurrence</strong> — the oldest instance we have
-          checked against a citable source within the stated search scope. It is not a
-          guarantee that nothing older exists outside that scope.
+          checked against a citable <em>primary</em> source within the stated search scope.
+          It is not a guarantee that nothing older exists outside that scope.
+        </li>
+        <li>
+          <strong>Earliest reported occurrence</strong> — the oldest instance known from
+          secondary reporting when the primary hardcopy was not independently inspected
+          here. Public index and card surfaces label these dates as <em>Reported</em> so
+          they are not confused with verified occurrences.
         </li>
         <li>
           <strong>Claimed coinage</strong> — a person or outlet asserts they coined the
-          phrase. Claims are recorded separately from verified occurrences.
+          phrase. Claims are recorded separately from verified occurrences. Direct
+          evidence that a claim was made is still a claim, not proof of historical
+          coinage.
         </li>
         <li>
           <strong>Popularized by</strong> — a use or campaign that materially widened

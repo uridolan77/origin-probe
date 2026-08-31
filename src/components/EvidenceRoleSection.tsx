@@ -2,6 +2,7 @@
 
 const ROLE_LABELS: Record<EvidenceRole, string> = {
   EARLIEST_VERIFIED_OCCURRENCE: "Earliest verified occurrence",
+  EARLIEST_REPORTED_OCCURRENCE: "Earliest reported occurrence",
   CLAIMED_COINAGE: "Claimed coinage",
   POPULARIZED_BY: "Popularized by",
   MISATTRIBUTED_TO: "Misattributed to",
@@ -42,6 +43,7 @@ export function EvidenceRoleSection({ role, assertions }: Props) {
 
 export const EVIDENCE_ROLE_ORDER: EvidenceRole[] = [
   "EARLIEST_VERIFIED_OCCURRENCE",
+  "EARLIEST_REPORTED_OCCURRENCE",
   "CLAIMED_COINAGE",
   "POPULARIZED_BY",
   "MISATTRIBUTED_TO",

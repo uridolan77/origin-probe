@@ -9,7 +9,7 @@ import { GenealogyTimeline } from "@/components/GenealogyTimeline";
 import { ShareActions } from "@/components/ShareActions";
 import { ResultViewBeacon } from "@/components/ResultViewBeacon";
 import { SourceList } from "@/components/SourceList";
-import { getAll, getBySlug } from "@/lib/genealogies";
+import { getPublishedBySlug, listPublished } from "@/lib/genealogies";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -19,7 +19,7 @@ type PageProps = {
 const EMPTY_COLLECTION_SLUG = "_empty";
 
 export function generateStaticParams() {
-  const all = getAll();
+  const all = listPublished();
   if (all.length === 0) return [{ slug: EMPTY_COLLECTION_SLUG }];
   return all.map((g) => ({ slug: g.slug }));
 }
@@ -27,7 +27,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   if (slug === EMPTY_COLLECTION_SLUG) return { title: "Not found" };
-  const g = getBySlug(slug);
+  const g = getPublishedBySlug(slug);
   if (!g) return { title: "Not found" };
   return {
     title: g.phrase,
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function GenealogyPage({ params }: PageProps) {
   const { slug } = await params;
   if (slug === EMPTY_COLLECTION_SLUG) notFound();
-  const g = getBySlug(slug);
+  const g = getPublishedBySlug(slug);
   if (!g) notFound();
 
   return (

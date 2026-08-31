@@ -1,19 +1,23 @@
 :root {
   --ink: #1a1f24;
   --ink-muted: #4a5560;
+  --ink-soft: #3a434c;
+  --muted-warm: #6b6459;
   --paper: #f7f4ef;
   --paper-deep: #ebe6dc;
   --rule: #c8c0b4;
+  --rule-soft: #ddd6c9;
   --accent: #1f4d63;
   --accent-soft: #d9e6ec;
   --focus: #0b6e4f;
   --danger: #8b2e2e;
+  --verdict-ochre: #8a6320;
   --role-bg: #f0ebe3;
   --timeline-line: #9a9084;
   --paper-card: #fffdf9;
   --shadow-soft: 0 1px 0 rgba(26, 31, 36, 0.06);
-  --font-display: Georgia, "Charter", "Times New Roman", Times, serif;
-  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-instrument-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
   --measure: 40rem;
   --page: 68rem;
   --space-1: 0.25rem;
@@ -116,8 +120,8 @@ a:hover {
 
 .site-brand {
   font-family: var(--font-display);
-  font-size: 1.65rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 400;
   letter-spacing: 0.01em;
   color: var(--ink);
   text-decoration: none;
@@ -127,7 +131,7 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
-  font-size: 0.95rem;
+  font-size: 0.84375rem;
 }
 
 .site-nav a {
@@ -157,6 +161,25 @@ a:hover {
   margin: 0;
 }
 
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .prose {
   max-width: var(--measure);
 }
@@ -167,7 +190,7 @@ a:hover {
 
 .display {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
@@ -197,55 +220,228 @@ a:hover {
   gap: var(--space-3);
 }
 
-.phrase-list {
-  list-style: none;
-  padding: 0;
-  margin: var(--space-5) 0 0;
+.collection-hero {
   display: grid;
-  gap: var(--space-3);
+  grid-template-columns: 1fr 22.5rem;
+  gap: 3.5rem;
+  align-items: end;
+  margin-bottom: var(--space-6);
 }
 
-@media (min-width: 640px) {
-  .phrase-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.collection-hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
-.phrase-list a {
-  display: block;
-  padding: var(--space-3) var(--space-4);
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  text-decoration: none;
+.collection-hero h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 3.375rem;
+  line-height: 1.03;
+  letter-spacing: -0.02em;
+  max-width: 22ch;
+  margin: 0;
+}
+
+.collection-hero .collection-lead {
+  font-size: 1.03125rem;
+  line-height: 1.6;
+  max-width: 56ch;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.collection-search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.phrase-index-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.phrase-index-table--desktop {
+  display: table;
+}
+
+.phrase-index-cards--mobile {
+  display: none;
+}
+
+.phrase-index-table thead th {
+  padding-bottom: 0.5625rem;
+  border-bottom: 1.5px solid var(--ink);
+  font-size: 0.65625rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-warm);
+  text-align: left;
+}
+
+.phrase-index-table thead th:last-child {
+  text-align: right;
+}
+
+.phrase-index-table tbody td {
+  padding: 1.1875rem 0;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top;
+}
+
+.phrase-index-table tbody tr:hover {
+  background: rgba(255, 253, 249, 0.75);
+}
+
+.phrase-index-table .phrase-index-year,
+.phrase-index-table .phrase-index-phrase,
+.phrase-index-table .phrase-index-phrase a {
+  font-family: var(--font-display);
+  font-size: 1.3125rem;
+  line-height: 1.25;
   color: var(--ink);
-  box-shadow: var(--shadow-soft);
+  text-decoration: none;
 }
 
-.phrase-list a:hover {
-  border-color: var(--accent);
+.phrase-index-table .phrase-index-phrase a:hover {
+  text-decoration: underline;
+}
+
+.phrase-index-table .phrase-index-finding {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.phrase-index-table .phrase-index-year {
+  width: 4.875rem;
+  line-height: 1.2;
+}
+
+.phrase-index-table .phrase-index-finding {
+  width: 18.75rem;
+}
+
+.phrase-index-verdict {
+  text-align: right;
+  font-size: 0.65625rem;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+.phrase-index-verdict--coinage {
+  color: var(--accent);
+}
+
+.phrase-index-verdict--misattributed {
+  color: var(--danger);
+}
+
+.phrase-index-verdict--popularized {
+  color: var(--verdict-ochre);
+}
+
+.phrase-index-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.phrase-index-card {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.phrase-index-card dl {
+  margin: 0;
+}
+
+.phrase-index-card-row {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.phrase-index-card-row:last-child {
+  margin-bottom: 0;
+}
+
+.phrase-index-card dt {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-warm);
+}
+
+.phrase-index-card dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.phrase-index-card .phrase-index-phrase a {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.collection-footnote {
+  margin: 1.375rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--muted-warm);
+}
+
+@media (max-width: 52rem) {
+  .collection-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .phrase-index-table--desktop {
+    display: none;
+  }
+
+  .phrase-index-cards--mobile {
+    display: block;
+  }
 }
 
 .search-box {
   position: relative;
-  max-width: 32rem;
+  max-width: none;
 }
 
 .search-box label {
   display: block;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted-warm);
   margin-bottom: var(--space-2);
 }
 
 .search-box input {
   width: 100%;
-  padding: 0.7rem 0.85rem;
+  padding: 0.8125rem 0.9375rem;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--paper-card);
   color: var(--ink);
   font: inherit;
+  font-size: 0.96875rem;
+}
+
+.search-hint {
+  font-size: 0.78125rem;
+  color: var(--muted-warm);
 }
 
 .search-suggestions {

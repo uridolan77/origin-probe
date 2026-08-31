@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 export const EvidenceRoleSchema = z.enum([
   "EARLIEST_VERIFIED_OCCURRENCE",
@@ -10,8 +10,6 @@ export const EvidenceRoleSchema = z.enum([
   "CONTESTED_INCOMPLETE",
 ]);
 
-export type EvidenceRole = z.infer<typeof EvidenceRoleSchema>;
-
 export const SupportKindSchema = z.enum([
   "direct",
   "supporting",
@@ -19,11 +17,7 @@ export const SupportKindSchema = z.enum([
   "incomplete",
 ]);
 
-export type SupportKind = z.infer<typeof SupportKindSchema>;
-
 export const SourceTypeSchema = z.enum(["primary", "secondary"]);
-
-export type SourceType = z.infer<typeof SourceTypeSchema>;
 
 export const GenealogyStatusSchema = z.enum([
   "draft",
@@ -33,17 +27,12 @@ export const GenealogyStatusSchema = z.enum([
   "withdrawn",
 ]);
 
-export type GenealogyStatus = z.infer<typeof GenealogyStatusSchema>;
-
 export const IndexVerdictSchema = z.enum([
   "direct_coinage",
   "claimed_coinage",
   "popularized",
   "misattributed",
 ]);
-
-export type Verdict = z.infer<typeof IndexVerdictSchema>;
-export { IndexVerdictSchema as VerdictSchema };
 
 export const HistoricalDateSchema = z
   .object({
@@ -55,15 +44,11 @@ export const HistoricalDateSchema = z
   })
   .strict();
 
-export type HistoricalDate = z.infer<typeof HistoricalDateSchema>;
-
 export const EarlierUseStatusSchema = z.enum([
   "none_located_within_scope",
   "reported_unverified",
   "contested",
 ]);
-
-export type EarlierUseStatus = z.infer<typeof EarlierUseStatusSchema>;
 
 export const OriginatorKeySchema = z
   .string()
@@ -84,16 +69,12 @@ export const IndexMetadataSchema = z
   })
   .strict();
 
-export type IndexMetadata = z.infer<typeof IndexMetadataSchema>;
-
 export const CorrectionHistoryEntrySchema = z.object({
   at: z.string().min(1),
   summary: z.string().min(1),
   fromRevision: z.number().int().nonnegative().optional(),
   toRevision: z.number().int().nonnegative().optional(),
 });
-
-export type CorrectionHistoryEntry = z.infer<typeof CorrectionHistoryEntrySchema>;
 
 export const AssertionSchema = z
   .object({
@@ -146,8 +127,6 @@ export const AssertionSchema = z
     }
   });
 
-export type Assertion = z.infer<typeof AssertionSchema>;
-
 export const SourceSchema = z
   .object({
     sourceId: z.string().min(1),
@@ -163,8 +142,6 @@ export const SourceSchema = z
     shortExcerpt: z.string().max(280).optional(),
   })
   .strict();
-
-export type Source = z.infer<typeof SourceSchema>;
 
 export const GenealogySchema = z
   .object({
@@ -190,17 +167,11 @@ export const GenealogySchema = z
   })
   .strict();
 
-export type Genealogy = z.infer<typeof GenealogySchema>;
-
-export const INDEX_EARLIEST_ROLES = new Set<EvidenceRole>([
+export const INDEX_EARLIEST_ROLES = new Set([
   "EARLIEST_VERIFIED_OCCURRENCE",
   "EARLIEST_REPORTED_OCCURRENCE",
 ]);
 
-export const PUBLISHED_STATUSES = new Set<GenealogyStatus>(["provisional", "reviewed"]);
+export const PUBLISHED_STATUSES = new Set(["provisional", "reviewed"]);
 
-export const UNPUBLISHED_STATUSES = new Set<GenealogyStatus>([
-  "draft",
-  "superseded",
-  "withdrawn",
-]);
+export const UNPUBLISHED_STATUSES = new Set(["draft", "superseded", "withdrawn"]);
