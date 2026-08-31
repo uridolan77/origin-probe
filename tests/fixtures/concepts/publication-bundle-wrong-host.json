@@ -1,0 +1,92 @@
+{
+  "packageKind": "origin_site_concept_publication_v1",
+  "packageVersion": 1,
+  "repository": "uridolan77/origin-probe",
+  "canonicalHost": "example.com",
+  "generatedAt": "2026-08-31T16:00:00.000Z",
+  "signerKeyId": "origin-site-concept-publication-authority-v1",
+  "sourceCandidatePackageDigest": "a2e463e0b134b4ed49ebb6cced8d0bf1afbb2dcf5780568d7e66ac31299d6814",
+  "roleRegistryDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "policyRegistryDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "dossierDigests": [
+    {
+      "conceptId": "C900",
+      "slug": "synthetic-fixture-concept",
+      "digest": "929fa68601d00fc3714ffdebb251c6c0c42accae3ac2c1866347e4d83cc16b7f"
+    }
+  ],
+  "dossiers": [
+    {
+      "conceptId": "C900",
+      "slug": "synthetic-fixture-concept",
+      "label": "Synthetic fixture concept",
+      "aliases": [
+        "fixture concept"
+      ],
+      "objectKind": "thought_experiment",
+      "definitionScope": "Contract-test only; not a real corpus record.",
+      "revision": 1,
+      "publishedAt": "2026-08-31T16:00:00.000Z",
+      "reviewedAt": "2026-08-31T15:55:00.000Z",
+      "status": "published",
+      "finding": "Within the declared search scope, an accepted formulation is attested in the fixture source.",
+      "projectionSlots": [
+        {
+          "slot": "earliest_accepted_formulation",
+          "assertionIds": [
+            "C900-A01"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "assertionId": "C900-A01",
+          "role": "earliest_accepted_formulation",
+          "claim": "Within the fixture search scope, the earliest accepted formulation appears in Source S01 (1970).",
+          "acceptedReviewEventIds": [
+            "REV-C900-001"
+          ],
+          "evidenceIds": [
+            "C900-E01"
+          ],
+          "sourceIds": [
+            "C900-S01"
+          ],
+          "temporal": {
+            "display": "1970",
+            "startYear": 1970,
+            "precision": "year"
+          },
+          "caveat": "Bounded to the fixture corpus; not a worldwide priority claim."
+        }
+      ],
+      "sources": [
+        {
+          "sourceId": "C900-S01",
+          "citation": "Fixture Author, Fixture Paper, 1970",
+          "url": "https://example.org/fixture-source",
+          "publicationDate": "1970"
+        }
+      ],
+      "searchScope": "Synthetic fixture corpus only",
+      "limitations": [
+        "Not a historical authority",
+        "Contract test only"
+      ],
+      "publicationReceipt": {
+        "packageId": "ORIGIN-SITE-CONCEPT-PUBLICATION-FIXTURE-001",
+        "workspaceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requestDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "planDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "roleRegistryDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "policyRegistryDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "authorizationId": "AUTH-FIXTURE-001",
+        "authorizedBy": "PRN-FIXTURE-AUTHORITY",
+        "authorizedAt": "2026-08-31T15:50:00.000Z",
+        "authorityKeyId": "origin-site-concept-publication-authority-v1",
+        "signature": "fixture-inner-receipt-sig"
+      }
+    }
+  ],
+  "signature": "N7o2QQ6C7kFDi2zbulQI14vIiiGQJwmb3s4etUd6m48ArhjkJN8lgVXM+7hxEhZr8m5bVp1uWHT7R+Z1pGLwAg=="
+}

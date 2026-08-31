@@ -12,10 +12,11 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "guard:data": "node tools/validate-data.mjs",
+    "guard:concepts": "node tools/validate-concept-data.mjs && node tools/guard-concept-publication.mjs",
     "guard:absolutes": "node tools/guard-absolutes.mjs",
     "guard:cleanroom": "node tools/cleanroom-scan.mjs",
     "guard:manifest": "node tools/export-manifest-check.mjs",
-    "guard:all": "npm run guard:data && npm run guard:absolutes && npm run guard:cleanroom && npm run guard:manifest",
+    "guard:all": "npm run guard:data && npm run guard:concepts && npm run guard:absolutes && npm run guard:cleanroom && npm run guard:manifest",
     "gen:og": "node tools/gen-og-cards.mjs",
     "verify": "npm run guard:all && npm run typecheck && npm run lint && npm run test && npm run build"
   },
