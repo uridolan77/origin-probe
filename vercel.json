@@ -3,7 +3,6 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
-  "alias": ["origin.onto\u0067ony.net"],
   "functions": {
     "api/measure.js": {
       "maxDuration": 10
