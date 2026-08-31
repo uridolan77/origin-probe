@@ -2,7 +2,10 @@ import { afterEach, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import { cleanup, render, screen } from "@testing-library/react";
 import { ConceptUnpublishedView, ConceptPublishedView } from "@/components/ConceptDetail";
-import type { ConceptCatalogItem, PublishedConceptGenealogy } from "@/lib/concepts/schema";
+import {
+  PublishedConceptGenealogySchema,
+  type ConceptCatalogItem,
+} from "@/lib/concepts/schema";
 
 afterEach(() => cleanup());
 
@@ -32,10 +35,12 @@ describe("concept detail UI", () => {
     expect(screen.queryByText(/Philippa Foot/i)).toBeNull();
   });
 
-  it("renders published projection sections from accepted dossier only", () => {
-    const dossier = JSON.parse(
-      fs.readFileSync("tests/fixtures/concepts/publication-bundle-valid.json", "utf8"),
-    ).dossiers[0] as PublishedConceptGenealogy;
+  it("renders published projection sections from schema-parsed dossier only", () => {
+    const dossier = PublishedConceptGenealogySchema.parse(
+      JSON.parse(
+        fs.readFileSync("tests/fixtures/concepts/publication-bundle-valid.json", "utf8"),
+      ).dossiers[0],
+    );
 
     render(<ConceptPublishedView dossier={dossier} />);
     expect(screen.getAllByText(dossier.finding).length).toBeGreaterThan(0);

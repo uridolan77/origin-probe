@@ -24,6 +24,9 @@ jobs:
           --health-retries 5
     env:
       MEASUREMENT_TEST_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/origin_measure_test
+      # Separately governed pin of data/concepts/publication-authority.public.json SPKI fingerprint.
+      # Changing the authority key without a root-signed rotation envelope must fail CI.
+      ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT: b978646d15db4ae4fb326262acc9ba1a66c17969f2fb67e438d50772d6cde9ee
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

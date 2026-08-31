@@ -1,15 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
-import { createPublicKey, verify } from "node:crypto";
-
-export type PublicationAuthority = {
-  keyId: string;
-  algorithm: "Ed25519";
-  publicKeyBase64: string;
-  purpose: string;
-  repository: string;
-  canonicalHost: string;
-};
+import { createHash, createPublicKey, verify } from "node:crypto";
+import {
+  PublicationAuthoritySchema,
+  type PublicationAuthority,
+} from "./schema";
+import { CANONICAL_PUBLICATION_HOST } from "./canonical";
 
 const AUTHORITY_PATH = path.join(
   process.cwd(),
@@ -20,17 +16,39 @@ const AUTHORITY_PATH = path.join(
 
 let cached: PublicationAuthority | null = null;
 
-export function loadPublicationAuthority(): PublicationAuthority {
-  if (cached) return cached;
-  const raw = JSON.parse(fs.readFileSync(AUTHORITY_PATH, "utf8")) as PublicationAuthority;
-  if (raw.algorithm !== "Ed25519") {
-    throw new Error("Unsupported publication authority algorithm");
+export function authorityFingerprintSha256(
+  publicKeyBase64: string,
+): string {
+  return createHash("sha256")
+    .update(Buffer.from(publicKeyBase64, "base64"))
+    .digest("hex");
+}
+
+export function loadPublicationAuthority(
+  repoRoot: string = process.cwd(),
+): PublicationAuthority {
+  if (cached && repoRoot === process.cwd()) return cached;
+  const authorityPath = path.join(
+    repoRoot,
+    "data",
+    "concepts",
+    "publication-authority.public.json",
+  );
+  const raw: unknown = JSON.parse(fs.readFileSync(authorityPath, "utf8"));
+  const parsed = PublicationAuthoritySchema.parse(raw);
+  if (parsed.canonicalHost !== CANONICAL_PUBLICATION_HOST) {
+    throw new Error("Publication authority canonicalHost mismatch");
   }
-  if (!raw.publicKeyBase64 || !raw.keyId) {
-    throw new Error("Invalid publication authority file");
+  if (parsed.revoked === true) {
+    throw new Error("Publication authority revoked");
   }
-  cached = raw;
-  return cached;
+  const fp = authorityFingerprintSha256(parsed.publicKeyBase64);
+  if (parsed.fingerprintSha256 && parsed.fingerprintSha256 !== fp) {
+    throw new Error("Publication authority fingerprint field mismatch");
+  }
+  const withFp = { ...parsed, fingerprintSha256: fp };
+  if (repoRoot === process.cwd()) cached = withFp;
+  return withFp;
 }
 
 export function clearPublicationAuthorityCache(): void {
@@ -44,7 +62,7 @@ export function clearPublicationAuthorityCache(): void {
 export function verifyPublicationSignature(
   payloadUtf8: string,
   signatureBase64: string,
-  authority: PublicationAuthority = loadPublicationAuthority(),
+  authority: PublicationAuthority,
 ): boolean {
   const key = createPublicKey({
     key: Buffer.from(authority.publicKeyBase64, "base64"),
@@ -58,3 +76,5 @@ export function verifyPublicationSignature(
     Buffer.from(signatureBase64, "base64"),
   );
 }
+
+export { AUTHORITY_PATH };

@@ -1,11 +1,12 @@
 /**
  * Canonical public host for signed concept publication bundles.
- * Brand segment is reconstructed at runtime so the clean-room denylist
- * never sees a contiguous prohibited brand literal in source.
+ * Stored as a normal hostname; cleanroom allows only this exact public host
+ * as a narrow exception to the brand denylist (see tools/cleanroom-scan.mjs).
  */
+export const CANONICAL_PUBLICATION_HOST = "origin.ontogony.net" as const;
+
 export function canonicalPublicationHost(): string {
-  const brand = Buffer.from("T250b2dvbnk=", "base64").toString("utf8").toLowerCase();
-  return `origin.${brand}.net`;
+  return CANONICAL_PUBLICATION_HOST;
 }
 
 export const CANONICAL_PUBLICATION_REPOSITORY = "uridolan77/origin-probe" as const;

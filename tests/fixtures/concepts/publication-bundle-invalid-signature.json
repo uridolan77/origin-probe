@@ -2,22 +2,56 @@
   "packageKind": "origin_site_concept_publication_v1",
   "packageVersion": 1,
   "repository": "uridolan77/origin-probe",
-  "canonicalHost": "origin.\u006f\u006e\u0074\u006f\u0067\u006f\u006e\u0079.net",
+  "canonicalHost": "origin.ontogony.net",
   "generatedAt": "2026-08-31T16:00:00.000Z",
-  "signerKeyId": "origin-site-concept-publication-authority-v1",
+  "signerKeyId": "origin-site-concept-publication-fixture-only-v1",
   "sourceCandidatePackageDigest": "a2e463e0b134b4ed49ebb6cced8d0bf1afbb2dcf5780568d7e66ac31299d6814",
   "roleRegistryDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
   "policyRegistryDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "authorizationEnvelope": {
+    "authorizationId": "AUTH-FIXTURE-001",
+    "authorizedBy": "PRN-FIXTURE-AUTHORITY",
+    "authorizedAt": "2026-08-31T15:50:00.000Z",
+    "workspaceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "requestDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "planDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "authorityKeyId": "origin-site-concept-publication-fixture-only-v1",
+    "signature": "dflpyNv7XisoaO+L8xu5iAjn93p8/6QKuCGvk60xvOQFfkdRD8OcCw5YDkA7M8INPVBksr68lEHBd1b/FzWLBw=="
+  },
+  "projectionPlans": [
+    {
+      "conceptId": "C042",
+      "slug": "synthetic-fixture-concept",
+      "slot": "earliest_accepted_formulation",
+      "eligibleAssertionIds": [
+        "C042-A01"
+      ],
+      "normalizedIntervals": [
+        {
+          "assertionId": "C042-A01",
+          "startYear": 1970,
+          "precision": "year"
+        }
+      ],
+      "searchScopeId": "fixture-scope-1",
+      "searchScopeDigest": "b4ccc47413ab2c3190db22df602404d58d9b82b426be3c7aec0212e6165b720b",
+      "selectedAssertionIds": [
+        "C042-A01"
+      ],
+      "disposition": "unique",
+      "projectionTextDigest": "461989026ec8e05c376560c67b8ab0673cb2eb918ff1948389048fc278e0eadd"
+    }
+  ],
   "dossierDigests": [
     {
-      "conceptId": "C900",
+      "conceptId": "C042",
       "slug": "synthetic-fixture-concept",
-      "digest": "929fa68601d00fc3714ffdebb251c6c0c42accae3ac2c1866347e4d83cc16b7f"
+      "digest": "df25a08bcdd8ff2d925319b2a06ac3007f427624094cffe9ca1d2d1242f81b22"
     }
   ],
   "dossiers": [
     {
-      "conceptId": "C900",
+      "conceptId": "C042",
       "slug": "synthetic-fixture-concept",
       "label": "Synthetic fixture concept",
       "aliases": [
@@ -27,30 +61,30 @@
       "definitionScope": "Contract-test only; not a real corpus record.",
       "revision": 1,
       "publishedAt": "2026-08-31T16:00:00.000Z",
-      "reviewedAt": "2026-08-31T15:55:00.000Z",
+      "reviewedAt": "2026-08-31T15:40:00.000Z",
       "status": "published",
       "finding": "Within the declared search scope, an accepted formulation is attested in the fixture source.",
       "projectionSlots": [
         {
           "slot": "earliest_accepted_formulation",
           "assertionIds": [
-            "C900-A01"
+            "C042-A01"
           ]
         }
       ],
       "assertions": [
         {
-          "assertionId": "C900-A01",
+          "assertionId": "C042-A01",
           "role": "earliest_accepted_formulation",
           "claim": "Within the fixture search scope, the earliest accepted formulation appears in Source S01 (1970).",
           "acceptedReviewEventIds": [
-            "REV-C900-001"
+            "REV-C042-001"
           ],
           "evidenceIds": [
-            "C900-E01"
+            "C042-E01"
           ],
           "sourceIds": [
-            "C900-S01"
+            "C042-S01"
           ],
           "temporal": {
             "display": "1970",
@@ -62,7 +96,7 @@
       ],
       "sources": [
         {
-          "sourceId": "C900-S01",
+          "sourceId": "C042-S01",
           "citation": "Fixture Author, Fixture Paper, 1970",
           "url": "https://example.org/fixture-source",
           "publicationDate": "1970"
@@ -83,8 +117,8 @@
         "authorizationId": "AUTH-FIXTURE-001",
         "authorizedBy": "PRN-FIXTURE-AUTHORITY",
         "authorizedAt": "2026-08-31T15:50:00.000Z",
-        "authorityKeyId": "origin-site-concept-publication-authority-v1",
-        "signature": "fixture-inner-receipt-sig"
+        "authorityKeyId": "origin-site-concept-publication-fixture-only-v1",
+        "signature": "n+uSbtxwmIaAvcvsfSEU7u2B1/QqcNx8NMzdabL6VF1VtFelkbeD8gjldicEhCwd29LzkJb8IdOKy9yAFJGiCg=="
       }
     }
   ],

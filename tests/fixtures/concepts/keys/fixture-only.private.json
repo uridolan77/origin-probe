@@ -1,0 +1,6 @@
+{
+  "keyId": "origin-site-concept-publication-fixture-only-v1",
+  "algorithm": "Ed25519",
+  "privateKeyBase64": "MC4CAQAwBQYDK2VwBCIEILJ68pAdLmHmgXTth2MZxZLZD2TXvM0617avCfMtTnHy",
+  "note": "FIXTURE-ONLY private key. Never use for production publication authority."
+}

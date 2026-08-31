@@ -1,0 +1,9 @@
+{
+  "keyId": "origin-site-concept-publication-fixture-only-v1",
+  "algorithm": "Ed25519",
+  "publicKeyBase64": "MCowBQYDK2VwAyEAG41gY+o54XyrMA6jY4Jc/tXkBYD1DblyhBjc91bl97I=",
+  "purpose": "Fixture-only signing for concept publication membrane tests",
+  "repository": "uridolan77/origin-probe",
+  "canonicalHost": "origin.ontogony.net",
+  "fingerprintSha256": "2992ba72c9dbf456b94fefde0ab52e9af332e4077d3ca50181289bdaca925a92"
+}

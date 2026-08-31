@@ -1,7 +1,7 @@
 {
   "packageKind": "origin_site_concept_publication_v1",
   "packageVersion": 1,
-  "repository": "other/repo",
+  "repository": "uridolan77/origin-probe",
   "canonicalHost": "origin.ontogony.net",
   "generatedAt": "2026-08-31T16:00:00.000Z",
   "signerKeyId": "origin-site-concept-publication-fixture-only-v1",
@@ -24,29 +24,36 @@
       "slug": "synthetic-fixture-concept",
       "slot": "earliest_accepted_formulation",
       "eligibleAssertionIds": [
-        "C042-A01"
+        "C042-A1",
+        "C042-A2"
       ],
       "normalizedIntervals": [
         {
-          "assertionId": "C042-A01",
-          "startYear": 1970,
+          "assertionId": "C042-A1",
+          "startYear": 1950,
+          "precision": "year"
+        },
+        {
+          "assertionId": "C042-A2",
+          "startYear": 1950,
           "precision": "year"
         }
       ],
       "searchScopeId": "fixture-scope-1",
       "searchScopeDigest": "b4ccc47413ab2c3190db22df602404d58d9b82b426be3c7aec0212e6165b720b",
       "selectedAssertionIds": [
-        "C042-A01"
+        "C042-A1",
+        "C042-A2"
       ],
-      "disposition": "unique",
-      "projectionTextDigest": "461989026ec8e05c376560c67b8ab0673cb2eb918ff1948389048fc278e0eadd"
+      "disposition": "contested",
+      "projectionTextDigest": "6bc0a7ffac663a685a17268c7ade3580e32c3bcccf48d9c97082bc804b2b2ed1"
     }
   ],
   "dossierDigests": [
     {
       "conceptId": "C042",
       "slug": "synthetic-fixture-concept",
-      "digest": "df25a08bcdd8ff2d925319b2a06ac3007f427624094cffe9ca1d2d1242f81b22"
+      "digest": "5ad4a876463ea0522845184afa3812d98cb9a6de6e3f6a6967c4c87e753da8a9"
     }
   ],
   "dossiers": [
@@ -63,35 +70,56 @@
       "publishedAt": "2026-08-31T16:00:00.000Z",
       "reviewedAt": "2026-08-31T15:40:00.000Z",
       "status": "published",
-      "finding": "Within the declared search scope, an accepted formulation is attested in the fixture source.",
+      "finding": "Within the fixture scope, two accepted formulations share the earliest year and remain contested.",
       "projectionSlots": [
         {
           "slot": "earliest_accepted_formulation",
           "assertionIds": [
-            "C042-A01"
+            "C042-A1",
+            "C042-A2"
           ]
         }
       ],
       "assertions": [
         {
-          "assertionId": "C042-A01",
+          "assertionId": "C042-A1",
           "role": "earliest_accepted_formulation",
-          "claim": "Within the fixture search scope, the earliest accepted formulation appears in Source S01 (1970).",
+          "claim": "tie A",
           "acceptedReviewEventIds": [
-            "REV-C042-001"
+            "REV-C042-T1"
           ],
           "evidenceIds": [
-            "C042-E01"
+            "C042-ET1"
           ],
           "sourceIds": [
             "C042-S01"
           ],
           "temporal": {
-            "display": "1970",
-            "startYear": 1970,
+            "display": "1950",
+            "startYear": 1950,
             "precision": "year"
           },
-          "caveat": "Bounded to the fixture corpus; not a worldwide priority claim."
+          "caveat": "Bounded fixture"
+        },
+        {
+          "assertionId": "C042-A2",
+          "role": "earliest_accepted_formulation",
+          "claim": "tie B",
+          "acceptedReviewEventIds": [
+            "REV-C042-T2"
+          ],
+          "evidenceIds": [
+            "C042-ET2"
+          ],
+          "sourceIds": [
+            "C042-S01"
+          ],
+          "temporal": {
+            "display": "1950",
+            "startYear": 1950,
+            "precision": "year"
+          },
+          "caveat": "Bounded fixture"
         }
       ],
       "sources": [
@@ -122,5 +150,5 @@
       }
     }
   ],
-  "signature": "z+E7QM1rmR3xpmu50CyuFiTt51GIBmeFYPNdbsmarmd37zL9webjI/w/j4qF0EJPYFBkCTr31tFmE1kzlBezBw=="
+  "signature": "XB4eU1V95tja0jHYpB73vWp9+2XjzptF/EExhOlQdUdzaCQq4CLBf4TDPkRaN6OPVrdenoaKqBkKGWr4BR/dDQ=="
 }

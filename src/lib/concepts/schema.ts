@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isProductConceptId } from "./concept-ids";
 
 export const ConceptObjectKindSchema = z.enum([
   "argument",
@@ -29,7 +30,9 @@ export type ResearchMaturity = z.infer<typeof ResearchMaturitySchema>;
 
 export const ConceptIdSchema = z
   .string()
-  .regex(/^C(?:0[0-9]{2}|100)$/);
+  .refine((id) => isProductConceptId(id), {
+    message: "conceptId must be in the exact set C001–C100",
+  });
 
 export const SlugSchema = z
   .string()
@@ -196,6 +199,51 @@ export type PublishedConceptGenealogy = z.infer<
   typeof PublishedConceptGenealogySchema
 >;
 
+export const NormalizedIntervalSchema = z
+  .object({
+    assertionId: z.string().min(1),
+    startYear: z.number().int(),
+    endYear: z.number().int().optional(),
+    precision: z
+      .enum(["exact", "year", "circa", "decade", "century", "range"])
+      .optional(),
+  })
+  .strict();
+
+export const PublicationProjectionPlanSchema = z
+  .object({
+    conceptId: ConceptIdSchema,
+    slug: SlugSchema,
+    slot: ConceptPublicRoleSchema,
+    eligibleAssertionIds: z.array(z.string().min(1)).min(1),
+    normalizedIntervals: z.array(NormalizedIntervalSchema).min(1),
+    searchScopeId: z.string().min(1),
+    searchScopeDigest: Sha256HexSchema,
+    selectedAssertionIds: z.array(z.string().min(1)).min(1),
+    disposition: z.enum(["unique", "contested"]),
+    projectionTextDigest: Sha256HexSchema,
+  })
+  .strict();
+
+export type PublicationProjectionPlan = z.infer<
+  typeof PublicationProjectionPlanSchema
+>;
+
+export const AuthorizationEnvelopeSchema = z
+  .object({
+    authorizationId: z.string().min(1),
+    authorizedBy: z.string().min(1),
+    authorizedAt: z.string().datetime({ offset: true }),
+    workspaceDigest: Sha256HexSchema,
+    requestDigest: Sha256HexSchema,
+    planDigest: Sha256HexSchema,
+    authorityKeyId: z.string().min(1),
+    signature: z.string().min(1),
+  })
+  .strict();
+
+export type AuthorizationEnvelope = z.infer<typeof AuthorizationEnvelopeSchema>;
+
 export const SITE_PUBLICATION_PACKAGE_KIND =
   "origin_site_concept_publication_v1" as const;
 
@@ -212,6 +260,8 @@ export const ConceptPublicationBundleSchema = z
     sourceCandidatePackageDigest: Sha256HexSchema,
     roleRegistryDigest: Sha256HexSchema,
     policyRegistryDigest: Sha256HexSchema,
+    authorizationEnvelope: AuthorizationEnvelopeSchema,
+    projectionPlans: z.array(PublicationProjectionPlanSchema).min(1),
     dossierDigests: z.array(
       z
         .object({
@@ -221,7 +271,7 @@ export const ConceptPublicationBundleSchema = z
         })
         .strict(),
     ),
-    dossiers: z.array(PublishedConceptGenealogySchema),
+    dossiers: z.array(PublishedConceptGenealogySchema).min(1),
     signature: z.string().min(1),
   })
   .strict();
@@ -229,6 +279,70 @@ export const ConceptPublicationBundleSchema = z
 export type ConceptPublicationBundle = z.infer<
   typeof ConceptPublicationBundleSchema
 >;
+
+export const PublicationAuthoritySchema = z
+  .object({
+    keyId: z.string().min(1),
+    algorithm: z.literal("Ed25519"),
+    publicKeyBase64: z.string().min(1),
+    purpose: z.string().min(1),
+    repository: z.literal("uridolan77/origin-probe"),
+    canonicalHost: z.string().min(1),
+    expiresAt: z.string().datetime({ offset: true }).optional(),
+    revoked: z.boolean().optional(),
+    fingerprintSha256: Sha256HexSchema.optional(),
+  })
+  .strict();
+
+export type PublicationAuthority = z.infer<typeof PublicationAuthoritySchema>;
+
+export const PinnedPublicationPolicySchema = z
+  .object({
+    schemaVersion: z.literal(1),
+    sourceCandidatePackageDigest: Sha256HexSchema,
+    roleRegistryDigest: Sha256HexSchema,
+    policyRegistryDigest: Sha256HexSchema,
+    authorityFingerprintSha256: Sha256HexSchema,
+  })
+  .strict();
+
+export type PinnedPublicationPolicy = z.infer<
+  typeof PinnedPublicationPolicySchema
+>;
+
+export const AuthorityRotationEnvelopeSchema = z
+  .object({
+    envelopeKind: z.literal("origin_publication_authority_rotation_v1"),
+    fromFingerprintSha256: Sha256HexSchema,
+    toFingerprintSha256: Sha256HexSchema,
+    toKeyId: z.string().min(1),
+    authorizedAt: z.string().datetime({ offset: true }),
+    rootKeyId: z.string().min(1),
+    signature: z.string().min(1),
+  })
+  .strict();
+
+export type AuthorityRotationEnvelope = z.infer<
+  typeof AuthorityRotationEnvelopeSchema
+>;
+
+export const CatalogReceiptSchema = z
+  .object({
+    receiptKind: z.literal("origin_concept_catalog_receipt_v1"),
+    sourcePackageId: z.string().min(1),
+    sourceArtifactDigest: Sha256HexSchema,
+    corpusAuditDigest: Sha256HexSchema,
+    c092PilotDigest: Sha256HexSchema.nullable(),
+    catalogDigest: Sha256HexSchema,
+    catalogCount: z.literal(100),
+    acceptedAssertionCount: z.number().int().nonnegative(),
+    publishedDossierCount: z.number().int().nonnegative(),
+    c092Maturity: z.literal("partially_verified"),
+    transformationBoundary: z.string().min(1),
+  })
+  .strict();
+
+export type CatalogReceipt = z.infer<typeof CatalogReceiptSchema>;
 
 /** Fields that must never appear on a public catalog item. */
 export const FORBIDDEN_CATALOG_CLAIM_KEYS = [
@@ -241,3 +355,8 @@ export const FORBIDDEN_CATALOG_CLAIM_KEYS = [
   "candidateView",
   "legacyCandidate",
 ] as const;
+
+/** Priority slots that require chronological derivation plans. */
+export const PRIORITY_PROJECTION_SLOTS = [
+  "earliest_accepted_formulation",
+] as const satisfies readonly ConceptPublicRole[];
