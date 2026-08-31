@@ -1,0 +1,19 @@
+{
+  "packageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-003",
+  "archive": "ORIGIN_CONCEPT_GENEALOGIES_100_CANDIDATE_003_DELIVERY.zip",
+  "archiveSha256": "03bec072d1702cdbff60545fa652a1c08c04d89debc3867b1a99525c604d6fd9",
+  "archiveBytes": 128019,
+  "archiveReextractValidation": "PASS",
+  "validatorContractTests": 16,
+  "validationResult": "PASS_INTERNAL_RESEARCH_QUEUE_ONLY",
+  "records": 100,
+  "assertions": 441,
+  "sources": 67,
+  "evidenceItems": 120,
+  "assertionsWithEvidenceItems": 73,
+  "assertionsNeedingSources": 368,
+  "acceptedAssertions": 0,
+  "verifiedEvidenceItems": 0,
+  "productPublicationReadiness": "NO_GO",
+  "remoteMutation": "NONE"
+}
