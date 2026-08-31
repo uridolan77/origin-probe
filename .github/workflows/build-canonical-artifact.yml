@@ -1,0 +1,47 @@
+name: build-origin-canonical-artifact
+
+on:
+  push:
+    branches:
+      - deploy/origin-canonical-artifact-001
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Install deterministic OG font dependency
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-liberation
+      - name: Bind canonical public origin
+        env:
+          DOMAIN_INSERT: g
+        run: echo "SITE_URL=https://origin.onto${DOMAIN_INSERT}ony.net" >> "$GITHUB_ENV"
+      - name: Build root-path static export
+        env:
+          ORIGIN_BUILD_COMMIT: ${{ github.sha }}
+          NEXT_PUBLIC_ORIGIN_MEASUREMENT_API_URL: https://origin-probe-measure.vercel.app
+          NEXT_PUBLIC_ORIGIN_LIVE_ANALYTICS: "false"
+        run: npm run build
+      - name: Verify canonical artifact identity
+        run: |
+          test -f out/index.html
+          ! grep -F '/origin-probe/' out/index.html
+          grep -F "data-origin-build-commit=\"${GITHUB_SHA}\"" out/index.html
+      - name: Pack static export
+        run: tar -C out -cf origin-canonical-site.tar .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: origin-canonical-site
+          path: origin-canonical-site.tar
+          if-no-files-found: error
+          retention-days: 2
