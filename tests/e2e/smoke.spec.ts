@@ -32,7 +32,18 @@ test("collection index rows are chronological", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const years = await page.locator(".phrase-index-table tbody tr td:first-child").allTextContents();
-  expect(years.map((y) => Number.parseInt(y.replace(/\D/g, ""), 10))).toEqual([1964, 1970, 1980, 1984, 2000, 2010, 2012]);
+  expect(years.map((y) => Number.parseInt(y.replace(/\D/g, ""), 10))).toEqual([1964, 1974, 1980, 1984, 2000, 2010, 2012]);
+});
+
+test("search matches year and non-alias author name", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const input = page.getByLabel("Search the collection");
+
+  await input.fill("1964");
+  await expect(page.locator(".search-suggestions a").first()).toContainText(/medium is the message/i);
+
+  await input.fill("Stewart Brand");
+  await expect(page.locator(".search-suggestions a").first()).toContainText(/information wants to be free/i);
 });
 
 test("every result page renders evidence roles and scope", async ({ page }) => {

@@ -7,6 +7,7 @@ export type SearchItem = {
   slug: string;
   phrase: string;
   aliases: string[];
+  searchTerms: string[];
 };
 
 type Props = {
@@ -20,10 +21,7 @@ export function SearchBox({ items }: Props) {
     const q = query.trim().toLowerCase();
     if (!q) return [];
     return items
-      .filter((item) => {
-        if (item.phrase.toLowerCase().includes(q)) return true;
-        return item.aliases.some((a) => a.toLowerCase().includes(q));
-      })
+      .filter((item) => item.searchTerms.some((term) => term.toLowerCase().includes(q)))
       .slice(0, 8);
   }, [items, query]);
 

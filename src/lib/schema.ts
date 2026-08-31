@@ -66,6 +66,7 @@ export const IndexMetadataSchema = z
       .strict(),
     shortFinding: z.string().trim().min(1).max(180),
     verdict: IndexVerdictSchema,
+    verdictAssertionId: z.string().min(1),
   })
   .strict();
 
@@ -138,9 +139,6 @@ export type Genealogy = z.infer<typeof GenealogySchema>;
 
 export const INDEX_EARLIEST_ROLES = new Set<EvidenceRole>([
   "EARLIEST_VERIFIED_OCCURRENCE",
-  "POPULARIZED_BY",
-  "ANTECEDENT",
-  "CLAIMED_COINAGE",
 ]);
 
 export const PUBLISHED_STATUSES = new Set<GenealogyStatus>(["provisional", "reviewed"]);

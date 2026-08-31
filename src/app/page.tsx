@@ -28,7 +28,7 @@ export default function HomePage() {
         <>
           <PhraseIndex items={indexed} />
           <p className="collection-footnote">
-            All {count} are provisional, revision 1, reviewed 2026-08-29.{" "}
+            Each entry shows its lifecycle status, revision, and review date.{" "}
             <Link href="/method/">How Origin traces a phrase</Link>.
           </p>
         </>

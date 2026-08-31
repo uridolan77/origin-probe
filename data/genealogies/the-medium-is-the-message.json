@@ -21,7 +21,8 @@
       "assertionId": "a-mim-earliest"
     },
     "shortFinding": "McLuhan's own formulation — chapter one of Understanding Media.",
-    "verdict": "direct_coinage"
+    "verdict": "direct_coinage",
+    "verdictAssertionId": "a-mim-coinage"
   },
   "searchScope": "Published Understanding Media text excerpts, McLuhan archive-site commentary, and standard reference summaries. Physical first edition not re-inspected beyond widely available chapter text.",
   "evidenceReviewed": "Understanding Media chapter text (1964); McLuhan archive-site FAQ restating the 1964 passage; encyclopedia/reference summaries.",

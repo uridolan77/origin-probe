@@ -22,7 +22,8 @@
       "assertionId": "a-culture-earliest"
     },
     "shortFinding": "Not Drucker. A Giga Information Group headline came first.",
-    "verdict": "misattributed"
+    "verdict": "misattributed",
+    "verdictAssertionId": "a-culture-misattr"
   },
   "searchScope": "English-language open web, Quote Investigator dossier, newspaper databases cited therein, and secondary management press. Did not inspect a physical March 2000 Giga Information Group original.",
   "evidenceReviewed": "Quote Investigator (2017) with hardcopy-verified September 2000 PIMA citation; 2006 Associated Press coverage of Mark Fields; 2011 textbook Drucker attribution.",

@@ -22,7 +22,8 @@
       "assertionId": "a-yap-earliest-modern"
     },
     "shortFinding": "A MetaFilter comment; a 1973 video-art line is related, not identical.",
-    "verdict": "popularized"
+    "verdict": "popularized",
+    "verdictAssertionId": "a-yap-pop"
   },
   "searchScope": "Quote Investigator dossier, MetaFilter 2010 comment trail via QI, and Richard Serra / Carlota Fay Schoolman 1973 video documentation.",
   "evidenceReviewed": "QI (2017) on Television Delivers People (1973) and Andrew Lewis / blue_beetle MetaFilter (2010); MoMA/video documentation summaries.",

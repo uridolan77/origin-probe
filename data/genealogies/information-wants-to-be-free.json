@@ -21,7 +21,8 @@
       "assertionId": "a-iwf-earliest"
     },
     "shortFinding": "Stewart Brand at the Hackers Conference — the slogan truncates a paradox.",
-    "verdict": "direct_coinage"
+    "verdict": "direct_coinage",
+    "verdictAssertionId": "a-iwf-coinage"
   },
   "searchScope": "Quote Investigator dossier, contemporaneous Washington Post reporting, Whole Earth Review transcript citations, and Brand’s later Media Lab restatement. Did not inspect physical May 1985 Whole Earth Review hardcopy beyond QI’s verified excerpts.",
   "evidenceReviewed": "QI (2018) citations to May 1985 Whole Earth Review transcript; 18 Nov 1984 Washington Post; Brand’s Media Lab (1987/1988).",

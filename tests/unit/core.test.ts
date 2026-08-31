@@ -103,6 +103,7 @@ describe("GenealogySchema", () => {
         },
         shortFinding: "Verified in the cited edition.",
         verdict: "direct_coinage",
+        verdictAssertionId: "a-coinage",
       },
       searchScope: "English-language digitized books, 1800–1950.",
       evidenceReviewed: "Two candidate editions checked.",
@@ -118,6 +119,14 @@ describe("GenealogySchema", () => {
           evidenceIds: ["src-1"],
           supportKind: "direct",
         },
+        {
+          assertionId: "a-coinage",
+          evidenceRole: "CLAIMED_COINAGE",
+          subject: "Example Author",
+          publicStatement: "Claimed as coinage by the cited author.",
+          evidenceIds: ["src-1"],
+          supportKind: "direct",
+        },
       ],
       sources: [
         {
@@ -129,7 +138,7 @@ describe("GenealogySchema", () => {
           sourceType: "primary",
           url: "https://example.com/work",
           accessedAt: "2026-01-01",
-          supportsAssertionIds: ["a1"],
+          supportsAssertionIds: ["a1", "a-coinage"],
         },
       ],
     });
@@ -137,6 +146,7 @@ describe("GenealogySchema", () => {
     if (parsed.success) {
       expect(parsed.data.index?.verdict).toBe("direct_coinage");
       expect(parsed.data.index?.earliest.date.display).toBe("1901");
+      expect(parsed.data.index?.verdictAssertionId).toBe("a-coinage");
     }
   });
 

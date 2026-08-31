@@ -6,12 +6,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
-import {
-  GenealogySchema,
-  INDEX_EARLIEST_ROLES,
-  PUBLISHED_STATUSES,
-  UNPUBLISHED_STATUSES,
-} from "./genealogy-schema.mjs";
+import { GenealogySchema } from "./genealogy-schema.mjs";
+import { collectIndexProvenanceErrors } from "./index-provenance.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dataDir = path.join(root, "data", "genealogies");
@@ -29,63 +25,6 @@ function computeHash(sources) {
 function fail(msg) {
   console.error(`validate-data: FAIL — ${msg}`);
   process.exitCode = 1;
-}
-
-function hasRole(assertions, role) {
-  return assertions.some((a) => a.evidenceRole === role);
-}
-
-function validateIndexProvenance(file, g, assertionById) {
-  const { index, status, assertions } = g;
-
-  if (PUBLISHED_STATUSES.has(status) && !index) {
-    fail(`${file}: published status "${status}" requires index projection`);
-    return;
-  }
-
-  if (UNPUBLISHED_STATUSES.has(status) && index) {
-    fail(`${file}: index projection is not allowed for status "${status}"`);
-    return;
-  }
-
-  if (!index) return;
-
-  const earliestAssertion = assertionById.get(index.earliest.assertionId);
-  if (!earliestAssertion) {
-    fail(
-      `${file}: index.earliest.assertionId "${index.earliest.assertionId}" not found`,
-    );
-    return;
-  }
-
-  if (!INDEX_EARLIEST_ROLES.has(earliestAssertion.evidenceRole)) {
-    fail(
-      `${file}: index.earliest.assertionId "${index.earliest.assertionId}" has disallowed role ${earliestAssertion.evidenceRole}`,
-    );
-  }
-
-  const { verdict } = index;
-  if (verdict === "misattributed" && !hasRole(assertions, "MISATTRIBUTED_TO")) {
-    fail(`${file}: verdict misattributed requires a MISATTRIBUTED_TO assertion`);
-  }
-  if (verdict === "claimed_coinage" && !hasRole(assertions, "CLAIMED_COINAGE")) {
-    fail(`${file}: verdict claimed_coinage requires a CLAIMED_COINAGE assertion`);
-  }
-  if (verdict === "popularized" && !hasRole(assertions, "POPULARIZED_BY")) {
-    fail(`${file}: verdict popularized requires a POPULARIZED_BY assertion`);
-  }
-  if (verdict === "direct_coinage") {
-    const hasDirectCoinage = assertions.some(
-      (a) =>
-        a.evidenceRole === "CLAIMED_COINAGE" ||
-        (a.evidenceRole === "EARLIEST_VERIFIED_OCCURRENCE" && a.supportKind === "direct"),
-    );
-    if (!hasDirectCoinage) {
-      fail(
-        `${file}: verdict direct_coinage requires CLAIMED_COINAGE or direct EARLIEST_VERIFIED_OCCURRENCE`,
-      );
-    }
-  }
 }
 
 if (!fs.existsSync(dataDir)) {
@@ -171,11 +110,11 @@ for (const file of files) {
       }
     }
 
-    if (a.evidenceRole === "EARLIEST_VERIFIED_OCCURRENCE") {
+    if (a.evidenceRole === "EARLIEST_VERIFIED_OCCURRENCE" && a.supportKind === "direct") {
       const hasPrimary = a.evidenceIds.some((id) => sourceById.get(id)?.sourceType === "primary");
       if (!hasPrimary) {
         fail(
-          `${file}: earliest-occurrence assertion ${a.assertionId} requires at least one primary source`,
+          `${file}: earliest-occurrence assertion ${a.assertionId} with supportKind=direct requires at least one primary source`,
         );
       }
     }
@@ -200,7 +139,9 @@ for (const file of files) {
     }
   }
 
-  validateIndexProvenance(file, g, assertionById);
+  for (const msg of collectIndexProvenanceErrors(g, assertionById, sourceById)) {
+    fail(`${file}: ${msg}`);
+  }
 
   for (const alias of [g.phrase, ...g.aliases]) {
     const key = alias.trim().toLowerCase();

@@ -14,15 +14,16 @@
   "index": {
     "earliest": {
       "date": {
-        "display": "1970s",
-        "startYear": 1970,
-        "precision": "decade",
+        "display": "1974",
+        "startYear": 1974,
+        "precision": "year",
         "calendar": "proleptic-gregorian"
       },
-      "assertionId": "a-btc-pop"
+      "assertionId": "a-btc-earliest-modern"
     },
     "shortFinding": "Not Gandhi. A 1913 passage of his is an antecedent, not the wording.",
-    "verdict": "misattributed"
+    "verdict": "misattributed",
+    "verdictAssertionId": "a-btc-misattr"
   },
   "searchScope": "Quote Investigator dossier and secondary reporting of the 1974/1987 print trail. Gandhi’s 1913 Indian Opinion passage reviewed via secondary quotation.",
   "evidenceReviewed": "QI (2017) on Lorrance 1974 trail and Gandhi 1913 antecedent; secondary reporting of 1987 Gandhi attribution.",
@@ -60,6 +61,16 @@
       "supportKind": "supporting"
     },
     {
+      "assertionId": "a-btc-earliest-modern",
+      "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
+      "subject": "Arleen Lorrance, 1974 modern slogan trail",
+      "publicStatement": "Attribution investigations identify a close modern slogan match in Arleen Lorrance’s 1974 writing; the primary hardcopy was not independently re-inspected in this corpus.",
+      "evidenceIds": [
+        "src-btc-qi-2017"
+      ],
+      "supportKind": "incomplete"
+    },
+    {
       "assertionId": "a-btc-incomplete",
       "evidenceRole": "CONTESTED_INCOMPLETE",
       "subject": "Earliest modern slogan wording",
@@ -84,6 +95,7 @@
         "a-btc-misattr",
         "a-btc-antecedent",
         "a-btc-pop",
+        "a-btc-earliest-modern",
         "a-btc-incomplete"
       ],
       "shortExcerpt": "Gandhi died in 1948, and the earliest close match known to QI appeared many years later in 1974 within a book chapter written by educator Arleen Lorrance."

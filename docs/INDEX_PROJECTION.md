@@ -4,15 +4,11 @@ The collection homepage renders a compact **index projection** derived from each
 
 ## Earliest column
 
-`index.earliest` identifies the assertion that justifies the displayed earliest label within the record's stated search scope.
+`index.earliest` identifies the `EARLIEST_VERIFIED_OCCURRENCE` assertion that justifies the displayed earliest label within the record's stated search scope.
 
-Usually this is an `EARLIEST_VERIFIED_OCCURRENCE` assertion. When no such assertion exists, the index may reference:
+Other roles (`POPULARIZED_BY`, `ANTECEDENT`, `CLAIMED_COINAGE`, `MISATTRIBUTED_TO`, `CONTESTED_INCOMPLETE`) may appear in the record, but they must not be bound as `index.earliest.assertionId`.
 
-- `POPULARIZED_BY` when the label reflects the popularization trail
-- `ANTECEDENT` when the label reflects a related earlier passage
-- `CLAIMED_COINAGE` when the label reflects an inspectable coinage date
-
-The `date` object uses proleptic Gregorian years. `startYear` is the sort key. `display` is the human-readable margin label and may use decade or circa precision.
+The `date` object uses proleptic Gregorian years. `startYear` is the sort key. `display` is the human-readable margin label and may use decade or circa precision. The date must be coherent with the bound earliest-occurrence assertion.
 
 ## Verdict column
 
@@ -25,8 +21,17 @@ Allowed values:
 - `popularized`
 - `misattributed`
 
-Each verdict must be consistent with assertion roles in the same record (for example, `misattributed` requires a `MISATTRIBUTED_TO` assertion).
+`index.verdictAssertionId` must point at the assertion that justifies the verdict:
+
+| Verdict | Bound assertion |
+| --- | --- |
+| `direct_coinage` | `CLAIMED_COINAGE`, `supportKind=direct`, at least one primary source |
+| `claimed_coinage` | `CLAIMED_COINAGE`, `supportKind` in `supporting` / `contested` / `incomplete` |
+| `popularized` | `POPULARIZED_BY`, `supportKind` not `incomplete` |
+| `misattributed` | `MISATTRIBUTED_TO` |
 
 ## Publication rule
 
 Records with lifecycle status `provisional` or `reviewed` must include a complete `index` object. Draft, superseded, and withdrawn records must not include `index`.
+
+The application runtime mirrors that membrane: only published records appear in the collection index, autocomplete, static params, and direct slug lookup.

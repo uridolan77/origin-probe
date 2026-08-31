@@ -21,7 +21,8 @@
       "assertionId": "a-mfbt-earliest"
     },
     "shortFinding": "Zuckerberg's IPO letter is the earliest text we could inspect.",
-    "verdict": "claimed_coinage"
+    "verdict": "direct_coinage",
+    "verdictAssertionId": "a-mfbt-coinage"
   },
   "searchScope": "SEC EDGAR Facebook S-1 full text and secondary press summarizing earlier interview use. Did not obtain a contemporaneous 2009 Business Insider transcript beyond secondary quotation.",
   "evidenceReviewed": "Facebook Form S-1 (2012-02-01) primary text; secondary reporting of Zuckerberg’s 2009 remarks.",

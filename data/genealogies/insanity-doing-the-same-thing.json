@@ -19,10 +19,11 @@
         "precision": "decade",
         "calendar": "proleptic-gregorian"
       },
-      "assertionId": "a-ins-pop"
+      "assertionId": "a-ins-earliest"
     },
     "shortFinding": "Not Einstein. Recovery-community and fiction use carried it.",
-    "verdict": "misattributed"
+    "verdict": "misattributed",
+    "verdictAssertionId": "a-ins-misattr"
   },
   "searchScope": "Quote Investigator dossier, Snopes summary, and cited 1981 newspaper / 1983 novel trail. Did not re-inspect Knoxville News-Sentinel microfilm beyond QI.",
   "evidenceReviewed": "QI (2017) on early-1980s recovery-community trail and Rita Mae Brown 1983; Ultimate Quotable Einstein misattribution listing via QI.",
@@ -50,6 +51,16 @@
       "supportKind": "supporting"
     },
     {
+      "assertionId": "a-ins-earliest",
+      "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
+      "subject": "Early-1980s recovery-community print trail",
+      "publicStatement": "Attribution investigations place early documented use in early-1980s recovery-community print; the earliest newspaper hardcopy was not independently re-inspected in this corpus.",
+      "evidenceIds": [
+        "src-ins-qi-2017"
+      ],
+      "supportKind": "incomplete"
+    },
+    {
       "assertionId": "a-ins-contested",
       "evidenceRole": "CONTESTED_INCOMPLETE",
       "subject": "Named author and earliest hardcopy in this corpus",
@@ -73,6 +84,7 @@
       "supportsAssertionIds": [
         "a-ins-misattr",
         "a-ins-pop",
+        "a-ins-earliest",
         "a-ins-contested"
       ],
       "shortExcerpt": "There is no substantive evidence that Einstein wrote or spoke the statement above. … based on current evidence the saying originated in one of the twelve-step communities."

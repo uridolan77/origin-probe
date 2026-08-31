@@ -1,11 +1,19 @@
 ﻿import fs from "node:fs";
 import path from "node:path";
-import { GenealogySchema, type Genealogy } from "./schema";
+import {
+  GenealogySchema,
+  PUBLISHED_STATUSES,
+  UNPUBLISHED_STATUSES,
+  type Genealogy,
+} from "./schema";
 
 const DATA_DIR = path.join(process.cwd(), "data", "genealogies");
-const PUBLISHED_STATUSES = new Set(["provisional", "reviewed"]);
 
 let cache: readonly Genealogy[] | null = null;
+
+export function isPublished(g: Pick<Genealogy, "status">): boolean {
+  return PUBLISHED_STATUSES.has(g.status);
+}
 
 function loadAll(): readonly Genealogy[] {
   if (cache) return cache;
@@ -29,8 +37,13 @@ function loadAll(): readonly Genealogy[] {
       throw new Error(`Invalid genealogy in ${file}: ${issues}`);
     }
     const record = result.data;
-    if (PUBLISHED_STATUSES.has(record.status) && !record.index) {
+    if (isPublished(record) && !record.index) {
       throw new Error(`Invalid genealogy in ${file}: published record missing index projection`);
+    }
+    if (UNPUBLISHED_STATUSES.has(record.status) && record.index) {
+      throw new Error(
+        `Invalid genealogy in ${file}: unpublished status "${record.status}" must not carry index projection`,
+      );
     }
     items.push(record);
   }
@@ -46,8 +59,17 @@ export function getAll(): readonly Genealogy[] {
   return loadAll();
 }
 
+export function listPublished(): readonly Genealogy[] {
+  return loadAll().filter(isPublished);
+}
+
 export function getBySlug(slug: string): Genealogy | undefined {
   return loadAll().find((g) => g.slug === slug);
+}
+
+export function getPublishedBySlug(slug: string): Genealogy | undefined {
+  const g = getBySlug(slug);
+  return g && isPublished(g) ? g : undefined;
 }
 
 export type IndexedGenealogy = Genealogy & {
@@ -55,35 +77,54 @@ export type IndexedGenealogy = Genealogy & {
 };
 
 export function listForIndex(): readonly IndexedGenealogy[] {
-  return getAll().filter(
-    (g): g is IndexedGenealogy => g.index != null,
-  ).toSorted(
+  return listPublished()
+    .filter((g): g is IndexedGenealogy => g.index != null)
+    .toSorted(
       (a, b) =>
         a.index.earliest.date.startYear - b.index.earliest.date.startYear ||
         a.phrase.localeCompare(b.phrase, "en") ||
-        a.slug.localeCompare(b.slug),
+        a.slug.localeCompare(b.slug, "en"),
     );
+}
+
+function searchHaystack(g: Genealogy): string[] {
+  const terms = [g.phrase, ...g.aliases];
+  if (g.index) {
+    terms.push(g.index.earliest.date.display, String(g.index.earliest.date.startYear));
+  }
+  for (const a of g.assertions) {
+    terms.push(a.subject);
+  }
+  for (const s of g.sources) {
+    terms.push(s.author);
+  }
+  return terms;
 }
 
 export function search(query: string): Genealogy[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
-  return loadAll().filter((g) => {
-    if (g.phrase.toLowerCase().includes(q)) return true;
-    return g.aliases.some((a) => a.toLowerCase().includes(q));
-  });
+  return listPublished().filter((g) =>
+    searchHaystack(g).some((term) => term.toLowerCase().includes(q)),
+  );
 }
 
 export type AutocompleteItem = {
   slug: string;
   phrase: string;
   aliases: string[];
+  searchTerms: string[];
 };
 
 export function listForAutocomplete(): AutocompleteItem[] {
-  return getAll().map((g) => ({
+  return listPublishedForAutocomplete();
+}
+
+export function listPublishedForAutocomplete(): AutocompleteItem[] {
+  return listPublished().map((g) => ({
     slug: g.slug,
     phrase: g.phrase,
     aliases: g.aliases,
+    searchTerms: searchHaystack(g),
   }));
 }
