@@ -17,6 +17,7 @@ const instrumentSerif = Instrument_Serif({
 });
 
 const siteUrl = process.env.SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
+const buildCommit = process.env.ORIGIN_BUILD_COMMIT || "local-unbound";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -30,7 +31,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${instrumentSans.variable} ${instrumentSerif.variable}`}>
+    <html
+      lang="en"
+      className={`${instrumentSans.variable} ${instrumentSerif.variable}`}
+      data-origin-build-commit={buildCommit}
+    >
       <body>
         <a className="skip-link" href="#main">
           Skip to content

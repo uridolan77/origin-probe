@@ -55,6 +55,7 @@ function record(name, ok, detail) {
     slug,
     creatorHash: hashClientId("seed-creator", cfg.clientSalt),
     seed: true,
+    runId,
     hmacSecret: cfg.hmacSecret,
     ttlSeconds: cfg.tokenTtlSeconds,
   });
@@ -67,7 +68,7 @@ function record(name, ok, detail) {
     token,
     runId,
   });
-  const verified = verifyShareToken(token, cfg.hmacSecret);
+  const verified = verifyShareToken(token, cfg.hmacSecret, runId);
   const r = acceptShareArrival({
     store,
     cfg,
@@ -94,6 +95,7 @@ let tokenA;
     slug,
     creatorHash: browserA,
     seed: false,
+    runId,
     hmacSecret: cfg.hmacSecret,
     ttlSeconds: cfg.tokenTtlSeconds,
   });
@@ -108,7 +110,7 @@ let tokenA;
   });
   record("3_browser_a_creates_share", Boolean(tokenA.includes(".")), "token issued");
 
-  const verified = verifyShareToken(tokenA, cfg.hmacSecret);
+  const verified = verifyShareToken(tokenA, cfg.hmacSecret, runId);
   const self = acceptShareArrival({
     store,
     cfg,
@@ -144,7 +146,7 @@ let tokenA;
 
 // 6. Browser B reload does not create another qualified propagation
 {
-  const verified = verifyShareToken(tokenA, cfg.hmacSecret);
+  const verified = verifyShareToken(tokenA, cfg.hmacSecret, runId);
   const reload = acceptShareArrival({
     store,
     cfg,
@@ -170,6 +172,7 @@ let tokenA;
     slug,
     creatorHash: browserC,
     seed: false,
+    runId,
     hmacSecret: cfg.hmacSecret,
     ttlSeconds: cfg.tokenTtlSeconds,
   });
@@ -182,7 +185,7 @@ let tokenA;
     token: token2,
     runId,
   });
-  const verified = verifyShareToken(token2, cfg.hmacSecret);
+  const verified = verifyShareToken(token2, cfg.hmacSecret, runId);
   const r = acceptShareArrival({
     store,
     cfg,
@@ -202,8 +205,9 @@ let tokenA;
 
 // 8. Modified token fails verification
 {
-  const bad = tokenA.slice(0, -2) + "ab";
-  const verified = verifyShareToken(bad, cfg.hmacSecret);
+  const [body, signature] = tokenA.split(".");
+  const bad = `${body[0] === "A" ? "B" : "A"}${body.slice(1)}.${signature}`;
+  const verified = verifyShareToken(bad, cfg.hmacSecret, runId);
   record(
     "8_modified_token_fails",
     verified.ok === false && verified.reason === "bad_signature",
@@ -214,7 +218,7 @@ let tokenA;
 // 9. Token used with different slug fails at arrival exclusion
 {
   const otherSlug = "move-fast-and-break-things";
-  const verified = verifyShareToken(tokenA, cfg.hmacSecret);
+  const verified = verifyShareToken(tokenA, cfg.hmacSecret, runId);
   assert.equal(verified.ok, true);
   const r = acceptShareArrival({
     store,
@@ -239,11 +243,12 @@ let tokenA;
     slug,
     creatorHash: browserA,
     seed: false,
+    runId,
     hmacSecret: cfg.hmacSecret,
     ttlSeconds: 1,
     nowMs: Date.now() - 60_000,
   });
-  const verified = verifyShareToken(expired, cfg.hmacSecret);
+  const verified = verifyShareToken(expired, cfg.hmacSecret, runId);
   record(
     "10_expired_token_fails",
     verified.ok === false && verified.reason === "expired_token",
@@ -268,23 +273,34 @@ let tokenA;
   );
 }
 
-// 12. Direct forged qualified submission is a protocol violation (API layer);
-// here we assert reducer never treats client-shaped qualified without derivation chain.
+// 12. A forged qualified row cannot be reduced without server-derived lineage.
+// The hosted transcript separately exercises the API-level 400 rejection.
 {
-  store.append({
-    type: "qualified_propagation",
-    runId,
-    slug,
-    clientHash: "forged",
-    creatorHash: "forged",
-    shareTokenFingerprint: "forged",
-    note: "should_not_be_writable_via_public_api",
-  });
-  // API rejects; store append in this unit is internal-only. Mark as API contract.
+  let rejection = "";
+  try {
+    reduceEvents(
+      [
+        {
+          id: "forged-qualified-propagation",
+          type: "qualified_propagation",
+          runId,
+          at: new Date().toISOString(),
+          slug,
+          clientHash: "forged-recipient",
+          creatorHash: "forged-creator",
+          shareTokenFingerprint: "forged-token",
+          derivedFrom: "missing-server-raw-event",
+        },
+      ],
+      runId,
+    );
+  } catch (error) {
+    rejection = String(error?.message || error);
+  }
   record(
-    "12_forged_qualified_api_rejected_by_contract",
-    true,
-    "api/index.js returns 400 for client-submitted qualified_*",
+    "12_forged_qualified_row_rejected_by_reducer",
+    rejection === "qualified_lineage_missing:forged-qualified-propagation",
+    rejection,
   );
 }
 

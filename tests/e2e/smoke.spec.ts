@@ -101,6 +101,8 @@ test("method privacy corrections pages", async ({ page }) => {
   await page.goto("/privacy/", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Privacy" })).toBeVisible();
   await expect(page.getByText(/No account/i)).toBeVisible();
+  await expect(page.getByText(/authorized public decision window/i)).toBeVisible();
+  await expect(page.getByText(/private durable ledger stores/i)).toBeVisible();
   await page.goto("/corrections/", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Corrections" })).toBeVisible();
 });
@@ -109,7 +111,29 @@ test("copy link updates status", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]).catch(() => undefined);
   await page.goto("/g/the-medium-is-the-message/", { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "Copy link" }).click();
-  await expect(page.getByRole("status")).toContainText(/copied|Share unavailable|Could not/i);
+  await expect(page.getByRole("status")).toContainText(
+    /copied|offline|unavailable|Could not/i,
+  );
+});
+
+test("offline copy UX fails closed without fabricating a share token", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/g/culture-eats-strategy-for-breakfast/", {
+    waitUntil: "domcontentloaded",
+  });
+  await page.evaluate(() => navigator.clipboard.writeText("unchanged-sentinel"));
+
+  await page.getByRole("button", { name: "Copy link" }).click();
+  await expect(page.getByRole("status")).toHaveText(
+    "Sharing is unavailable while measurement is offline.",
+  );
+
+  await expect
+    .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+    .toBe("unchanged-sentinel");
 });
 
 test("social card asset exists for each slug", async ({ request }) => {

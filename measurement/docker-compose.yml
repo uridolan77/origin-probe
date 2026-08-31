@@ -17,6 +17,7 @@ services:
       retries: 20
 
   api-a:
+    image: ${MEASUREMENT_ACCEPTANCE_IMAGE}
     build: .
     environment:
       MEASUREMENT_DATABASE_URL: postgres://origin:origin_measure_dev@db:5432/origin_measure
@@ -27,6 +28,7 @@ services:
       MEASUREMENT_RUN_ID: ${MEASUREMENT_RUN_ID:-ORIGIN-G2R-ACCEPTANCE}
       MEASUREMENT_OPERATOR_HASHES: ${MEASUREMENT_OPERATOR_HASHES:-}
       MEASUREMENT_REQUIRE_SECRETS: "true"
+      MEASUREMENT_INSTANCE_LABEL: api-a
       PORT: "8787"
     ports:
       - "8787:8787"
@@ -35,7 +37,7 @@ services:
         condition: service_healthy
 
   api-b:
-    build: .
+    image: ${MEASUREMENT_ACCEPTANCE_IMAGE}
     environment:
       MEASUREMENT_DATABASE_URL: postgres://origin:origin_measure_dev@db:5432/origin_measure
       MEASUREMENT_HMAC_SECRET: ${MEASUREMENT_HMAC_SECRET}
@@ -45,6 +47,7 @@ services:
       MEASUREMENT_RUN_ID: ${MEASUREMENT_RUN_ID:-ORIGIN-G2R-ACCEPTANCE}
       MEASUREMENT_OPERATOR_HASHES: ${MEASUREMENT_OPERATOR_HASHES:-}
       MEASUREMENT_REQUIRE_SECRETS: "true"
+      MEASUREMENT_INSTANCE_LABEL: api-b
       PORT: "8787"
     ports:
       - "8788:8787"
