@@ -46,7 +46,7 @@ test("collection index rows are chronological", async ({ page }) => {
 });
 
 test("search matches year and non-alias author name", async ({ page }) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("/", { waitUntil: "networkidle" });
   const input = page.getByLabel("Search the collection");
 
   await input.fill("1964");
@@ -85,7 +85,7 @@ test("reported occurrence timelines use historical dates not dossier years", asy
 });
 
 test("search autocomplete and unsupported phrase", async ({ page }) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("/", { waitUntil: "networkidle" });
   const input = page.getByLabel("Search the collection");
   await input.fill("culture eats");
   await expect(page.locator(".search-suggestions a").first()).toBeVisible();
@@ -146,7 +146,7 @@ test("method privacy corrections pages", async ({ page }) => {
 
 test("copy link updates status", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]).catch(() => undefined);
-  await page.goto("/g/the-medium-is-the-message/", { waitUntil: "domcontentloaded" });
+  await page.goto("/g/the-medium-is-the-message/", { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Copy link" }).click();
   await expect(page.getByRole("status")).toContainText(
     /copied|offline|unavailable|Could not/i,
@@ -159,7 +159,7 @@ test("offline copy UX fails closed without fabricating a share token", async ({
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/g/culture-eats-strategy-for-breakfast/", {
-    waitUntil: "domcontentloaded",
+    waitUntil: "networkidle",
   });
   await page.evaluate(() => navigator.clipboard.writeText("unchanged-sentinel"));
 

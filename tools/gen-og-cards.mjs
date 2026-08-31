@@ -5,6 +5,7 @@
  * Prunes stale /og assets that do not belong to the current published set.
  */
 import fs from "node:fs";
+import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadPublishedGenealogies, pruneStaleOgCards } from "./og-publish.mjs";
@@ -26,6 +27,51 @@ const ROLE_LABELS = {
   ANTECEDENT: "Antecedent",
   CONTESTED_INCOMPLETE: "Contested / incomplete",
 };
+
+const FROZEN_CARD_SHA256 = Object.freeze({
+  "be-the-change-you-wish-to-see":
+    "db795779da2f232a458f2a506f3580f06cdfbcec5874fb45f5bf86709d6ee634",
+  "culture-eats-strategy-for-breakfast":
+    "959ebfe881cffcb0803b65c229ca8450d34b8e3303dcc65449206dc5a18c98b0",
+  "if-youre-not-paying-you-are-the-product":
+    "f3642be0dd11347ddfa39a79a7b00f356d25f4adda93508d29bd8c2da5e5cdef",
+  "information-wants-to-be-free":
+    "00a8d91714480d7a1a5f1e1b02bec696f6c87e1df9d822d1d0fa864ef6a55741",
+  "insanity-doing-the-same-thing":
+    "2d6e03d373cf9d7e9af31fb6968f13fdfd7172065eef1c1240b24a8ff4a9300b",
+  "move-fast-and-break-things":
+    "245652abe7b205b34deeba7701da635745e428e4fb551dcbf4ac29db042344fc",
+  "the-medium-is-the-message":
+    "01917768cd9f57c4aec3a3ed6fedcd703d0f607dcc028d770a82d7395ef7dcac",
+});
+
+function sha256(bytes) {
+  return crypto.createHash("sha256").update(bytes).digest("hex");
+}
+
+function verifyFrozenCards(genealogies) {
+  const observedSlugs = genealogies.map((genealogy) => genealogy.slug).sort();
+  const expectedSlugs = Object.keys(FROZEN_CARD_SHA256).sort();
+  if (JSON.stringify(observedSlugs) !== JSON.stringify(expectedSlugs)) {
+    throw new Error("Frozen OG card manifest does not match the published genealogy set.");
+  }
+
+  let missing = false;
+  for (const slug of expectedSlugs) {
+    const cardPath = path.join(outDir, `${slug}.png`);
+    if (!fs.existsSync(cardPath)) {
+      missing = true;
+      continue;
+    }
+    if (sha256(fs.readFileSync(cardPath)) !== FROZEN_CARD_SHA256[slug]) {
+      throw new Error(`Frozen OG card digest changed for ${slug}.`);
+    }
+  }
+  if (!missing) {
+    console.log(`gen-og-cards: verified frozen assets (${expectedSlugs.length})`);
+  }
+  return !missing;
+}
 
 async function ensureFont() {
   const fontPath = path.join(fontDir, "LiberationSerif-Regular.ttf");
@@ -180,17 +226,22 @@ async function main() {
     return;
   }
 
-  const fontData = await ensureFont();
   const publishedSlugs = genealogies.map((g) => g.slug);
-  for (const g of genealogies) {
-    const out = path.join(outDir, `${g.slug}.png`);
-    const png = await renderCard(g, fontData);
-    fs.writeFileSync(out, png);
-    console.log("wrote", path.relative(root, out), `${png.length} bytes`);
-  }
   const removed = pruneStaleOgCards(outDir, publishedSlugs);
   if (removed.length) {
     console.log(`gen-og-cards: pruned ${removed.length} stale card(s): ${removed.join(", ")}`);
+  }
+  if (verifyFrozenCards(genealogies)) return;
+
+  const fontData = await ensureFont();
+  for (const g of genealogies) {
+    const out = path.join(outDir, `${g.slug}.png`);
+    const png = await renderCard(g, fontData);
+    if (sha256(png) !== FROZEN_CARD_SHA256[g.slug]) {
+      throw new Error(`Generated OG card digest changed for ${g.slug}.`);
+    }
+    fs.writeFileSync(out, png);
+    console.log("wrote", path.relative(root, out), `${png.length} bytes`);
   }
   console.log(`gen-og-cards: ok (${genealogies.length} published)`);
 }
