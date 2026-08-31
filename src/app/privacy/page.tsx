@@ -8,14 +8,14 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <article className="prose stack">
-      <h1 className="display" style={{ fontSize: "2rem", margin: 0 }}>
+      <h1 className="display display-lg">
         Privacy
       </h1>
       <p className="lead">
         Origin&apos;s research pages are statically served. There are no accounts, no
         advertising networks, and no browser fingerprinting.
       </p>
-      <h2 className="display" style={{ fontSize: "1.25rem" }}>
+      <h2 className="display display-sm">
         What we do not do
       </h2>
       <ul>
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
         <li>No third-party ad pixels.</li>
         <li>No canvas, audio, or similar fingerprinting techniques.</li>
       </ul>
-      <h2 className="display" style={{ fontSize: "1.25rem" }}>
+      <h2 className="display display-sm">
         Measurement (plain language)
       </h2>
       <p>
@@ -46,7 +46,7 @@ export default function PrivacyPage() {
         invalid tokens, and duplicate qualifications. The private ledger is evaluated only
         against the authorized 14-day window for the probe decision.
       </p>
-      <h2 className="display" style={{ fontSize: "1.25rem" }}>
+      <h2 className="display display-sm">
         Corrections
       </h2>
       <p>

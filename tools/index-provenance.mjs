@@ -21,7 +21,7 @@ function historicalDatesEqual(a, b) {
  */
 export function collectIndexProvenanceErrors(g, assertionById, sourceById) {
   const errors = [];
-  const { index, status, assertions } = g;
+  const { index, status } = g;
 
   if (PUBLISHED_STATUSES.has(status) && !index) {
     errors.push(`published status "${status}" requires index projection`);

@@ -1,0 +1,230 @@
+/* Origin design tokens — light theme defaults */
+
+:root {
+  /* Surfaces */
+  --surface: #f4f1eb;
+  --surface-raised: #fffdf9;
+  --surface-sunken: #ebe6dc;
+  --surface-overlay: #ffffff;
+
+  /* Text */
+  --text: #14181d;
+  --text-secondary: #4a5560;
+  --text-tertiary: #6b6459;
+  --text-inverse: #f7f4ef;
+
+  /* Borders */
+  --border: #d4cdc0;
+  --border-strong: #9a9084;
+  --border-subtle: #e5dfd3;
+
+  /* Interactive */
+  --link: #1a5a74;
+  --link-hover: #0f3d50;
+  --accent: #1a5a74;
+  --accent-soft: #d5e8f0;
+  --focus: #0b6e4f;
+
+  /* Status ramp */
+  --status-verified: #0b6e4f;
+  --status-verified-bg: #d8efe6;
+  --status-reported: #8a6320;
+  --status-reported-bg: #f5ebda;
+  --status-contested: #8b2e2e;
+  --status-contested-bg: #f4e0e0;
+  --status-neutral: #4a5560;
+  --status-neutral-bg: #e8e4dc;
+
+  /* Verdict tones */
+  --verdict-coinage: #1a5a74;
+  --verdict-claimed: #1a5a74;
+  --verdict-popularized: #8a6320;
+  --verdict-misattributed: #8b2e2e;
+
+  /* Domain */
+  --role-bg: #eee9e1;
+  --timeline-line: #9a9084;
+  --timeline-event: #1a5a74;
+  --timeline-documented: #9a9084;
+  --span-earliest: #1a5a74;
+  --span-popularized: #8a6320;
+  --span-track: #e5dfd3;
+  --danger: #8b2e2e;
+  --success: #0b6e4f;
+
+  /* Legacy aliases (compat during migration) */
+  --ink: var(--text);
+  --ink-muted: var(--text-secondary);
+  --ink-soft: var(--text-secondary);
+  --muted-warm: var(--text-tertiary);
+  --paper: var(--surface);
+  --paper-deep: var(--surface-sunken);
+  --paper-card: var(--surface-raised);
+  --rule: var(--border);
+  --rule-soft: var(--border-subtle);
+  --accent-soft: var(--accent-soft);
+  --verdict-ochre: var(--verdict-popularized);
+
+  /* Typography */
+  --font-body: var(--font-instrument-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-instrument-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-brand: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+
+  --text-2xs: 0.625rem;
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.75rem;
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Layout */
+  --measure: 42rem;
+  --page: 72rem;
+  --rail: 16rem;
+  --radius: 4px;
+  --radius-lg: 8px;
+  --shadow-soft: 0 1px 2px rgba(20, 24, 29, 0.06);
+  --shadow-raised: 0 2px 8px rgba(20, 24, 29, 0.08);
+
+  /* Density (comfortable default) */
+  --row-pad-y: 0.875rem;
+  --row-font: var(--text-md);
+  --chip-pad-y: 0.15rem;
+  --chip-pad-x: 0.45rem;
+
+  /* Breakpoints (documentation only; used in media queries as rem) */
+  --bp-compact: 40rem;
+  --bp-tablet: 52rem;
+  --bp-desktop: 68rem;
+  --bp-wide: 90rem;
+}
+
+html[data-theme="dark"],
+html[data-theme="system"]:not([data-resolved-theme="light"]) {
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    color-scheme: dark;
+  }
+
+  html:not([data-theme="light"]) {
+    --surface: #12151a;
+    --surface-raised: #1a1f26;
+    --surface-sunken: #0d1014;
+    --surface-overlay: #222830;
+
+    --text: #e8e4dc;
+    --text-secondary: #a8b0b8;
+    --text-tertiary: #8a847a;
+    --text-inverse: #12151a;
+
+    --border: #2e3640;
+    --border-strong: #5a6570;
+    --border-subtle: #252b33;
+
+    --link: #6eb8d4;
+    --link-hover: #9ad0e4;
+    --accent: #6eb8d4;
+    --accent-soft: #1a3340;
+    --focus: #3dba8c;
+
+    --status-verified: #3dba8c;
+    --status-verified-bg: #143528;
+    --status-reported: #d4a04a;
+    --status-reported-bg: #3a2e14;
+    --status-contested: #e07070;
+    --status-contested-bg: #3a1818;
+    --status-neutral: #a8b0b8;
+    --status-neutral-bg: #252b33;
+
+    --verdict-coinage: #6eb8d4;
+    --verdict-claimed: #6eb8d4;
+    --verdict-popularized: #d4a04a;
+    --verdict-misattributed: #e07070;
+
+    --role-bg: #1a1f26;
+    --timeline-line: #5a6570;
+    --timeline-event: #6eb8d4;
+    --timeline-documented: #5a6570;
+    --span-earliest: #6eb8d4;
+    --span-popularized: #d4a04a;
+    --span-track: #2e3640;
+    --danger: #e07070;
+    --success: #3dba8c;
+  }
+}
+
+html[data-theme="dark"] {
+  --surface: #12151a;
+  --surface-raised: #1a1f26;
+  --surface-sunken: #0d1014;
+  --surface-overlay: #222830;
+
+  --text: #e8e4dc;
+  --text-secondary: #a8b0b8;
+  --text-tertiary: #8a847a;
+  --text-inverse: #12151a;
+
+  --border: #2e3640;
+  --border-strong: #5a6570;
+  --border-subtle: #252b33;
+
+  --link: #6eb8d4;
+  --link-hover: #9ad0e4;
+  --accent: #6eb8d4;
+  --accent-soft: #1a3340;
+  --focus: #3dba8c;
+
+  --status-verified: #3dba8c;
+  --status-verified-bg: #143528;
+  --status-reported: #d4a04a;
+  --status-reported-bg: #3a2e14;
+  --status-contested: #e07070;
+  --status-contested-bg: #3a1818;
+  --status-neutral: #a8b0b8;
+  --status-neutral-bg: #252b33;
+
+  --verdict-coinage: #6eb8d4;
+  --verdict-claimed: #6eb8d4;
+  --verdict-popularized: #d4a04a;
+  --verdict-misattributed: #e07070;
+
+  --role-bg: #1a1f26;
+  --timeline-line: #5a6570;
+  --timeline-event: #6eb8d4;
+  --timeline-documented: #5a6570;
+  --span-earliest: #6eb8d4;
+  --span-popularized: #d4a04a;
+  --span-track: #2e3640;
+  --danger: #e07070;
+  --success: #3dba8c;
+}
+
+html[data-density="compact"] {
+  --row-pad-y: 0.5rem;
+  --row-font: var(--text-sm);
+  --chip-pad-y: 0.1rem;
+  --chip-pad-x: 0.35rem;
+  --space-row: 0.5rem;
+}
