@@ -72,7 +72,7 @@ function roleLines(g) {
 function indexEarliestLine(g) {
   if (!g.index) return null;
   const assertion = g.assertions.find((a) => a.assertionId === g.index.earliest.assertionId);
-  const display = g.index.earliest.date.display;
+  const display = assertion?.occurrenceDate?.display ?? g.index.earliest.date.display;
   if (assertion?.evidenceRole === "EARLIEST_REPORTED_OCCURRENCE") {
     return `Index earliest: Reported ${display} (secondary; primary not re-inspected)`;
   }

@@ -75,7 +75,14 @@
       "evidenceIds": [
         "src-btc-qi-2017"
       ],
-      "supportKind": "incomplete"
+      "supportKind": "incomplete",
+      "occurrenceDate": {
+        "display": "1974",
+        "startYear": 1974,
+        "precision": "year",
+        "calendar": "proleptic-gregorian"
+      },
+      "earlierUseStatus": "reported_unverified"
     },
     {
       "assertionId": "a-btc-incomplete",

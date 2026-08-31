@@ -8,6 +8,27 @@ function mapsFrom(assertions: Array<Record<string, unknown>>, sources: Array<Rec
   return { assertionById, sourceById };
 }
 
+const date1900 = {
+  display: "1900",
+  startYear: 1900,
+  precision: "year",
+  calendar: "proleptic-gregorian",
+};
+
+const date1964 = {
+  display: "1964",
+  startYear: 1964,
+  precision: "year",
+  calendar: "proleptic-gregorian",
+};
+
+const date1974 = {
+  display: "1974",
+  startYear: 1974,
+  precision: "year",
+  calendar: "proleptic-gregorian",
+};
+
 const primary = {
   sourceId: "src-1",
   sourceType: "primary",
@@ -18,25 +39,39 @@ const secondary = {
   sourceType: "secondary",
 };
 
+function evo(overrides: Record<string, unknown> = {}) {
+  return {
+    assertionId: "a-earliest",
+    evidenceRole: "EARLIEST_VERIFIED_OCCURRENCE",
+    subject: "Ada Lovelace",
+    publicStatement: "Verified Ada Lovelace occurrence.",
+    supportKind: "direct",
+    evidenceIds: ["src-1"],
+    occurrenceDate: date1900,
+    earlierUseStatus: "none_located_within_scope",
+    originatorKey: "ada-lovelace",
+    ...overrides,
+  };
+}
+
+function coinage(overrides: Record<string, unknown> = {}) {
+  return {
+    assertionId: "a-coinage",
+    evidenceRole: "CLAIMED_COINAGE",
+    subject: "Ada Lovelace",
+    publicStatement: "Commonly credited to Ada Lovelace.",
+    supportKind: "direct",
+    evidenceIds: ["src-1"],
+    originatorKey: "ada-lovelace",
+    ...overrides,
+  };
+}
+
 describe("index provenance verdict binding", () => {
   it("rejects direct_coinage bound to incomplete CLAIMED_COINAGE", () => {
     const assertions = [
-      {
-        assertionId: "a-earliest",
-        evidenceRole: "EARLIEST_VERIFIED_OCCURRENCE",
-        subject: "Ada Lovelace",
-        publicStatement: "Verified Ada Lovelace occurrence.",
-        supportKind: "direct",
-        evidenceIds: ["src-1"],
-      },
-      {
-        assertionId: "a-coinage",
-        evidenceRole: "CLAIMED_COINAGE",
-        subject: "Ada Lovelace",
-        publicStatement: "Claimed coinage by Ada Lovelace.",
-        supportKind: "incomplete",
-        evidenceIds: ["src-2"],
-      },
+      evo(),
+      coinage({ supportKind: "incomplete", evidenceIds: ["src-2"] }),
     ];
     const { assertionById, sourceById } = mapsFrom(assertions, [primary, secondary]);
     const errors = collectIndexProvenanceErrors(
@@ -44,7 +79,7 @@ describe("index provenance verdict binding", () => {
         status: "provisional",
         assertions,
         index: {
-          earliest: { assertionId: "a-earliest", date: { startYear: 1900 } },
+          earliest: { assertionId: "a-earliest", date: date1900 },
           shortFinding: "x",
           verdict: "direct_coinage",
           verdictAssertionId: "a-coinage",
@@ -58,23 +93,11 @@ describe("index provenance verdict binding", () => {
 
   it("accepts claimed_coinage with direct support strength", () => {
     const assertions = [
-      {
-        assertionId: "a-earliest",
-        evidenceRole: "EARLIEST_VERIFIED_OCCURRENCE",
-        subject: "Ada Lovelace",
-        publicStatement: "Verified Ada Lovelace occurrence.",
-        supportKind: "direct",
-        evidenceIds: ["src-1"],
+      evo({
+        earlierUseStatus: "reported_unverified",
         caveat: "Earlier use reported but not inspected.",
-      },
-      {
-        assertionId: "a-coinage",
-        evidenceRole: "CLAIMED_COINAGE",
-        subject: "Ada Lovelace",
-        publicStatement: "Commonly credited to Ada Lovelace.",
-        supportKind: "direct",
-        evidenceIds: ["src-1"],
-      },
+      }),
+      coinage(),
     ];
     const { assertionById, sourceById } = mapsFrom(assertions, [primary]);
     const errors = collectIndexProvenanceErrors(
@@ -82,7 +105,7 @@ describe("index provenance verdict binding", () => {
         status: "provisional",
         assertions,
         index: {
-          earliest: { assertionId: "a-earliest", date: { startYear: 1900 } },
+          earliest: { assertionId: "a-earliest", date: date1900 },
           shortFinding: "x",
           verdict: "claimed_coinage",
           verdictAssertionId: "a-coinage",
@@ -94,25 +117,13 @@ describe("index provenance verdict binding", () => {
     expect(errors).toEqual([]);
   });
 
-  it("rejects direct_coinage when earliest has unresolved earlier-use caveat", () => {
+  it("rejects direct_coinage when earliest earlierUseStatus is not none_located_within_scope", () => {
     const assertions = [
-      {
-        assertionId: "a-earliest",
-        evidenceRole: "EARLIEST_VERIFIED_OCCURRENCE",
-        subject: "Ada Lovelace",
-        publicStatement: "Verified Ada Lovelace occurrence.",
-        supportKind: "direct",
-        evidenceIds: ["src-1"],
+      evo({
+        earlierUseStatus: "reported_unverified",
         caveat: "Earlier 2009 use reported but not inspected.",
-      },
-      {
-        assertionId: "a-coinage",
-        evidenceRole: "CLAIMED_COINAGE",
-        subject: "Ada Lovelace",
-        publicStatement: "Commonly credited to Ada Lovelace.",
-        supportKind: "direct",
-        evidenceIds: ["src-1"],
-      },
+      }),
+      coinage(),
     ];
     const { assertionById, sourceById } = mapsFrom(assertions, [primary]);
     const errors = collectIndexProvenanceErrors(
@@ -120,7 +131,7 @@ describe("index provenance verdict binding", () => {
         status: "provisional",
         assertions,
         index: {
-          earliest: { assertionId: "a-earliest", date: { startYear: 1900 } },
+          earliest: { assertionId: "a-earliest", date: date1900 },
           shortFinding: "x",
           verdict: "direct_coinage",
           verdictAssertionId: "a-coinage",
@@ -129,19 +140,122 @@ describe("index provenance verdict binding", () => {
       assertionById,
       sourceById,
     );
-    expect(errors.some((e: string) => e.includes("unresolved earlier-use caveat"))).toBe(true);
+    expect(errors.some((e: string) => e.includes("earlierUseStatus none_located_within_scope"))).toBe(
+      true,
+    );
+  });
+
+  it("rejects direct_coinage when earlierUseStatus is contested even without a caveat field", () => {
+    const assertions = [
+      evo({ earlierUseStatus: "contested" }),
+      coinage(),
+    ];
+    const { assertionById, sourceById } = mapsFrom(assertions, [primary]);
+    const errors = collectIndexProvenanceErrors(
+      {
+        status: "provisional",
+        assertions,
+        index: {
+          earliest: { assertionId: "a-earliest", date: date1900 },
+          shortFinding: "x",
+          verdict: "direct_coinage",
+          verdictAssertionId: "a-coinage",
+        },
+      },
+      assertionById,
+      sourceById,
+    );
+    expect(errors.some((e: string) => e.includes("earlierUseStatus none_located_within_scope"))).toBe(
+      true,
+    );
+  });
+
+  it("rejects direct_coinage on generic token overlap without matching originatorKey", () => {
+    const assertions = [
+      evo({
+        subject: "Internal saying at a conference",
+        publicStatement: "An internal saying appeared in print.",
+        originatorKey: "unrelated-person",
+      }),
+      coinage({
+        subject: "Mark Zuckerberg / Facebook internal saying",
+        originatorKey: "mark-zuckerberg",
+      }),
+    ];
+    const { assertionById, sourceById } = mapsFrom(assertions, [primary]);
+    const errors = collectIndexProvenanceErrors(
+      {
+        status: "provisional",
+        assertions,
+        index: {
+          earliest: { assertionId: "a-earliest", date: date1900 },
+          shortFinding: "x",
+          verdict: "direct_coinage",
+          verdictAssertionId: "a-coinage",
+        },
+      },
+      assertionById,
+      sourceById,
+    );
+    expect(errors.some((e: string) => e.includes("originatorKey"))).toBe(true);
+  });
+
+  it("rejects direct_coinage when index earliest is EARLIEST_REPORTED_OCCURRENCE", () => {
+    const assertions = [
+      {
+        assertionId: "a-earliest",
+        evidenceRole: "EARLIEST_REPORTED_OCCURRENCE",
+        subject: "Reported trail",
+        publicStatement: "Reported only.",
+        supportKind: "incomplete",
+        evidenceIds: ["src-2"],
+        occurrenceDate: date1974,
+        earlierUseStatus: "reported_unverified",
+        originatorKey: "ada-lovelace",
+      },
+      coinage({ evidenceIds: ["src-1"] }),
+    ];
+    const { assertionById, sourceById } = mapsFrom(assertions, [primary, secondary]);
+    const errors = collectIndexProvenanceErrors(
+      {
+        status: "provisional",
+        assertions,
+        index: {
+          earliest: { assertionId: "a-earliest", date: date1974 },
+          shortFinding: "x",
+          verdict: "direct_coinage",
+          verdictAssertionId: "a-coinage",
+        },
+      },
+      assertionById,
+      sourceById,
+    );
+    expect(errors.some((e: string) => e.includes("EARLIEST_VERIFIED_OCCURRENCE"))).toBe(true);
+  });
+
+  it("rejects when index.earliest.date disagrees with assertion occurrenceDate", () => {
+    const assertions = [evo({ occurrenceDate: date1964 }), coinage()];
+    const { assertionById, sourceById } = mapsFrom(assertions, [primary]);
+    const errors = collectIndexProvenanceErrors(
+      {
+        status: "provisional",
+        assertions,
+        index: {
+          earliest: { assertionId: "a-earliest", date: date1900 },
+          shortFinding: "x",
+          verdict: "claimed_coinage",
+          verdictAssertionId: "a-coinage",
+        },
+      },
+      assertionById,
+      sourceById,
+    );
+    expect(errors.some((e: string) => e.includes("must equal occurrenceDate"))).toBe(true);
   });
 
   it("rejects popularized bound to incomplete POPULARIZED_BY", () => {
     const assertions = [
-      {
-        assertionId: "a-earliest",
-        evidenceRole: "EARLIEST_VERIFIED_OCCURRENCE",
-        subject: "Ada Lovelace",
-        publicStatement: "Verified Ada Lovelace occurrence.",
-        supportKind: "direct",
-        evidenceIds: ["src-1"],
-      },
+      evo(),
       {
         assertionId: "a-pop",
         evidenceRole: "POPULARIZED_BY",
@@ -157,7 +271,7 @@ describe("index provenance verdict binding", () => {
         status: "provisional",
         assertions,
         index: {
-          earliest: { assertionId: "a-earliest", date: { startYear: 1900 } },
+          earliest: { assertionId: "a-earliest", date: date1900 },
           shortFinding: "x",
           verdict: "popularized",
           verdictAssertionId: "a-pop",
@@ -171,14 +285,7 @@ describe("index provenance verdict binding", () => {
 
   it("rejects misattributed bound to wrong role", () => {
     const assertions = [
-      {
-        assertionId: "a-earliest",
-        evidenceRole: "EARLIEST_VERIFIED_OCCURRENCE",
-        subject: "Ada Lovelace",
-        publicStatement: "Verified Ada Lovelace occurrence.",
-        supportKind: "direct",
-        evidenceIds: ["src-1"],
-      },
+      evo(),
       {
         assertionId: "a-pop",
         evidenceRole: "POPULARIZED_BY",
@@ -194,7 +301,7 @@ describe("index provenance verdict binding", () => {
         status: "provisional",
         assertions,
         index: {
-          earliest: { assertionId: "a-earliest", date: { startYear: 1900 } },
+          earliest: { assertionId: "a-earliest", date: date1900 },
           shortFinding: "x",
           verdict: "misattributed",
           verdictAssertionId: "a-pop",
@@ -252,6 +359,8 @@ describe("index provenance verdict binding", () => {
         publicStatement: "Reported in secondary dossier.",
         supportKind: "incomplete",
         evidenceIds: ["src-2"],
+        occurrenceDate: date1974,
+        earlierUseStatus: "reported_unverified",
       },
       {
         assertionId: "a-mis",
@@ -268,7 +377,7 @@ describe("index provenance verdict binding", () => {
         status: "provisional",
         assertions,
         index: {
-          earliest: { assertionId: "a-reported", date: { startYear: 1974 } },
+          earliest: { assertionId: "a-reported", date: date1974 },
           shortFinding: "x",
           verdict: "misattributed",
           verdictAssertionId: "a-mis",
@@ -280,24 +389,20 @@ describe("index provenance verdict binding", () => {
     expect(errors).toEqual([]);
   });
 
-  it("accepts valid direct_coinage with matching primary EVO and no caveat", () => {
+  it("accepts valid direct_coinage with matching originatorKey and none_located_within_scope", () => {
     const assertions = [
-      {
+      evo({
         assertionId: "a-earliest",
-        evidenceRole: "EARLIEST_VERIFIED_OCCURRENCE",
         subject: "Understanding Media (1964)",
         publicStatement: "Verified Marshall McLuhan occurrence in Understanding Media.",
-        supportKind: "direct",
-        evidenceIds: ["src-1"],
-      },
-      {
-        assertionId: "a-coinage",
-        evidenceRole: "CLAIMED_COINAGE",
+        occurrenceDate: date1964,
+        originatorKey: "marshall-mcluhan",
+      }),
+      coinage({
         subject: "Marshall McLuhan",
         publicStatement: "Commonly credited to Marshall McLuhan.",
-        supportKind: "direct",
-        evidenceIds: ["src-1"],
-      },
+        originatorKey: "marshall-mcluhan",
+      }),
     ];
     const { assertionById, sourceById } = mapsFrom(assertions, [primary]);
     const errors = collectIndexProvenanceErrors(
@@ -305,7 +410,7 @@ describe("index provenance verdict binding", () => {
         status: "provisional",
         assertions,
         index: {
-          earliest: { assertionId: "a-earliest", date: { startYear: 1964 } },
+          earliest: { assertionId: "a-earliest", date: date1964 },
           shortFinding: "x",
           verdict: "direct_coinage",
           verdictAssertionId: "a-coinage",

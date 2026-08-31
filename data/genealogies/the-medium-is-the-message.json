@@ -37,7 +37,8 @@
       "evidenceIds": [
         "src-mim-um-1964"
       ],
-      "supportKind": "direct"
+      "supportKind": "direct",
+      "originatorKey": "marshall-mcluhan"
     },
     {
       "assertionId": "a-mim-earliest",
@@ -48,7 +49,15 @@
         "src-mim-um-1964",
         "src-mim-archive-faq"
       ],
-      "supportKind": "direct"
+      "supportKind": "direct",
+      "occurrenceDate": {
+        "display": "1964",
+        "startYear": 1964,
+        "precision": "year",
+        "calendar": "proleptic-gregorian"
+      },
+      "earlierUseStatus": "none_located_within_scope",
+      "originatorKey": "marshall-mcluhan"
     },
     {
       "assertionId": "a-mim-pop",

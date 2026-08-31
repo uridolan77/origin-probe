@@ -7,6 +7,16 @@ const dataDir = path.join(process.cwd(), "data", "genealogies");
 const baselineDir = path.join(process.cwd(), "tests", "fixtures", "genealogies-baseline");
 const manifestPath = path.join(baselineDir, "MANIFEST.json");
 
+function stripAssertionAdditions(assertions: Array<Record<string, unknown>>) {
+  return assertions.map((a) => {
+    const next = { ...a };
+    delete next.occurrenceDate;
+    delete next.earlierUseStatus;
+    delete next.originatorKey;
+    return next;
+  });
+}
+
 function stripIndexProjection(record: Record<string, unknown>) {
   const rest = { ...record };
   delete rest.index;
@@ -14,6 +24,11 @@ function stripIndexProjection(record: Record<string, unknown>) {
   delete rest.earliestSortYear;
   delete rest.shortFinding;
   delete rest.verdict;
+  if (Array.isArray(rest.assertions)) {
+    rest.assertions = stripAssertionAdditions(
+      rest.assertions as Array<Record<string, unknown>>,
+    );
+  }
   return rest;
 }
 

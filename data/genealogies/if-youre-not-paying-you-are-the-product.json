@@ -50,7 +50,14 @@
         "src-yap-metafilter-2010"
       ],
       "supportKind": "direct",
-      "caveat": "Earlier near-matches (for example 2001 Usenet “You’re not the customer, you’re the product”) exist without the payment clause; this page separates those roles."
+      "caveat": "Earlier near-matches (for example 2001 Usenet “You’re not the customer, you’re the product”) exist without the payment clause; this page separates those roles.",
+      "occurrenceDate": {
+        "display": "2010",
+        "startYear": 2010,
+        "precision": "year",
+        "calendar": "proleptic-gregorian"
+      },
+      "earlierUseStatus": "none_located_within_scope"
     },
     {
       "assertionId": "a-yap-pop",

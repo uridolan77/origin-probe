@@ -11,7 +11,13 @@ The collection homepage renders a compact **index projection** derived from each
 
 Other roles (`POPULARIZED_BY`, `ANTECEDENT`, `CLAIMED_COINAGE`, `MISATTRIBUTED_TO`, `CONTESTED_INCOMPLETE`) may appear in the record, but they must not be bound as `index.earliest.assertionId`.
 
-The `date` object uses proleptic Gregorian years. `startYear` is the sort key. `display` is the human-readable margin label and may use decade or circa precision. The date must be coherent with the bound assertion.
+The structured historical date lives on the bound occurrence assertion as `occurrenceDate` (`display`, `startYear`, precision, calendar). `index.earliest.date` is a projection and must deep-equal that field. The homepage label, OG card line, and detail-page timeline all derive the occurrence label from `occurrenceDate` (with the Reported prefix when the role is `EARLIEST_REPORTED_OCCURRENCE`). `startYear` remains the collection sort key.
+
+Occurrence assertions also carry `earlierUseStatus`:
+
+- `none_located_within_scope`
+- `reported_unverified`
+- `contested`
 
 ## Verdict column
 
@@ -29,11 +35,11 @@ Allowed values:
 | Verdict | Bound assertion |
 | --- | --- |
 | `claimed_coinage` | `CLAIMED_COINAGE` (any `supportKind`, including `direct`) |
-| `direct_coinage` | `CLAIMED_COINAGE` with `supportKind=direct` and a primary source, **plus** a same-subject `EARLIEST_VERIFIED_OCCURRENCE` that is itself `direct`, primary-backed, and free of an unresolved earlier-use caveat |
+| `direct_coinage` | `CLAIMED_COINAGE` with `supportKind=direct` and a primary source, **plus** the **index-bound** `EARLIEST_VERIFIED_OCCURRENCE` itself being `direct`, primary-backed, `earlierUseStatus=none_located_within_scope`, and sharing the same `originatorKey` as the coinage claim |
 | `popularized` | `POPULARIZED_BY`, `supportKind` not `incomplete` |
 | `misattributed` | `MISATTRIBUTED_TO` |
 
-A direct claim assertion alone is not sufficient for `direct_coinage`.
+A direct claim assertion alone is not sufficient for `direct_coinage`. Token overlap between subjects is not accepted as same-subject identity; `originatorKey` must match. Absence of a `caveat` string is not accepted as “no earlier use”; only `earlierUseStatus=none_located_within_scope` qualifies.
 
 ## Publication rule
 

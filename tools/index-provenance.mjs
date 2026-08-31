@@ -1,24 +1,18 @@
 import { INDEX_EARLIEST_ROLES, PUBLISHED_STATUSES, UNPUBLISHED_STATUSES } from "./genealogy-schema.mjs";
 
-function subjectTokens(subject) {
-  return new Set(
-    String(subject)
-      .toLowerCase()
-      .split(/[^a-z0-9]+/)
-      .filter((t) => t.length > 2),
-  );
-}
-
-function subjectsAlign(occurrence, claimSubject) {
-  const haystack = `${occurrence.subject} ${occurrence.publicStatement}`.toLowerCase();
-  for (const token of subjectTokens(claimSubject)) {
-    if (haystack.includes(token)) return true;
-  }
-  return false;
-}
-
 function hasPrimary(assertion, sourceById) {
   return assertion.evidenceIds.some((id) => sourceById.get(id)?.sourceType === "primary");
+}
+
+function historicalDatesEqual(a, b) {
+  if (!a || !b) return false;
+  return (
+    a.display === b.display &&
+    a.startYear === b.startYear &&
+    a.endYear === b.endYear &&
+    a.precision === b.precision &&
+    a.calendar === b.calendar
+  );
 }
 
 /**
@@ -52,6 +46,16 @@ export function collectIndexProvenanceErrors(g, assertionById, sourceById) {
   if (!INDEX_EARLIEST_ROLES.has(earliestAssertion.evidenceRole)) {
     errors.push(
       `index.earliest.assertionId "${index.earliest.assertionId}" has disallowed role ${earliestAssertion.evidenceRole}`,
+    );
+  }
+
+  if (!earliestAssertion.occurrenceDate) {
+    errors.push(
+      `index.earliest.assertionId "${index.earliest.assertionId}" is missing occurrenceDate`,
+    );
+  } else if (!historicalDatesEqual(index.earliest.date, earliestAssertion.occurrenceDate)) {
+    errors.push(
+      `index.earliest.date must equal occurrenceDate on assertion "${index.earliest.assertionId}"`,
     );
   }
 
@@ -118,17 +122,36 @@ export function collectIndexProvenanceErrors(g, assertionById, sourceById) {
       return errors;
     }
 
-    const matchingEvo = (assertions || []).find(
-      (a) =>
-        a.evidenceRole === "EARLIEST_VERIFIED_OCCURRENCE" &&
-        a.supportKind === "direct" &&
-        hasPrimary(a, sourceById) &&
-        !a.caveat &&
-        subjectsAlign(a, verdictAssertion.subject),
-    );
-    if (!matchingEvo) {
+    if (earliestAssertion.evidenceRole !== "EARLIEST_VERIFIED_OCCURRENCE") {
       errors.push(
-        `verdict direct_coinage requires a same-subject EARLIEST_VERIFIED_OCCURRENCE with supportKind direct, a primary source, and no unresolved earlier-use caveat`,
+        `verdict direct_coinage requires index.earliest to bind EARLIEST_VERIFIED_OCCURRENCE (got ${earliestAssertion.evidenceRole})`,
+      );
+      return errors;
+    }
+    if (earliestAssertion.supportKind !== "direct") {
+      errors.push(
+        `verdict direct_coinage requires index-bound EVO supportKind direct (got ${earliestAssertion.supportKind})`,
+      );
+      return errors;
+    }
+    if (!hasPrimary(earliestAssertion, sourceById)) {
+      errors.push(
+        `verdict direct_coinage requires index-bound EVO to cite at least one primary source`,
+      );
+      return errors;
+    }
+    if (earliestAssertion.earlierUseStatus !== "none_located_within_scope") {
+      errors.push(
+        `verdict direct_coinage requires index-bound EVO earlierUseStatus none_located_within_scope (got ${earliestAssertion.earlierUseStatus ?? "missing"})`,
+      );
+      return errors;
+    }
+
+    const claimKey = verdictAssertion.originatorKey;
+    const evoKey = earliestAssertion.originatorKey;
+    if (!claimKey || !evoKey || claimKey !== evoKey) {
+      errors.push(
+        `verdict direct_coinage requires matching originatorKey on CLAIMED_COINAGE and index-bound EVO`,
       );
     }
   }

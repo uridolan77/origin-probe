@@ -44,6 +44,17 @@ export const HistoricalDateSchema = z
   })
   .strict();
 
+export const EarlierUseStatusSchema = z.enum([
+  "none_located_within_scope",
+  "reported_unverified",
+  "contested",
+]);
+
+export const OriginatorKeySchema = z
+  .string()
+  .min(1)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+
 export const IndexMetadataSchema = z
   .object({
     earliest: z
@@ -65,15 +76,56 @@ export const CorrectionHistoryEntrySchema = z.object({
   toRevision: z.number().int().nonnegative().optional(),
 });
 
-export const AssertionSchema = z.object({
-  assertionId: z.string().min(1),
-  evidenceRole: EvidenceRoleSchema,
-  subject: z.string().min(1),
-  publicStatement: z.string().min(1),
-  evidenceIds: z.array(z.string().min(1)).min(1),
-  supportKind: SupportKindSchema,
-  caveat: z.string().min(1).optional(),
-});
+export const AssertionSchema = z
+  .object({
+    assertionId: z.string().min(1),
+    evidenceRole: EvidenceRoleSchema,
+    subject: z.string().min(1),
+    publicStatement: z.string().min(1),
+    evidenceIds: z.array(z.string().min(1)).min(1),
+    supportKind: SupportKindSchema,
+    caveat: z.string().min(1).optional(),
+    occurrenceDate: HistoricalDateSchema.optional(),
+    originatorKey: OriginatorKeySchema.optional(),
+    earlierUseStatus: EarlierUseStatusSchema.optional(),
+  })
+  .strict()
+  .superRefine((a, ctx) => {
+    const isOccurrence =
+      a.evidenceRole === "EARLIEST_VERIFIED_OCCURRENCE" ||
+      a.evidenceRole === "EARLIEST_REPORTED_OCCURRENCE";
+    if (isOccurrence) {
+      if (!a.occurrenceDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "occurrenceDate is required for earliest-occurrence roles",
+          path: ["occurrenceDate"],
+        });
+      }
+      if (!a.earlierUseStatus) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "earlierUseStatus is required for earliest-occurrence roles",
+          path: ["earlierUseStatus"],
+        });
+      }
+    } else {
+      if (a.occurrenceDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "occurrenceDate is only allowed on earliest-occurrence roles",
+          path: ["occurrenceDate"],
+        });
+      }
+      if (a.earlierUseStatus) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "earlierUseStatus is only allowed on earliest-occurrence roles",
+          path: ["earlierUseStatus"],
+        });
+      }
+    }
+  });
 
 export const SourceSchema = z
   .object({

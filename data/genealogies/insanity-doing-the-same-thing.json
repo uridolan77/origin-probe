@@ -65,7 +65,14 @@
       "evidenceIds": [
         "src-ins-qi-2017"
       ],
-      "supportKind": "incomplete"
+      "supportKind": "incomplete",
+      "occurrenceDate": {
+        "display": "1980s",
+        "startYear": 1980,
+        "precision": "decade",
+        "calendar": "proleptic-gregorian"
+      },
+      "earlierUseStatus": "reported_unverified"
     },
     {
       "assertionId": "a-ins-contested",

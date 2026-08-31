@@ -37,7 +37,8 @@
       "evidenceIds": [
         "src-mfbt-s1-2012"
       ],
-      "supportKind": "direct"
+      "supportKind": "direct",
+      "originatorKey": "mark-zuckerberg"
     },
     {
       "assertionId": "a-mfbt-earliest",
@@ -48,7 +49,15 @@
         "src-mfbt-s1-2012"
       ],
       "supportKind": "direct",
-      "caveat": "Secondary sources report earlier 2009 interview use; those earlier pages were not independently re-inspected as primary transcripts here."
+      "caveat": "Secondary sources report earlier 2009 interview use; those earlier pages were not independently re-inspected as primary transcripts here.",
+      "occurrenceDate": {
+        "display": "2012",
+        "startYear": 2012,
+        "precision": "year",
+        "calendar": "proleptic-gregorian"
+      },
+      "earlierUseStatus": "reported_unverified",
+      "originatorKey": "mark-zuckerberg"
     },
     {
       "assertionId": "a-mfbt-pop",

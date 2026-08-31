@@ -55,6 +55,13 @@ describe("GenealogySchema", () => {
           publicStatement: "Verified in the cited edition within scope.",
           evidenceIds: ["src-1"],
           supportKind: "direct",
+          occurrenceDate: {
+            display: "1901",
+            startYear: 1901,
+            precision: "year",
+            calendar: "proleptic-gregorian",
+          },
+          earlierUseStatus: "none_located_within_scope",
         },
       ],
       sources: [
@@ -118,6 +125,14 @@ describe("GenealogySchema", () => {
           publicStatement: "Verified in the cited edition within scope.",
           evidenceIds: ["src-1"],
           supportKind: "direct",
+          occurrenceDate: {
+            display: "1901",
+            startYear: 1901,
+            precision: "year",
+            calendar: "proleptic-gregorian",
+          },
+          earlierUseStatus: "none_located_within_scope",
+          originatorKey: "example-author",
         },
         {
           assertionId: "a-coinage",
@@ -126,6 +141,7 @@ describe("GenealogySchema", () => {
           publicStatement: "Claimed as coinage by the cited author.",
           evidenceIds: ["src-1"],
           supportKind: "direct",
+          originatorKey: "example-author",
         },
       ],
       sources: [
@@ -193,6 +209,13 @@ describe("GenealogySchema", () => {
           publicStatement: "Verified in the cited edition within scope.",
           evidenceIds: ["src-1"],
           supportKind: "direct",
+          occurrenceDate: {
+            display: "1901",
+            startYear: 1901,
+            precision: "year",
+            calendar: "proleptic-gregorian",
+          },
+          earlierUseStatus: "none_located_within_scope",
         },
       ],
       sources: [

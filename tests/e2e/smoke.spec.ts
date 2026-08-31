@@ -68,6 +68,22 @@ test("every result page renders evidence roles and scope", async ({ page }) => {
   }
 });
 
+test("reported occurrence timelines use historical dates not dossier years", async ({ page }) => {
+  await page.goto("/g/be-the-change-you-wish-to-see/", { waitUntil: "domcontentloaded" });
+  const btcOccurrence = page.locator(".timeline li").filter({
+    hasText: /earliest reported occurrence/i,
+  });
+  await expect(btcOccurrence.locator(".timeline-date")).toHaveText("Reported 1974");
+  await expect(btcOccurrence.locator(".timeline-date")).not.toHaveText("2017-10-23");
+
+  await page.goto("/g/insanity-doing-the-same-thing/", { waitUntil: "domcontentloaded" });
+  const insanityOccurrence = page.locator(".timeline li").filter({
+    hasText: /earliest reported occurrence/i,
+  });
+  await expect(insanityOccurrence.locator(".timeline-date")).toHaveText("Reported 1980s");
+  await expect(insanityOccurrence.locator(".timeline-date")).not.toHaveText("2017-03-23");
+});
+
 test("search autocomplete and unsupported phrase", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const input = page.getByLabel("Search the collection");

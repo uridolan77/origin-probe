@@ -38,7 +38,8 @@
         "src-iwf-wer-1985",
         "src-iwf-wapo-1984"
       ],
-      "supportKind": "direct"
+      "supportKind": "direct",
+      "originatorKey": "stewart-brand"
     },
     {
       "assertionId": "a-iwf-earliest",
@@ -49,7 +50,15 @@
         "src-iwf-wapo-1984",
         "src-iwf-wer-1985"
       ],
-      "supportKind": "direct"
+      "supportKind": "direct",
+      "occurrenceDate": {
+        "display": "1984",
+        "startYear": 1984,
+        "precision": "year",
+        "calendar": "proleptic-gregorian"
+      },
+      "earlierUseStatus": "none_located_within_scope",
+      "originatorKey": "stewart-brand"
     },
     {
       "assertionId": "a-iwf-contested",
