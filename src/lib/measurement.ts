@@ -6,7 +6,16 @@
 
 import { getOrCreateClientId } from "@/lib/events";
 
+const CANONICAL_HOST = "origin.onto\u0067ony.net";
+
+function usesSameOriginMeasurementBridge(): boolean {
+  if (typeof window === "undefined") return false;
+  const hostname = window.location.hostname.toLowerCase();
+  return hostname === CANONICAL_HOST || hostname.endsWith(".vercel.app");
+}
+
 export function measurementApiBase(): string {
+  if (usesSameOriginMeasurementBridge()) return "/__measure";
   if (typeof process === "undefined") return "";
   return (process.env.NEXT_PUBLIC_ORIGIN_MEASUREMENT_API_URL || "").replace(
     /\/$/,

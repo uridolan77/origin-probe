@@ -56,8 +56,9 @@
       ]
     },
     "ordinary_build_configuration": {
-      "description": "Ordinary build, lint, test, and CI configuration.",
+      "description": "Ordinary build, deployment, lint, test, and CI configuration.",
       "globs": [
+        "api/**",
         "package.json",
         "package-lock.json",
         "tsconfig.json",
