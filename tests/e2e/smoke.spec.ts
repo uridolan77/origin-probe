@@ -38,7 +38,7 @@ test("every result page renders evidence roles and scope", async ({ page }) => {
 });
 
 test("search autocomplete and unsupported phrase", async ({ page }) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("/", { waitUntil: "networkidle" });
   const input = page.getByLabel("Search the traced collection");
   await input.fill("culture eats");
   await expect(page.getByRole("listbox")).toBeVisible();
@@ -91,7 +91,7 @@ test("method privacy corrections pages", async ({ page }) => {
 
 test("copy link updates status", async ({ page, context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]).catch(() => undefined);
-  await page.goto("/g/the-medium-is-the-message/", { waitUntil: "domcontentloaded" });
+  await page.goto("/g/the-medium-is-the-message/", { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Copy link" }).click();
   await expect(page.getByRole("status")).toContainText(
     /copied|offline|unavailable|Could not/i,
@@ -104,7 +104,7 @@ test("offline copy UX fails closed without fabricating a share token", async ({
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/g/culture-eats-strategy-for-breakfast/", {
-    waitUntil: "domcontentloaded",
+    waitUntil: "networkidle",
   });
   await page.evaluate(() => navigator.clipboard.writeText("unchanged-sentinel"));
 
