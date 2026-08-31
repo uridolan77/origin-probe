@@ -110,11 +110,20 @@ for (const file of files) {
       }
     }
 
-    if (a.evidenceRole === "EARLIEST_VERIFIED_OCCURRENCE" && a.supportKind === "direct") {
+    if (a.evidenceRole === "EARLIEST_VERIFIED_OCCURRENCE") {
       const hasPrimary = a.evidenceIds.some((id) => sourceById.get(id)?.sourceType === "primary");
       if (!hasPrimary) {
         fail(
-          `${file}: earliest-occurrence assertion ${a.assertionId} with supportKind=direct requires at least one primary source`,
+          `${file}: earliest-occurrence assertion ${a.assertionId} requires at least one primary source`,
+        );
+      }
+    }
+
+    if (a.evidenceRole === "EARLIEST_REPORTED_OCCURRENCE") {
+      const hasPrimary = a.evidenceIds.some((id) => sourceById.get(id)?.sourceType === "primary");
+      if (hasPrimary) {
+        fail(
+          `${file}: earliest-reported assertion ${a.assertionId} must not cite a primary source (use EARLIEST_VERIFIED_OCCURRENCE when primary hardcopy is inspected)`,
         );
       }
     }

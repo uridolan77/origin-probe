@@ -7,8 +7,8 @@
     "be the change",
     "gandhi be the change"
   ],
-  "revision": 1,
-  "reviewedAt": "2026-08-29",
+  "revision": 2,
+  "reviewedAt": "2026-08-31",
   "status": "provisional",
   "finding": "Prominent misattribution to Gandhi; attribution investigations point to a 1970s modern slogan trail and a 1913 Gandhi passage as a related antecedent, not the same wording. Earliest modern hardcopy was not independently re-inspected in this corpus.",
   "index": {
@@ -27,8 +27,15 @@
   },
   "searchScope": "Quote Investigator dossier and secondary reporting of the 1974/1987 print trail. Gandhi’s 1913 Indian Opinion passage reviewed via secondary quotation.",
   "evidenceReviewed": "QI (2017) on Lorrance 1974 trail and Gandhi 1913 antecedent; secondary reporting of 1987 Gandhi attribution.",
-  "supersedesRevision": null,
-  "correctionHistory": [],
+  "supersedesRevision": 1,
+  "correctionHistory": [
+    {
+      "at": "2026-08-31",
+      "summary": "Added earliest-reported 1974 modern-wording assertion and rebound the index earliest milestone from popularization to that reported occurrence.",
+      "fromRevision": 1,
+      "toRevision": 2
+    }
+  ],
   "assertions": [
     {
       "assertionId": "a-btc-misattr",
@@ -62,7 +69,7 @@
     },
     {
       "assertionId": "a-btc-earliest-modern",
-      "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
+      "evidenceRole": "EARLIEST_REPORTED_OCCURRENCE",
       "subject": "Arleen Lorrance, 1974 modern slogan trail",
       "publicStatement": "Attribution investigations identify a close modern slogan match in Arleen Lorrance’s 1974 writing; the primary hardcopy was not independently re-inspected in this corpus.",
       "evidenceIds": [

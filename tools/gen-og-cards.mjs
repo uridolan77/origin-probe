@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 /**
- * Build-time social cards from genealogy JSON.
+ * Build-time social cards from published genealogy JSON only.
  * Renders separated evidence roles; never fabricates source counts or findings.
+ * Prunes stale /og assets that do not belong to the current published set.
  */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadPublishedGenealogies, pruneStaleOgCards } from "./og-publish.mjs";
+
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dataDir = path.join(root, "data", "genealogies");
 const outDir = path.join(root, "public", "og");
@@ -16,6 +19,7 @@ fs.mkdirSync(fontDir, { recursive: true });
 
 const ROLE_LABELS = {
   EARLIEST_VERIFIED_OCCURRENCE: "Earliest verified occurrence located",
+  EARLIEST_REPORTED_OCCURRENCE: "Earliest reported occurrence (secondary)",
   CLAIMED_COINAGE: "Commonly credited to",
   POPULARIZED_BY: "Popularized by",
   MISATTRIBUTED_TO: "Misattributed to",
@@ -23,20 +27,11 @@ const ROLE_LABELS = {
   CONTESTED_INCOMPLETE: "Contested / incomplete",
 };
 
-function loadGenealogies() {
-  if (!fs.existsSync(dataDir)) return [];
-  return fs
-    .readdirSync(dataDir)
-    .filter((f) => f.endsWith(".json"))
-    .map((f) => JSON.parse(fs.readFileSync(path.join(dataDir, f), "utf8")));
-}
-
 async function ensureFont() {
   const fontPath = path.join(fontDir, "LiberationSerif-Regular.ttf");
   if (fs.existsSync(fontPath) && fs.statSync(fontPath).size > 1000) {
     return fs.readFileSync(fontPath);
   }
-  // Prefer a local system Times/Liberation font when present (no network dependency for CI cache hits).
   const candidates = [
     "C:/Windows/Fonts/times.ttf",
     "C:/Windows/Fonts/timesnr.ttf",
@@ -62,6 +57,7 @@ function roleLines(g) {
     "CLAIMED_COINAGE",
     "POPULARIZED_BY",
     "EARLIEST_VERIFIED_OCCURRENCE",
+    "EARLIEST_REPORTED_OCCURRENCE",
     "MISATTRIBUTED_TO",
     "ANTECEDENT",
     "CONTESTED_INCOMPLETE",
@@ -73,13 +69,24 @@ function roleLines(g) {
   return lines.slice(0, 4);
 }
 
+function indexEarliestLine(g) {
+  if (!g.index) return null;
+  const assertion = g.assertions.find((a) => a.assertionId === g.index.earliest.assertionId);
+  const display = g.index.earliest.date.display;
+  if (assertion?.evidenceRole === "EARLIEST_REPORTED_OCCURRENCE") {
+    return `Index earliest: Reported ${display} (secondary; primary not re-inspected)`;
+  }
+  return `Index earliest: ${display}`;
+}
+
 async function renderCard(g, fontData) {
   const satori = (await import("satori")).default;
   const { Resvg } = await import("@resvg/resvg-js");
   const roles = roleLines(g);
+  const earliest = indexEarliestLine(g);
   const finding =
     g.finding.length > 160 ? `${g.finding.slice(0, 157)}…` : g.finding;
-  const meta = `${g.sources.length} sources · reviewed ${g.reviewedAt}`;
+  const meta = `${g.sources.length} sources · revision ${g.revision} · reviewed ${g.reviewedAt}`;
 
   const children = [
     {
@@ -97,6 +104,16 @@ async function renderCard(g, fontData) {
       },
     },
   ];
+
+  if (earliest) {
+    children.push({
+      type: "div",
+      props: {
+        style: { fontSize: 24, marginBottom: 10, color: "#243028", maxWidth: 1040 },
+        children: earliest,
+      },
+    });
+  }
 
   for (const line of roles) {
     children.push({
@@ -152,17 +169,33 @@ async function renderCard(g, fontData) {
   return resvg.render().asPng();
 }
 
-const genealogies = loadGenealogies();
-if (genealogies.length === 0) {
-  console.log("gen-og-cards: no genealogies");
-  process.exit(0);
+async function main() {
+  const genealogies = loadPublishedGenealogies(dataDir);
+  if (genealogies.length === 0) {
+    console.log("gen-og-cards: no published genealogies");
+    const removedEmpty = pruneStaleOgCards(outDir, []);
+    if (removedEmpty.length) {
+      console.log(`gen-og-cards: pruned ${removedEmpty.length} stale card(s)`);
+    }
+    return;
+  }
+
+  const fontData = await ensureFont();
+  const publishedSlugs = genealogies.map((g) => g.slug);
+  for (const g of genealogies) {
+    const out = path.join(outDir, `${g.slug}.png`);
+    const png = await renderCard(g, fontData);
+    fs.writeFileSync(out, png);
+    console.log("wrote", path.relative(root, out), `${png.length} bytes`);
+  }
+  const removed = pruneStaleOgCards(outDir, publishedSlugs);
+  if (removed.length) {
+    console.log(`gen-og-cards: pruned ${removed.length} stale card(s): ${removed.join(", ")}`);
+  }
+  console.log(`gen-og-cards: ok (${genealogies.length} published)`);
 }
 
-const fontData = await ensureFont();
-for (const g of genealogies) {
-  const out = path.join(outDir, `${g.slug}.png`);
-  const png = await renderCard(g, fontData);
-  fs.writeFileSync(out, png);
-  console.log("wrote", path.relative(root, out), `${png.length} bytes`);
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) {
+  await main();
 }
-console.log(`gen-og-cards: ok (${genealogies.length})`);

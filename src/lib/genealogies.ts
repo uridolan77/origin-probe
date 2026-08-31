@@ -91,6 +91,10 @@ function searchHaystack(g: Genealogy): string[] {
   const terms = [g.phrase, ...g.aliases];
   if (g.index) {
     terms.push(g.index.earliest.date.display, String(g.index.earliest.date.startYear));
+    const assertion = g.assertions.find((a) => a.assertionId === g.index!.earliest.assertionId);
+    if (assertion?.evidenceRole === "EARLIEST_REPORTED_OCCURRENCE") {
+      terms.push(`Reported ${g.index.earliest.date.display}`, "reported");
+    }
   }
   for (const a of g.assertions) {
     terms.push(a.subject);

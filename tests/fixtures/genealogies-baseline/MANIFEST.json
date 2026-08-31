@@ -1,0 +1,13 @@
+{
+  "baseCommit": "c29a5679d11b95dd771f63f9676b74d45dd3bcec",
+  "note": "Immutable pre-revision-2 baselines without nested index; UTF-8 without BOM. Hashes lock custody to the BOM-normalized fixture commit before canonical assertion additions.",
+  "files": {
+    "be-the-change-you-wish-to-see.json": "ce6c3b715df008362f54bf07dd68652b4bae953535f5e2b2d10f3d70ef83538a",
+    "culture-eats-strategy-for-breakfast.json": "db3b1c01f847d15f7c9bf4c1ed2781e49006705af4159e1cb2d2dcf278687389",
+    "if-youre-not-paying-you-are-the-product.json": "310dda2b5f51a9465add75aefc0c0a8ce79d2949acc337fbe19fd5493ccd319f",
+    "information-wants-to-be-free.json": "a806f38ce2967e924d415fd54104001474d4dd89c8ef0e5211957afec11d144a",
+    "insanity-doing-the-same-thing.json": "0f70180700e1089caf9c491436e395cd78b632a66632c14e9d8ac3341c2cf1fd",
+    "move-fast-and-break-things.json": "a6a8f152fc4f2c00fdbfea3b822b74c4cf5f90d5c518a4289cfed194b894b1cf",
+    "the-medium-is-the-message.json": "84d97a8f7bae0a4618b5bb7d1fd2b4f6dc39c345d576d43a2713e32e89d97274"
+  }
+}

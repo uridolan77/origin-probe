@@ -7,8 +7,8 @@
     "insanity same thing different results",
     "einstein insanity quote"
   ],
-  "revision": 1,
-  "reviewedAt": "2026-08-29",
+  "revision": 2,
+  "reviewedAt": "2026-08-31",
   "status": "provisional",
   "finding": "Prominent misattribution to Einstein; popularization via 1980s recovery-community and fiction use is stronger than any Einstein coinage claim, while named authorship remains incomplete.",
   "index": {
@@ -27,8 +27,15 @@
   },
   "searchScope": "Quote Investigator dossier, Snopes summary, and cited 1981 newspaper / 1983 novel trail. Did not re-inspect Knoxville News-Sentinel microfilm beyond QI.",
   "evidenceReviewed": "QI (2017) on early-1980s recovery-community trail and Rita Mae Brown 1983; Ultimate Quotable Einstein misattribution listing via QI.",
-  "supersedesRevision": null,
-  "correctionHistory": [],
+  "supersedesRevision": 1,
+  "correctionHistory": [
+    {
+      "at": "2026-08-31",
+      "summary": "Added earliest-reported early-1980s recovery-community occurrence and rebound the index earliest milestone from popularization to that reported occurrence.",
+      "fromRevision": 1,
+      "toRevision": 2
+    }
+  ],
   "assertions": [
     {
       "assertionId": "a-ins-misattr",
@@ -52,7 +59,7 @@
     },
     {
       "assertionId": "a-ins-earliest",
-      "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
+      "evidenceRole": "EARLIEST_REPORTED_OCCURRENCE",
       "subject": "Early-1980s recovery-community print trail",
       "publicStatement": "Attribution investigations place early documented use in early-1980s recovery-community print; the earliest newspaper hardcopy was not independently re-inspected in this corpus.",
       "evidenceIds": [

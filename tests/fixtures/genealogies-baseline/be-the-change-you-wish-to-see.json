@@ -47,16 +47,6 @@
       "supportKind": "supporting"
     },
     {
-      "assertionId": "a-btc-earliest-modern",
-      "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
-      "subject": "Arleen Lorrance, 1974 modern slogan trail",
-      "publicStatement": "Attribution investigations identify a close modern slogan match in Arleen Lorrance’s 1974 writing; the primary hardcopy was not independently re-inspected in this corpus.",
-      "evidenceIds": [
-        "src-btc-qi-2017"
-      ],
-      "supportKind": "incomplete"
-    },
-    {
       "assertionId": "a-btc-incomplete",
       "evidenceRole": "CONTESTED_INCOMPLETE",
       "subject": "Earliest modern slogan wording",
@@ -81,7 +71,6 @@
         "a-btc-misattr",
         "a-btc-antecedent",
         "a-btc-pop",
-        "a-btc-earliest-modern",
         "a-btc-incomplete"
       ],
       "shortExcerpt": "Gandhi died in 1948, and the earliest close match known to QI appeared many years later in 1974 within a book chapter written by educator Arleen Lorrance."

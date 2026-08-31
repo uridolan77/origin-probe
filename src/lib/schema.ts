@@ -2,6 +2,7 @@
 
 export const EvidenceRoleSchema = z.enum([
   "EARLIEST_VERIFIED_OCCURRENCE",
+  "EARLIEST_REPORTED_OCCURRENCE",
   "CLAIMED_COINAGE",
   "POPULARIZED_BY",
   "MISATTRIBUTED_TO",
@@ -139,6 +140,7 @@ export type Genealogy = z.infer<typeof GenealogySchema>;
 
 export const INDEX_EARLIEST_ROLES = new Set<EvidenceRole>([
   "EARLIEST_VERIFIED_OCCURRENCE",
+  "EARLIEST_REPORTED_OCCURRENCE",
 ]);
 
 export const PUBLISHED_STATUSES = new Set<GenealogyStatus>(["provisional", "reviewed"]);

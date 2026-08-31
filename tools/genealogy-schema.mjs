@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const EvidenceRoleSchema = z.enum([
   "EARLIEST_VERIFIED_OCCURRENCE",
+  "EARLIEST_REPORTED_OCCURRENCE",
   "CLAIMED_COINAGE",
   "POPULARIZED_BY",
   "MISATTRIBUTED_TO",
@@ -116,6 +117,7 @@ export const GenealogySchema = z
 
 export const INDEX_EARLIEST_ROLES = new Set([
   "EARLIEST_VERIFIED_OCCURRENCE",
+  "EARLIEST_REPORTED_OCCURRENCE",
 ]);
 
 export const PUBLISHED_STATUSES = new Set(["provisional", "reviewed"]);

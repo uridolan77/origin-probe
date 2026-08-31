@@ -24,7 +24,9 @@ test("home page loads with traced collection", async ({ page }) => {
   await expect(page.getByRole("columnheader", { name: "Verdict" })).toBeVisible();
   await expect(page.locator('.phrase-index-table--desktop a[href="/g/culture-eats-strategy-for-breakfast/"]')).toBeVisible();
   await expect(page.locator(".phrase-index-table--desktop").getByRole("cell", { name: "1964" })).toBeVisible();
+  await expect(page.locator(".phrase-index-table--desktop").getByRole("cell", { name: "Reported 1974" })).toBeVisible();
   await expect(page.locator(".phrase-index-table--desktop").getByRole("cell", { name: "Direct coinage" }).first()).toBeVisible();
+  await expect(page.locator(".phrase-index-table--desktop").getByRole("cell", { name: "Claimed coinage" })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -32,7 +34,15 @@ test("collection index rows are chronological", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const years = await page.locator(".phrase-index-table tbody tr td:first-child").allTextContents();
-  expect(years.map((y) => Number.parseInt(y.replace(/\D/g, ""), 10))).toEqual([1964, 1974, 1980, 1984, 2000, 2010, 2012]);
+  expect(years).toEqual([
+    "1964",
+    "Reported 1974",
+    "Reported 1980s",
+    "1984",
+    "2000",
+    "2010",
+    "2012",
+  ]);
 });
 
 test("search matches year and non-alias author name", async ({ page }) => {
