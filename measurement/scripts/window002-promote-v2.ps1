@@ -363,6 +363,39 @@ function Read-JsonEvidence {
     }
 }
 
+function Get-NormalizedFullPath {
+    param([Parameter(Mandatory = $true)][string] $LiteralPath)
+    $full = [IO.Path]::GetFullPath($LiteralPath)
+    $pathRoot = [IO.Path]::GetPathRoot($full)
+    $isWindowsVolumeGuidRoot = (
+        [Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT -and
+        [regex]::IsMatch(
+            $full,
+            '^\\\\\?\\(?i:Volume)\{[0-9A-Fa-f]{8}-(?:[0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}\}(?:\\)?$'
+        )
+    )
+    if ($isWindowsVolumeGuidRoot) {
+        return $full.TrimEnd([char[]] @(
+            [IO.Path]::DirectorySeparatorChar,
+            [IO.Path]::AltDirectorySeparatorChar
+        )) + [IO.Path]::DirectorySeparatorChar
+    }
+    if ($full.Length -gt $pathRoot.Length) {
+        $full = $full.TrimEnd([char[]] @(
+            [IO.Path]::DirectorySeparatorChar,
+            [IO.Path]::AltDirectorySeparatorChar
+        ))
+    }
+    return $full
+}
+
+function Get-NativePathComparison {
+    if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
+        return [StringComparison]::OrdinalIgnoreCase
+    }
+    return [StringComparison]::Ordinal
+}
+
 function Assert-PathUnderRoot {
     param(
         [Parameter(Mandatory = $true)][string] $LiteralPath,
@@ -370,11 +403,17 @@ function Assert-PathUnderRoot {
         [Parameter(Mandatory = $true)][string] $Label,
         [switch] $AllowDirectory
     )
-    $root = [IO.Path]::GetFullPath($RootPath).TrimEnd('\')
-    $full = [IO.Path]::GetFullPath($LiteralPath)
+    $root = Get-NormalizedFullPath -LiteralPath $RootPath
+    $full = Get-NormalizedFullPath -LiteralPath $LiteralPath
+    $comparison = Get-NativePathComparison
+    $separator = [IO.Path]::DirectorySeparatorChar
+    $rootPrefix = if (
+        $root[$root.Length - 1] -eq [IO.Path]::DirectorySeparatorChar -or
+        $root[$root.Length - 1] -eq [IO.Path]::AltDirectorySeparatorChar
+    ) { $root } else { $root + $separator }
     if (
-        $full -cne $root -and
-        -not $full.StartsWith($root + '\', [StringComparison]::OrdinalIgnoreCase)
+        -not [string]::Equals($full, $root, $comparison) -and
+        -not $full.StartsWith($rootPrefix, $comparison)
     ) { Stop-Promotion "$Label is outside its pinned root." }
     $cursor = $full
     while ($cursor.Length -ge $root.Length) {
@@ -383,12 +422,12 @@ function Assert-PathUnderRoot {
         if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
             Stop-Promotion "$Label traverses a reparse point."
         }
-        if ($cursor -ceq $root) { break }
+        if ([string]::Equals($cursor, $root, $comparison)) { break }
         $parent = [IO.Path]::GetDirectoryName($cursor)
         if ([string]::IsNullOrEmpty($parent) -or $parent.Length -ge $cursor.Length) {
             Stop-Promotion "$Label root traversal is invalid."
         }
-        $cursor = $parent.TrimEnd('\')
+        $cursor = Get-NormalizedFullPath -LiteralPath $parent
     }
     $leaf = Get-Item -LiteralPath $full -Force
     if ($AllowDirectory) {
@@ -1530,7 +1569,7 @@ function Assert-SupplementalSeal {
 
 function Resolve-V2EvidenceDirectory {
     param([switch] $RequireProtection)
-    $directory = [IO.Path]::GetFullPath($EvidenceDirectoryPath).TrimEnd('\')
+    $directory = Get-NormalizedFullPath -LiteralPath $EvidenceDirectoryPath
     if (-not (Test-Path -LiteralPath $directory -PathType Container)) {
         Stop-Promotion 'The v2 evidence directory is absent.'
     }
@@ -1539,8 +1578,11 @@ function Resolve-V2EvidenceDirectory {
         Stop-Promotion 'The v2 evidence directory is a reparse point.'
     }
     if ($RequireProtection) {
-        $expected = [IO.Path]::Combine($storePath, $expectedEvidenceDirectoryName)
-        if ($item.FullName.TrimEnd('\') -cne $expected) {
+        $expected = Get-NormalizedFullPath -LiteralPath (
+            [IO.Path]::Combine($storePath, $expectedEvidenceDirectoryName)
+        )
+        $actual = Get-NormalizedFullPath -LiteralPath $item.FullName
+        if (-not [string]::Equals($actual, $expected, (Get-NativePathComparison))) {
             Stop-Promotion 'The v2 evidence directory is outside its protected pinned location.'
         }
         Assert-RestrictedAcl -LiteralPath $item.FullName -Label 'The v2 evidence directory' -IsDirectory $true
