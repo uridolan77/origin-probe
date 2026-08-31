@@ -92,7 +92,7 @@ async function renderCard(g, fontData) {
     {
       type: "div",
       props: {
-        style: { fontSize: 22, letterSpacing: 2, color: "#3d5a45", marginBottom: 18 },
+        style: { fontSize: 22, letterSpacing: 2, color: "#1a5a74", marginBottom: 18 },
         children: "ORIGIN",
       },
     },
@@ -109,7 +109,7 @@ async function renderCard(g, fontData) {
     children.push({
       type: "div",
       props: {
-        style: { fontSize: 24, marginBottom: 10, color: "#243028", maxWidth: 1040 },
+        style: { fontSize: 24, marginBottom: 10, color: "#14181d", maxWidth: 1040 },
         children: earliest,
       },
     });
@@ -119,7 +119,7 @@ async function renderCard(g, fontData) {
     children.push({
       type: "div",
       props: {
-        style: { fontSize: 24, marginBottom: 8, color: "#243028", maxWidth: 1040 },
+        style: { fontSize: 24, marginBottom: 8, color: "#14181d", maxWidth: 1040 },
         children: line,
       },
     });
@@ -128,14 +128,14 @@ async function renderCard(g, fontData) {
   children.push({
     type: "div",
     props: {
-      style: { fontSize: 22, marginTop: 18, color: "#1a241c", maxWidth: 1040 },
+      style: { fontSize: 22, marginTop: 18, color: "#14181d", maxWidth: 1040 },
       children: `Finding: ${finding}`,
     },
   });
   children.push({
     type: "div",
     props: {
-      style: { fontSize: 20, marginTop: 20, color: "#5a6b5e" },
+      style: { fontSize: 20, marginTop: 20, color: "#4a5560" },
       children: meta,
     },
   });
@@ -151,10 +151,10 @@ async function renderCard(g, fontData) {
           flexDirection: "column",
           justifyContent: "center",
           padding: 56,
-          background: "#f3f0e8",
-          color: "#162018",
+          background: "#f4f1eb",
+          color: "#14181d",
           fontFamily: "CardSerif",
-          border: "12px solid #2f4a38",
+          border: "12px solid #1a5a74",
         },
         children,
       },

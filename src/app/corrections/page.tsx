@@ -10,7 +10,7 @@ export default function CorrectionsPage() {
   return (
     <article className="stack">
       <header className="prose">
-        <h1 className="display" style={{ fontSize: "2rem", margin: 0 }}>
+        <h1 className="display display-lg">
           Corrections
         </h1>
         <p className="lead">

@@ -1,6 +1,5 @@
 ﻿import Link from "next/link";
-import { PhraseIndex } from "@/components/PhraseIndex";
-import { SearchBox } from "@/components/SearchBox";
+import { CollectionIndex } from "@/components/CollectionIndex";
 import { listForAutocomplete, listForIndex } from "@/lib/genealogies";
 
 export default function HomePage() {
@@ -19,14 +18,11 @@ export default function HomePage() {
               : "A small research surface for traced phrase genealogies. Each entry keeps verified use, claimed coinage, popularization and misattribution apart — and says where the trail goes cold."}
           </p>
         </div>
-        <div className="collection-search">
-          <SearchBox items={autocomplete} />
-        </div>
       </header>
 
       {indexed.length > 0 ? (
         <>
-          <PhraseIndex items={indexed} />
+          <CollectionIndex items={indexed} searchItems={autocomplete} />
           <p className="collection-footnote">
             Each entry shows its lifecycle status, revision, and review date.{" "}
             <Link href="/method/">How Origin traces a phrase</Link>.
