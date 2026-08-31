@@ -29,7 +29,7 @@ jobs:
       - name: Build root-path static export
         env:
           ORIGIN_BUILD_COMMIT: ${{ github.sha }}
-          NEXT_PUBLIC_ORIGIN_MEASUREMENT_API_URL: https://origin-probe-measure.vercel.app
+          NEXT_PUBLIC_ORIGIN_MEASUREMENT_API_URL: /__measure
           NEXT_PUBLIC_ORIGIN_LIVE_ANALYTICS: "false"
         run: npm run build
       - name: Verify canonical artifact identity
@@ -37,6 +37,7 @@ jobs:
           test -f out/index.html
           ! grep -F '/origin-probe/' out/index.html
           grep -F "data-origin-build-commit=\"${GITHUB_SHA}\"" out/index.html
+          grep -R -F '/__measure' out/_next/static/chunks >/dev/null
       - name: Pack static export
         run: tar -C out -cf origin-canonical-site.tar .
       - uses: actions/upload-artifact@v4
