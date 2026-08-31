@@ -20,7 +20,8 @@ test("home page loads with traced collection", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /Who coined it/i })).toBeVisible();
   await expect(page.getByText("Built by Uri Dolan")).toBeVisible();
   await expect(page.getByLabel("Search the collection")).toBeVisible();
-  await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Collection" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Phrases" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Concepts" })).toBeVisible();
   await expect(page.getByRole("columnheader", { name: "Verdict" })).toBeVisible();
   await expect(page.locator('.phrase-index-table--desktop a[href="/g/culture-eats-strategy-for-breakfast/"]')).toBeVisible();
   await expect(page.locator(".phrase-index-table--desktop").getByRole("cell", { name: "1964" })).toBeVisible();
