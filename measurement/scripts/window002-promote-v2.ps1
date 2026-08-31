@@ -169,7 +169,7 @@ $liveGatePostBodyFilenames = @(
     'post-public-alias-read-2-export-all.json',
     'post-public-alias-read-2-authoritative-reduction.json'
 )
-$expectedWindowReducerSha256 = 'c2a14b8f14dd272f563f46b0ea16baa40715ed2799d845c733e00671e57f63b0'
+$expectedWindowReducerSha256 = '1fd9dc1d7a1cda0218b31f6e0b270c089422b1a551ed222e4b8e7fc5af8e65f7'
 
 $captureToolRelativePath = 'measurement/scripts/window002-baseline-capture-v2.mjs'
 $captureTestRelativePath = 'measurement/test/window002-baseline-capture-v2.test.js'

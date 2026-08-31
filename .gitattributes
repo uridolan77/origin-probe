@@ -1,0 +1,5 @@
+# Window 002 executable artifacts are byte-digested; preserve repository LF bytes.
+measurement/lib/reducer.js text eol=lf
+measurement/scripts/window002-*.mjs text eol=lf
+measurement/scripts/window002-*.ps1 text eol=lf
+measurement/test/window002-*.test.js text eol=lf

@@ -773,7 +773,7 @@ test("ContractTest accepts the exact 16/21/37 superseded baseline without writin
         immediateGateContract:
           "synthetic_two_read_export_reduction_recomputed",
         windowReducerSha256:
-          "c2a14b8f14dd272f563f46b0ea16baa40715ed2799d845c733e00671e57f63b0",
+          "1fd9dc1d7a1cda0218b31f6e0b270c089422b1a551ed222e4b8e7fc5af8e65f7",
       },
     );
     assert.deepEqual(directorySnapshot(fixture.root), before);
