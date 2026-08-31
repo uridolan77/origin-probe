@@ -20,26 +20,50 @@ jobs:
           set -u
           deployment_host="origin-onto${DOMAIN_INSERT}ony-9weghqrxu-uridolan77s-projects.vercel.app"
           canonical_host="origin.onto${DOMAIN_INSERT}ony.net"
+          apex_host="onto${DOMAIN_INSERT}ony.net"
           mkdir -p verification
 
-          deployment_http=0
-          for attempt in $(seq 1 18); do
-            deployment_http=$(curl -sS -o verification/deployment-index.html -w '%{http_code}' \
-              --max-time 20 "https://${deployment_host}/" || true)
-            if [ "$deployment_http" = "200" ]; then break; fi
-            sleep 10
-          done
+          request() {
+            local name="$1"
+            local url="$2"
+            curl -sS \
+              --max-time 30 \
+              --dump-header "verification/${name}-headers.txt" \
+              --output "verification/${name}-body" \
+              --write-out '%{http_code}' \
+              "$url" || true
+          }
 
-          evidence_http=$(curl -sS -o verification/deployment-evidence.json -w '%{http_code}' \
-            --max-time 20 "https://${deployment_host}/.well-known/origin-deployment.json" || true)
-          health_http=$(curl -sS -o verification/measurement-health.json -w '%{http_code}' \
-            --max-time 20 "https://${deployment_host}/__measure/v1/health" || true)
-          canonical_http=$(curl -sS -L -o verification/canonical-index.html -w '%{http_code}' \
-            --max-time 20 "https://${canonical_host}/" || true)
+          request_follow() {
+            local name="$1"
+            local url="$2"
+            curl -sS -L \
+              --max-time 30 \
+              --dump-header "verification/${name}-headers.txt" \
+              --output "verification/${name}-body" \
+              --write-out '%{http_code}' \
+              "$url" || true
+          }
+
+          deployment_http=$(request deployment "https://${deployment_host}/")
+          deployment_follow_http=$(request_follow deployment-follow "https://${deployment_host}/")
+          evidence_http=$(request evidence "https://${deployment_host}/.well-known/origin-deployment.json")
+          evidence_follow_http=$(request_follow evidence-follow "https://${deployment_host}/.well-known/origin-deployment.json")
+          health_http=$(request health "https://${deployment_host}/__measure/v1/health")
+          health_follow_http=$(request_follow health-follow "https://${deployment_host}/__measure/v1/health")
+          canonical_http=$(request_follow canonical "https://${canonical_host}/")
 
           dig +short "$deployment_host" A > verification/deployment-a.txt || true
+          dig +short "$deployment_host" CNAME > verification/deployment-cname.txt || true
           dig +short "$canonical_host" A > verification/canonical-a.txt || true
+          dig +short "$canonical_host" AAAA > verification/canonical-aaaa.txt || true
           dig +short "$canonical_host" CNAME > verification/canonical-cname.txt || true
+          dig +short "$apex_host" NS > verification/apex-ns.txt || true
+          dig +short "$apex_host" SOA > verification/apex-soa.txt || true
+
+          location=$(awk 'BEGIN{IGNORECASE=1} /^location:/ {sub(/\r$/, ""); sub(/^[^:]*:[[:space:]]*/, ""); print; exit}' verification/deployment-headers.txt)
+          evidence_location=$(awk 'BEGIN{IGNORECASE=1} /^location:/ {sub(/\r$/, ""); sub(/^[^:]*:[[:space:]]*/, ""); print; exit}' verification/evidence-headers.txt)
+          health_location=$(awk 'BEGIN{IGNORECASE=1} /^location:/ {sub(/\r$/, ""); sub(/^[^:]*:[[:space:]]*/, ""); print; exit}' verification/health-headers.txt)
 
           commit_bound=false
           no_pages_base_path=false
@@ -47,19 +71,19 @@ jobs:
           health_ok=false
           canonical_bound=false
 
-          if [ "$deployment_http" = "200" ] && grep -Fq "data-origin-build-commit=\"${EXPECTED_BUILD_COMMIT}\"" verification/deployment-index.html; then
+          if [ "$deployment_follow_http" = "200" ] && grep -Fq "data-origin-build-commit=\"${EXPECTED_BUILD_COMMIT}\"" verification/deployment-follow-body; then
             commit_bound=true
           fi
-          if [ "$deployment_http" = "200" ] && ! grep -Fq '/origin-probe/' verification/deployment-index.html; then
+          if [ "$deployment_follow_http" = "200" ] && ! grep -Fq '/origin-probe/' verification/deployment-follow-body; then
             no_pages_base_path=true
           fi
-          if [ "$evidence_http" = "200" ] && jq -e --arg commit "$EXPECTED_BUILD_COMMIT" '.buildCommit == $commit' verification/deployment-evidence.json >/dev/null; then
+          if [ "$evidence_follow_http" = "200" ] && jq -e --arg commit "$EXPECTED_BUILD_COMMIT" '.buildCommit == $commit' verification/evidence-follow-body >/dev/null 2>&1; then
             evidence_bound=true
           fi
-          if [ "$health_http" = "200" ] && jq -e '.ok == true' verification/measurement-health.json >/dev/null; then
+          if [ "$health_follow_http" = "200" ] && jq -e '.ok == true' verification/health-follow-body >/dev/null 2>&1; then
             health_ok=true
           fi
-          if [ "$canonical_http" = "200" ] && grep -Fq "data-origin-build-commit=\"${EXPECTED_BUILD_COMMIT}\"" verification/canonical-index.html; then
+          if [ "$canonical_http" = "200" ] && grep -Fq "data-origin-build-commit=\"${EXPECTED_BUILD_COMMIT}\"" verification/canonical-body; then
             canonical_bound=true
           fi
 
@@ -67,23 +91,37 @@ jobs:
             --arg deploymentHost "$deployment_host" \
             --arg canonicalHost "$canonical_host" \
             --arg deploymentHttp "$deployment_http" \
+            --arg deploymentFollowHttp "$deployment_follow_http" \
             --arg evidenceHttp "$evidence_http" \
+            --arg evidenceFollowHttp "$evidence_follow_http" \
             --arg healthHttp "$health_http" \
+            --arg healthFollowHttp "$health_follow_http" \
             --arg canonicalHttp "$canonical_http" \
+            --arg deploymentLocation "$location" \
+            --arg evidenceLocation "$evidence_location" \
+            --arg healthLocation "$health_location" \
             --argjson commitBound "$commit_bound" \
             --argjson noPagesBasePath "$no_pages_base_path" \
             --argjson evidenceBound "$evidence_bound" \
             --argjson healthOk "$health_ok" \
             --argjson canonicalBound "$canonical_bound" \
             '{
-              schemaVersion: "origin.deployment-verification.v1",
+              schemaVersion: "origin.deployment-verification.v2",
               deploymentHost: $deploymentHost,
               canonicalHost: $canonicalHost,
               http: {
                 deployment: ($deploymentHttp | tonumber),
+                deploymentFollow: ($deploymentFollowHttp | tonumber),
                 evidence: ($evidenceHttp | tonumber),
+                evidenceFollow: ($evidenceFollowHttp | tonumber),
                 measurementHealth: ($healthHttp | tonumber),
+                measurementHealthFollow: ($healthFollowHttp | tonumber),
                 canonical: ($canonicalHttp | tonumber)
+              },
+              redirects: {
+                deployment: $deploymentLocation,
+                evidence: $evidenceLocation,
+                measurementHealth: $healthLocation
               },
               gates: {
                 commitBound: $commitBound,
@@ -94,6 +132,10 @@ jobs:
               }
             }' > verification/report.json
           cat verification/report.json
+          printf '%s\n' '--- authoritative nameservers ---'
+          cat verification/apex-ns.txt
+          printf '%s\n' '--- deployment response headers ---'
+          cat verification/deployment-headers.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -104,9 +146,9 @@ jobs:
       - name: Enforce deployment gates
         run: |
           jq -e '
-            .http.deployment == 200 and
-            .http.evidence == 200 and
-            .http.measurementHealth == 200 and
+            .http.deploymentFollow == 200 and
+            .http.evidenceFollow == 200 and
+            .http.measurementHealthFollow == 200 and
             .http.canonical == 200 and
             .gates.commitBound == true and
             .gates.noPagesBasePath == true and
