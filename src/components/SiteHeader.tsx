@@ -8,7 +8,7 @@ function navCurrent(path: string, pathname: string): "page" | undefined {
   if (path === "/") {
     return pathname === "/" || pathname === "" ? "page" : undefined;
   }
-  return pathname.startsWith(path) ? "page" : undefined;
+  return pathname === path || pathname.startsWith(`${path}/`) ? "page" : undefined;
 }
 
 export function SiteHeader() {
@@ -22,12 +22,21 @@ export function SiteHeader() {
       <div className="site-header-actions">
         <nav className="site-nav" aria-label="Primary">
           <Link href="/" aria-current={navCurrent("/", pathname)}>
-            Collection
+            Phrases
+          </Link>
+          <Link
+            href="/concepts/"
+            aria-current={navCurrent("/concepts", pathname)}
+          >
+            Concepts
           </Link>
           <Link href="/method/" aria-current={navCurrent("/method", pathname)}>
             Method
           </Link>
-          <Link href="/corrections/" aria-current={navCurrent("/corrections", pathname)}>
+          <Link
+            href="/corrections/"
+            aria-current={navCurrent("/corrections", pathname)}
+          >
             Corrections
           </Link>
         </nav>
