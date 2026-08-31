@@ -2,6 +2,7 @@
 
 export const EvidenceRoleSchema = z.enum([
   "EARLIEST_VERIFIED_OCCURRENCE",
+  "EARLIEST_REPORTED_OCCURRENCE",
   "CLAIMED_COINAGE",
   "POPULARIZED_BY",
   "MISATTRIBUTED_TO",
@@ -34,6 +35,57 @@ export const GenealogyStatusSchema = z.enum([
 
 export type GenealogyStatus = z.infer<typeof GenealogyStatusSchema>;
 
+export const IndexVerdictSchema = z.enum([
+  "direct_coinage",
+  "claimed_coinage",
+  "popularized",
+  "misattributed",
+]);
+
+export type Verdict = z.infer<typeof IndexVerdictSchema>;
+export { IndexVerdictSchema as VerdictSchema };
+
+export const HistoricalDateSchema = z
+  .object({
+    display: z.string().trim().min(1).max(40),
+    startYear: z.number().int(),
+    endYear: z.number().int().optional(),
+    precision: z.enum(["exact", "year", "circa", "decade", "century", "range"]),
+    calendar: z.literal("proleptic-gregorian"),
+  })
+  .strict();
+
+export type HistoricalDate = z.infer<typeof HistoricalDateSchema>;
+
+export const EarlierUseStatusSchema = z.enum([
+  "none_located_within_scope",
+  "reported_unverified",
+  "contested",
+]);
+
+export type EarlierUseStatus = z.infer<typeof EarlierUseStatusSchema>;
+
+export const OriginatorKeySchema = z
+  .string()
+  .min(1)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+
+export const IndexMetadataSchema = z
+  .object({
+    earliest: z
+      .object({
+        date: HistoricalDateSchema,
+        assertionId: z.string().min(1),
+      })
+      .strict(),
+    shortFinding: z.string().trim().min(1).max(180),
+    verdict: IndexVerdictSchema,
+    verdictAssertionId: z.string().min(1),
+  })
+  .strict();
+
+export type IndexMetadata = z.infer<typeof IndexMetadataSchema>;
+
 export const CorrectionHistoryEntrySchema = z.object({
   at: z.string().min(1),
   summary: z.string().min(1),
@@ -43,15 +95,56 @@ export const CorrectionHistoryEntrySchema = z.object({
 
 export type CorrectionHistoryEntry = z.infer<typeof CorrectionHistoryEntrySchema>;
 
-export const AssertionSchema = z.object({
-  assertionId: z.string().min(1),
-  evidenceRole: EvidenceRoleSchema,
-  subject: z.string().min(1),
-  publicStatement: z.string().min(1),
-  evidenceIds: z.array(z.string().min(1)).min(1),
-  supportKind: SupportKindSchema,
-  caveat: z.string().min(1).optional(),
-});
+export const AssertionSchema = z
+  .object({
+    assertionId: z.string().min(1),
+    evidenceRole: EvidenceRoleSchema,
+    subject: z.string().min(1),
+    publicStatement: z.string().min(1),
+    evidenceIds: z.array(z.string().min(1)).min(1),
+    supportKind: SupportKindSchema,
+    caveat: z.string().min(1).optional(),
+    occurrenceDate: HistoricalDateSchema.optional(),
+    originatorKey: OriginatorKeySchema.optional(),
+    earlierUseStatus: EarlierUseStatusSchema.optional(),
+  })
+  .strict()
+  .superRefine((a, ctx) => {
+    const isOccurrence =
+      a.evidenceRole === "EARLIEST_VERIFIED_OCCURRENCE" ||
+      a.evidenceRole === "EARLIEST_REPORTED_OCCURRENCE";
+    if (isOccurrence) {
+      if (!a.occurrenceDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "occurrenceDate is required for earliest-occurrence roles",
+          path: ["occurrenceDate"],
+        });
+      }
+      if (!a.earlierUseStatus) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "earlierUseStatus is required for earliest-occurrence roles",
+          path: ["earlierUseStatus"],
+        });
+      }
+    } else {
+      if (a.occurrenceDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "occurrenceDate is only allowed on earliest-occurrence roles",
+          path: ["occurrenceDate"],
+        });
+      }
+      if (a.earlierUseStatus) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "earlierUseStatus is only allowed on earliest-occurrence roles",
+          path: ["earlierUseStatus"],
+        });
+      }
+    }
+  });
 
 export type Assertion = z.infer<typeof AssertionSchema>;
 
@@ -86,6 +179,7 @@ export const GenealogySchema = z
     reviewedAt: z.string().min(1),
     status: GenealogyStatusSchema,
     finding: z.string().min(1),
+    index: IndexMetadataSchema.optional(),
     searchScope: z.string().min(1),
     evidenceReviewed: z.string().min(1),
     sourceSetHash: z.string().regex(/^sha256:[0-9a-f]{16}$/),
@@ -97,3 +191,16 @@ export const GenealogySchema = z
   .strict();
 
 export type Genealogy = z.infer<typeof GenealogySchema>;
+
+export const INDEX_EARLIEST_ROLES = new Set<EvidenceRole>([
+  "EARLIEST_VERIFIED_OCCURRENCE",
+  "EARLIEST_REPORTED_OCCURRENCE",
+]);
+
+export const PUBLISHED_STATUSES = new Set<GenealogyStatus>(["provisional", "reviewed"]);
+
+export const UNPUBLISHED_STATUSES = new Set<GenealogyStatus>([
+  "draft",
+  "superseded",
+  "withdrawn",
+]);

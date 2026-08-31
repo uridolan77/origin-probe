@@ -3,7 +3,7 @@
 export default function NotFound() {
   return (
     <div className="prose stack">
-      <h1 className="display" style={{ fontSize: "2rem", margin: 0 }}>
+      <h1 className="display display-lg">
         Not found
       </h1>
       <p>That page is not part of the traced collection.</p>

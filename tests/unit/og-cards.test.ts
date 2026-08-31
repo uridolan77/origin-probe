@@ -1,6 +1,5 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { afterEach, describe, expect, it } from "vitest";
@@ -13,15 +12,19 @@ function sha256(filePath: string): string {
 }
 
 function createFixture(): string {
-  const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "origin-og-cards-"));
+  const fixtureRoot = fs.mkdtempSync(
+    path.join(repositoryRoot, "node_modules", ".origin-og-cards-"),
+  );
   temporaryRoots.push(fixtureRoot);
   fs.mkdirSync(path.join(fixtureRoot, "tools"), { recursive: true });
   fs.mkdirSync(path.join(fixtureRoot, "data"), { recursive: true });
   fs.mkdirSync(path.join(fixtureRoot, "public"), { recursive: true });
-  fs.copyFileSync(
-    path.join(repositoryRoot, "tools", "gen-og-cards.mjs"),
-    path.join(fixtureRoot, "tools", "gen-og-cards.mjs"),
-  );
+  for (const tool of ["gen-og-cards.mjs", "genealogy-schema.mjs", "og-publish.mjs"]) {
+    fs.copyFileSync(
+      path.join(repositoryRoot, "tools", tool),
+      path.join(fixtureRoot, "tools", tool),
+    );
+  }
   fs.cpSync(path.join(repositoryRoot, "data", "genealogies"), path.join(fixtureRoot, "data", "genealogies"), {
     recursive: true,
   });
@@ -91,14 +94,18 @@ describe("frozen OG cards", () => {
     );
   });
 
-  it("fails closed when the genealogy directory is absent", () => {
+  it("preserves the no-published-genealogies cleanup behavior", () => {
     const fixtureRoot = createFixture();
     fs.rmSync(path.join(fixtureRoot, "data", "genealogies"), { recursive: true });
 
     const result = runGenerator(fixtureRoot);
 
-    expect(result.status).not.toBe(0);
-    expect(result.stderr).toContain("Frozen OG card manifest does not match the genealogy set.");
+    expect(result.status, result.stderr).toBe(0);
+    expect(result.stdout).toContain("gen-og-cards: no published genealogies");
+    expect(result.stdout).toContain("gen-og-cards: pruned 7 stale card(s)");
+    expect(
+      fs.readdirSync(path.join(fixtureRoot, "public", "og")).filter((name) => name.endsWith(".png")),
+    ).toEqual([]);
     expect(fs.existsSync(path.join(fixtureRoot, "tools", "fonts", "LiberationSerif-Regular.ttf"))).toBe(
       false,
     );
@@ -114,7 +121,9 @@ describe("frozen OG cards", () => {
     const result = runGenerator(fixtureRoot);
 
     expect(result.status).not.toBe(0);
-    expect(result.stderr).toContain("Frozen OG card manifest does not match the genealogy set.");
+    expect(result.stderr).toContain(
+      "Frozen OG card manifest does not match the published genealogy set.",
+    );
     expect(fs.existsSync(path.join(fixtureRoot, "tools", "fonts", "LiberationSerif-Regular.ttf"))).toBe(
       false,
     );

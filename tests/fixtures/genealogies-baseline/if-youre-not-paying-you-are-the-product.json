@@ -1,0 +1,109 @@
+{
+  "genealogyId": "gen-you-are-the-product",
+  "slug": "if-youre-not-paying-you-are-the-product",
+  "phrase": "If you’re not paying for the product, you are the product",
+  "aliases": [
+    "you are the product",
+    "if you are not paying for it you are the product",
+    "youre not the customer youre the product"
+  ],
+  "revision": 1,
+  "reviewedAt": "2026-08-29",
+  "status": "provisional",
+  "finding": "Popular 2010 MetaFilter wording is distinct from a 1973 video-art antecedent; popularization and origin are separate, and the TV critique is related rather than identical wording.",
+  "searchScope": "Quote Investigator dossier, MetaFilter 2010 comment trail via QI, and Richard Serra / Carlota Fay Schoolman 1973 video documentation.",
+  "evidenceReviewed": "QI (2017) on Television Delivers People (1973) and Andrew Lewis / blue_beetle MetaFilter (2010); MoMA/video documentation summaries.",
+  "supersedesRevision": null,
+  "correctionHistory": [],
+  "assertions": [
+    {
+      "assertionId": "a-yap-antecedent",
+      "evidenceRole": "ANTECEDENT",
+      "subject": "Television Delivers People (1973)",
+      "publicStatement": "An earlier related formulation appears in Richard Serra and Carlota Fay Schoolman’s 1973 video Television Delivers People: “You are the product of t.v.” — related idea, not the later “if you’re not paying…” wording.",
+      "evidenceIds": [
+        "src-yap-tdp-1973",
+        "src-yap-qi-2017"
+      ],
+      "supportKind": "direct"
+    },
+    {
+      "assertionId": "a-yap-earliest-modern",
+      "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
+      "subject": "MetaFilter comment by Andrew Lewis (2010)",
+      "publicStatement": "Earliest verified occurrence located for the modern “if you are not paying…” formulation: Andrew Lewis (blue_beetle) on MetaFilter in 2010.",
+      "evidenceIds": [
+        "src-yap-metafilter-2010"
+      ],
+      "supportKind": "direct",
+      "caveat": "Earlier near-matches (for example 2001 Usenet “You’re not the customer, you’re the product”) exist without the payment clause; this page separates those roles."
+    },
+    {
+      "assertionId": "a-yap-pop",
+      "evidenceRole": "POPULARIZED_BY",
+      "subject": "Social-media / surveillance-capitalism critique (2010s)",
+      "publicStatement": "Popularized by 2010s social-media criticism that recycled the MetaFilter line as a critique of free consumer platforms.",
+      "evidenceIds": [
+        "src-yap-qi-2017"
+      ],
+      "supportKind": "supporting"
+    },
+    {
+      "assertionId": "a-yap-coinage",
+      "evidenceRole": "CLAIMED_COINAGE",
+      "subject": "Andrew Lewis (blue_beetle) for the payment-clause form",
+      "publicStatement": "Commonly credited to Andrew Lewis’s 2010 MetaFilter comment for the payment-clause form; that credit covers the modern wording, not the 1973 antecedent.",
+      "evidenceIds": [
+        "src-yap-metafilter-2010"
+      ],
+      "supportKind": "direct"
+    }
+  ],
+  "sources": [
+    {
+      "sourceId": "src-yap-tdp-1973",
+      "title": "Television Delivers People",
+      "author": "Richard Serra; Carlota Fay Schoolman",
+      "publisher": "Video artwork (broadcast/exhibited 1973)",
+      "publicationDate": "1973-03-30",
+      "sourceType": "primary",
+      "url": "https://www.moma.org/collection/works/119321",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-yap-antecedent"
+      ],
+      "shortExcerpt": "You are the product of t.v. You are delivered to the advertiser who is the customer."
+    },
+    {
+      "sourceId": "src-yap-metafilter-2010",
+      "title": "MetaFilter comment on Digg / user-as-product",
+      "author": "Andrew Lewis (blue_beetle)",
+      "publisher": "MetaFilter",
+      "publicationDate": "2010-08-26",
+      "sourceType": "primary",
+      "url": "https://www.metafilter.com/95152/Userdriven-discontent",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-yap-earliest-modern",
+        "a-yap-coinage"
+      ],
+      "shortExcerpt": "If you are not paying for it, you’re not the customer; you’re the product being sold."
+    },
+    {
+      "sourceId": "src-yap-qi-2017",
+      "title": "You’re Not the Customer; You’re the Product",
+      "author": "Garson O’Toole",
+      "publisher": "Quote Investigator",
+      "publicationDate": "2017-07-16",
+      "sourceType": "secondary",
+      "url": "https://quoteinvestigator.com/2017/07/16/product/",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-yap-antecedent",
+        "a-yap-pop"
+      ],
+      "shortExcerpt": "In conclusion, this saying evolved over time. Richard Serra and Carlota Fay Schoolman crafted an interesting precursor in 1973."
+    }
+  ],
+  "sourceSetHash": "sha256:ddea00e711e8d22c"
+}

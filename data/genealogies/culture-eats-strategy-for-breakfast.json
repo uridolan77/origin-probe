@@ -11,6 +11,20 @@
   "reviewedAt": "2026-08-29",
   "status": "provisional",
   "finding": "Popularized attribution to Peter Drucker is stronger than any coinage claim; the earliest verified breakfast wording located is a March 2000 Giga Information Group headline cited in a September 2000 trade journal.",
+  "index": {
+    "earliest": {
+      "date": {
+        "display": "2000",
+        "startYear": 2000,
+        "precision": "year",
+        "calendar": "proleptic-gregorian"
+      },
+      "assertionId": "a-culture-earliest"
+    },
+    "shortFinding": "Not Drucker. A Giga Information Group headline came first.",
+    "verdict": "misattributed",
+    "verdictAssertionId": "a-culture-misattr"
+  },
   "searchScope": "English-language open web, Quote Investigator dossier, newspaper databases cited therein, and secondary management press. Did not inspect a physical March 2000 Giga Information Group original.",
   "evidenceReviewed": "Quote Investigator (2017) with hardcopy-verified September 2000 PIMA citation; 2006 Associated Press coverage of Mark Fields; 2011 textbook Drucker attribution.",
   "supersedesRevision": null,
@@ -26,7 +40,14 @@
         "src-culture-qi-2017"
       ],
       "supportKind": "direct",
-      "caveat": "The March 2000 Giga periodical itself was not inspected in this review; the claim rests on the hardcopy-verified September 2000 citation reported by Quote Investigator."
+      "caveat": "The March 2000 Giga periodical itself was not inspected in this review; the claim rests on the hardcopy-verified September 2000 citation reported by Quote Investigator.",
+      "occurrenceDate": {
+        "display": "2000",
+        "startYear": 2000,
+        "precision": "year",
+        "calendar": "proleptic-gregorian"
+      },
+      "earlierUseStatus": "none_located_within_scope"
     },
     {
       "assertionId": "a-culture-misattr",

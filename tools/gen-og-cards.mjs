@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 /**
- * Build-time social cards from genealogy JSON.
+ * Build-time social cards from published genealogy JSON only.
  * Renders separated evidence roles; never fabricates source counts or findings.
+ * Prunes stale /og assets that do not belong to the current published set.
  */
 import fs from "node:fs";
 import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadPublishedGenealogies, pruneStaleOgCards } from "./og-publish.mjs";
+
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dataDir = path.join(root, "data", "genealogies");
 const outDir = path.join(root, "public", "og");
@@ -17,6 +20,7 @@ fs.mkdirSync(fontDir, { recursive: true });
 
 const ROLE_LABELS = {
   EARLIEST_VERIFIED_OCCURRENCE: "Earliest verified occurrence located",
+  EARLIEST_REPORTED_OCCURRENCE: "Earliest reported occurrence (secondary)",
   CLAIMED_COINAGE: "Commonly credited to",
   POPULARIZED_BY: "Popularized by",
   MISATTRIBUTED_TO: "Misattributed to",
@@ -26,38 +30,30 @@ const ROLE_LABELS = {
 
 const FROZEN_CARD_SHA256 = Object.freeze({
   "be-the-change-you-wish-to-see":
-    "bea857164bc4e81bd3910f7eaa625abad41866521eadb779263ba2fb58fa8556",
+    "db795779da2f232a458f2a506f3580f06cdfbcec5874fb45f5bf86709d6ee634",
   "culture-eats-strategy-for-breakfast":
-    "430c48abdad488da762fcd8568f5d728c5a9a279a426909008d26deef7496aea",
+    "959ebfe881cffcb0803b65c229ca8450d34b8e3303dcc65449206dc5a18c98b0",
   "if-youre-not-paying-you-are-the-product":
-    "4d8383f81eeb72f4cff83de91683474ccc50a43ff2f7860294655d3254ae6733",
+    "f3642be0dd11347ddfa39a79a7b00f356d25f4adda93508d29bd8c2da5e5cdef",
   "information-wants-to-be-free":
-    "da2880b7011e562fd5f824239b89c9af389336a1cf383935cd7274ae473dc316",
+    "00a8d91714480d7a1a5f1e1b02bec696f6c87e1df9d822d1d0fa864ef6a55741",
   "insanity-doing-the-same-thing":
-    "d077bdd2bc2fd259780f336622b8ae0dbce2b7f0c3de043d9e217f1e651a1555",
+    "2d6e03d373cf9d7e9af31fb6968f13fdfd7172065eef1c1240b24a8ff4a9300b",
   "move-fast-and-break-things":
-    "6335afe24230aa37e4187d75c218a11ff07d7ed8bd0f0d1631d81a2eacaba5f6",
+    "245652abe7b205b34deeba7701da635745e428e4fb551dcbf4ac29db042344fc",
   "the-medium-is-the-message":
-    "af0abca054e466290a96d9dc90d154610537ff6e1d99263316a06942e90a7a5d",
+    "01917768cd9f57c4aec3a3ed6fedcd703d0f607dcc028d770a82d7395ef7dcac",
 });
 
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
 }
 
-function loadGenealogies() {
-  if (!fs.existsSync(dataDir)) return [];
-  return fs
-    .readdirSync(dataDir)
-    .filter((f) => f.endsWith(".json"))
-    .map((f) => JSON.parse(fs.readFileSync(path.join(dataDir, f), "utf8")));
-}
-
 function verifyFrozenCards(genealogies) {
   const observedSlugs = genealogies.map((genealogy) => genealogy.slug).sort();
   const expectedSlugs = Object.keys(FROZEN_CARD_SHA256).sort();
   if (JSON.stringify(observedSlugs) !== JSON.stringify(expectedSlugs)) {
-    throw new Error("Frozen OG card manifest does not match the genealogy set.");
+    throw new Error("Frozen OG card manifest does not match the published genealogy set.");
   }
 
   let missing = false;
@@ -67,8 +63,7 @@ function verifyFrozenCards(genealogies) {
       missing = true;
       continue;
     }
-    const observedSha256 = sha256(fs.readFileSync(cardPath));
-    if (observedSha256 !== FROZEN_CARD_SHA256[slug]) {
+    if (sha256(fs.readFileSync(cardPath)) !== FROZEN_CARD_SHA256[slug]) {
       throw new Error(`Frozen OG card digest changed for ${slug}.`);
     }
   }
@@ -83,7 +78,6 @@ async function ensureFont() {
   if (fs.existsSync(fontPath) && fs.statSync(fontPath).size > 1000) {
     return fs.readFileSync(fontPath);
   }
-  // Prefer a local system Times/Liberation font when present (no network dependency for CI cache hits).
   const candidates = [
     "C:/Windows/Fonts/times.ttf",
     "C:/Windows/Fonts/timesnr.ttf",
@@ -109,6 +103,7 @@ function roleLines(g) {
     "CLAIMED_COINAGE",
     "POPULARIZED_BY",
     "EARLIEST_VERIFIED_OCCURRENCE",
+    "EARLIEST_REPORTED_OCCURRENCE",
     "MISATTRIBUTED_TO",
     "ANTECEDENT",
     "CONTESTED_INCOMPLETE",
@@ -120,19 +115,30 @@ function roleLines(g) {
   return lines.slice(0, 4);
 }
 
+function indexEarliestLine(g) {
+  if (!g.index) return null;
+  const assertion = g.assertions.find((a) => a.assertionId === g.index.earliest.assertionId);
+  const display = assertion?.occurrenceDate?.display ?? g.index.earliest.date.display;
+  if (assertion?.evidenceRole === "EARLIEST_REPORTED_OCCURRENCE") {
+    return `Index earliest: Reported ${display} (secondary; primary not re-inspected)`;
+  }
+  return `Index earliest: ${display}`;
+}
+
 async function renderCard(g, fontData) {
   const satori = (await import("satori")).default;
   const { Resvg } = await import("@resvg/resvg-js");
   const roles = roleLines(g);
+  const earliest = indexEarliestLine(g);
   const finding =
     g.finding.length > 160 ? `${g.finding.slice(0, 157)}…` : g.finding;
-  const meta = `${g.sources.length} sources · reviewed ${g.reviewedAt}`;
+  const meta = `${g.sources.length} sources · revision ${g.revision} · reviewed ${g.reviewedAt}`;
 
   const children = [
     {
       type: "div",
       props: {
-        style: { fontSize: 22, letterSpacing: 2, color: "#3d5a45", marginBottom: 18 },
+        style: { fontSize: 22, letterSpacing: 2, color: "#1a5a74", marginBottom: 18 },
         children: "ORIGIN",
       },
     },
@@ -145,11 +151,21 @@ async function renderCard(g, fontData) {
     },
   ];
 
+  if (earliest) {
+    children.push({
+      type: "div",
+      props: {
+        style: { fontSize: 24, marginBottom: 10, color: "#14181d", maxWidth: 1040 },
+        children: earliest,
+      },
+    });
+  }
+
   for (const line of roles) {
     children.push({
       type: "div",
       props: {
-        style: { fontSize: 24, marginBottom: 8, color: "#243028", maxWidth: 1040 },
+        style: { fontSize: 24, marginBottom: 8, color: "#14181d", maxWidth: 1040 },
         children: line,
       },
     });
@@ -158,14 +174,14 @@ async function renderCard(g, fontData) {
   children.push({
     type: "div",
     props: {
-      style: { fontSize: 22, marginTop: 18, color: "#1a241c", maxWidth: 1040 },
+      style: { fontSize: 22, marginTop: 18, color: "#14181d", maxWidth: 1040 },
       children: `Finding: ${finding}`,
     },
   });
   children.push({
     type: "div",
     props: {
-      style: { fontSize: 20, marginTop: 20, color: "#5a6b5e" },
+      style: { fontSize: 20, marginTop: 20, color: "#4a5560" },
       children: meta,
     },
   });
@@ -181,10 +197,10 @@ async function renderCard(g, fontData) {
           flexDirection: "column",
           justifyContent: "center",
           padding: 56,
-          background: "#f3f0e8",
-          color: "#162018",
+          background: "#f4f1eb",
+          color: "#14181d",
           fontFamily: "CardSerif",
-          border: "12px solid #2f4a38",
+          border: "12px solid #1a5a74",
         },
         children,
       },
@@ -199,19 +215,38 @@ async function renderCard(g, fontData) {
   return resvg.render().asPng();
 }
 
-const genealogies = loadGenealogies();
-if (verifyFrozenCards(genealogies)) {
-  process.exit(0);
+async function main() {
+  const genealogies = loadPublishedGenealogies(dataDir);
+  if (genealogies.length === 0) {
+    console.log("gen-og-cards: no published genealogies");
+    const removedEmpty = pruneStaleOgCards(outDir, []);
+    if (removedEmpty.length) {
+      console.log(`gen-og-cards: pruned ${removedEmpty.length} stale card(s)`);
+    }
+    return;
+  }
+
+  const publishedSlugs = genealogies.map((g) => g.slug);
+  const removed = pruneStaleOgCards(outDir, publishedSlugs);
+  if (removed.length) {
+    console.log(`gen-og-cards: pruned ${removed.length} stale card(s): ${removed.join(", ")}`);
+  }
+  if (verifyFrozenCards(genealogies)) return;
+
+  const fontData = await ensureFont();
+  for (const g of genealogies) {
+    const out = path.join(outDir, `${g.slug}.png`);
+    const png = await renderCard(g, fontData);
+    if (sha256(png) !== FROZEN_CARD_SHA256[g.slug]) {
+      throw new Error(`Generated OG card digest changed for ${g.slug}.`);
+    }
+    fs.writeFileSync(out, png);
+    console.log("wrote", path.relative(root, out), `${png.length} bytes`);
+  }
+  console.log(`gen-og-cards: ok (${genealogies.length} published)`);
 }
 
-const fontData = await ensureFont();
-for (const g of genealogies) {
-  const out = path.join(outDir, `${g.slug}.png`);
-  const png = await renderCard(g, fontData);
-  if (sha256(png) !== FROZEN_CARD_SHA256[g.slug]) {
-    throw new Error(`Generated OG card digest changed for ${g.slug}.`);
-  }
-  fs.writeFileSync(out, png);
-  console.log("wrote", path.relative(root, out), `${png.length} bytes`);
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) {
+  await main();
 }
-console.log(`gen-og-cards: ok (${genealogies.length})`);
