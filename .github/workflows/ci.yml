@@ -26,6 +26,8 @@ jobs:
       MEASUREMENT_TEST_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/origin_measure_test
     steps:
       - uses: actions/checkout@v4
+      - name: Record committed OG digests
+        run: sha256sum public/og/*.png
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
