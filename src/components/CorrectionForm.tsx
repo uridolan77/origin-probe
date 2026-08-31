@@ -1,10 +1,25 @@
 ﻿"use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { submitCorrection } from "@/lib/corrections";
 import { createDefaultEventSink, getOrCreateClientId } from "@/lib/events";
 
 export function CorrectionForm() {
+  const searchParams = useSearchParams();
+  const kind = searchParams.get("kind");
+  const subject = searchParams.get("subject") ?? "";
+
+  const defaults = useMemo(() => {
+    if (kind === "concept" && subject) {
+      return {
+        phrase: subject,
+        notes: `Concept suggestion/correction for subject "${subject}".`,
+      };
+    }
+    return { phrase: "", notes: "" };
+  }, [kind, subject]);
+
   const [errors, setErrors] = useState<string[]>([]);
   const [successId, setSuccessId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -44,11 +59,26 @@ export function CorrectionForm() {
     setPending(false);
   }
 
+  const subjectLabel =
+    kind === "concept" ? "Concept label or slug" : "Phrase";
+
   return (
     <form className="form-grid" onSubmit={onSubmit} noValidate>
+      {kind === "concept" ? (
+        <p className="form-hint" role="note">
+          Concept path: suggest a concept, propose a source, or correct a published
+          dossier. The field below still uses the shared correction store.
+        </p>
+      ) : null}
       <label>
-        Phrase
-        <input name="phrase" required maxLength={200} autoComplete="off" />
+        {subjectLabel}
+        <input
+          name="phrase"
+          required
+          maxLength={200}
+          autoComplete="off"
+          defaultValue={defaults.phrase}
+        />
       </label>
       <label>
         Candidate source URL
@@ -69,7 +99,12 @@ export function CorrectionForm() {
       </label>
       <label>
         Notes
-        <textarea name="notes" required maxLength={2000} />
+        <textarea
+          name="notes"
+          required
+          maxLength={2000}
+          defaultValue={defaults.notes}
+        />
       </label>
       <label>
         Submitter (optional)
@@ -78,20 +113,22 @@ export function CorrectionForm() {
 
       {errors.length > 0 ? (
         <div className="form-error" role="alert">
-          {errors.map((err) => (
-            <div key={err}>{err}</div>
-          ))}
+          <ul>
+            {errors.map((err) => (
+              <li key={err}>{err}</li>
+            ))}
+          </ul>
         </div>
       ) : null}
 
       {successId ? (
         <p className="form-success" role="status">
-          Stored locally as {successId}. This is a mock adapter; nothing was sent to a server.
+          Stored locally as {successId}.
         </p>
       ) : null}
 
-      <button className="btn" type="submit" disabled={pending}>
-        {pending ? "Saving…" : "Submit correction"}
+      <button type="submit" disabled={pending}>
+        {pending ? "Submitting…" : "Submit"}
       </button>
     </form>
   );

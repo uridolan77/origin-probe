@@ -1,4 +1,5 @@
 ﻿import type { Metadata } from "next";
+import Link from "next/link";
 import { ConfidenceChip } from "@/components/ConfidenceChip";
 import { SupportMeter } from "@/components/SupportMeter";
 import { VerdictBadge } from "@/components/VerdictBadge";
@@ -188,6 +189,31 @@ export default function MethodPage() {
         Every genealogy carries a revision number, review date, status, and a hash of its
         source set. New evidence can supersede a prior revision. Corrections are welcome
         through the structured form; there is no public comment stream.
+      </p>
+
+      <h2 className="display display-sm">Concept genealogies</h2>
+      <p>
+        Words and concepts are not identical. A philosophical concept can carry a word
+        history, conceptual antecedents, textual formulations, translations, later
+        systematizations, and popular reception — each as a separate claim. A research
+        catalog entry is not a public historical finding. &ldquo;Sourced&rdquo; is not the
+        same as &ldquo;accepted.&rdquo; Accepted public text is generated only from reviewed
+        assertions under a separately authorized publication projection. Priority is bounded
+        by the declared search scope. Competing accepted priority claims produce a contested
+        result rather than a false single winner.
+      </p>
+      <ol className="concept-lifecycle">
+        <li>Research queued</li>
+        <li>Source leads mapped</li>
+        <li>Sources and evidence inspected</li>
+        <li>Independent claim review</li>
+        <li>Accepted or rejected</li>
+        <li>Separately authorized publication</li>
+      </ol>
+      <p>
+        The public Concepts index shows research-status metadata for the catalog. Candidate
+        assertion prose is not rendered as findings.         See{" "}
+        <Link href="/concepts/">the concepts catalog</Link>.
       </p>
     </article>
   );
