@@ -1,10 +1,9 @@
-import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-const BASE_COMMIT = "f460b03";
 const dataDir = path.join(process.cwd(), "data", "genealogies");
+const baselineDir = path.join(process.cwd(), "tests", "fixtures", "genealogies-baseline");
 
 function stripIndexProjection(record: Record<string, unknown>) {
   const rest = { ...record };
@@ -22,10 +21,7 @@ describe("index migration additive-only proof", () => {
   for (const file of files) {
     it(`preserves canonical fields in ${file}`, () => {
       const current = JSON.parse(fs.readFileSync(path.join(dataDir, file), "utf8"));
-      const baselineRaw = execSync(`git show ${BASE_COMMIT}:data/genealogies/${file}`, {
-        encoding: "utf8",
-      });
-      const baseline = JSON.parse(baselineRaw);
+      const baseline = JSON.parse(fs.readFileSync(path.join(baselineDir, file), "utf8"));
       expect(stripIndexProjection(current)).toEqual(baseline);
       expect(current.index).toBeDefined();
     });

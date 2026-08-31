@@ -1,0 +1,83 @@
+﻿{
+  "genealogyId": "gen-medium-is-the-message",
+  "slug": "the-medium-is-the-message",
+  "phrase": "The medium is the message",
+  "aliases": [
+    "medium is the message",
+    "mcluhan medium message"
+  ],
+  "revision": 1,
+  "reviewedAt": "2026-08-29",
+  "status": "provisional",
+  "finding": "Direct coinage evidence supports Marshall McLuhan; the phrase titles chapter one of Understanding Media (1964) and is treated as his formulation in the media-studies record reviewed.",
+  "searchScope": "Published Understanding Media text excerpts, McLuhan archive-site commentary, and standard reference summaries. Physical first edition not re-inspected beyond widely available chapter text.",
+  "evidenceReviewed": "Understanding Media chapter text (1964); McLuhan archive-site FAQ restating the 1964 passage; encyclopedia/reference summaries.",
+  "supersedesRevision": null,
+  "correctionHistory": [],
+  "assertions": [
+    {
+      "assertionId": "a-mim-coinage",
+      "evidenceRole": "CLAIMED_COINAGE",
+      "subject": "Marshall McLuhan",
+      "publicStatement": "Commonly credited to Marshall McLuhan, who uses the phrase as the title and thesis of the opening chapter of Understanding Media (1964).",
+      "evidenceIds": [
+        "src-mim-um-1964"
+      ],
+      "supportKind": "direct"
+    },
+    {
+      "assertionId": "a-mim-earliest",
+      "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
+      "subject": "Understanding Media (1964)",
+      "publicStatement": "Earliest verified occurrence located in Marshall McLuhan, Understanding Media: The Extensions of Man (New York: McGraw-Hill, 1964), chapter ΓÇ£The Medium Is the Message.ΓÇ¥",
+      "evidenceIds": [
+        "src-mim-um-1964",
+        "src-mim-archive-faq"
+      ],
+      "supportKind": "direct"
+    },
+    {
+      "assertionId": "a-mim-pop",
+      "evidenceRole": "POPULARIZED_BY",
+      "subject": "McLuhanΓÇÖs media-theory reception and later title play (Massage)",
+      "publicStatement": "Popularized by the reception of Understanding Media and later cultural reuse, including the intentional 1967 title play The Medium Is the Massage.",
+      "evidenceIds": [
+        "src-mim-archive-faq"
+      ],
+      "supportKind": "supporting"
+    }
+  ],
+  "sources": [
+    {
+      "sourceId": "src-mim-um-1964",
+      "title": "Understanding Media: The Extensions of Man",
+      "author": "Marshall McLuhan",
+      "publisher": "McGraw-Hill",
+      "publicationDate": "1964",
+      "sourceType": "primary",
+      "url": "https://web.mit.edu/allanmc/www/mcluhan.mediummessage.pdf",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-mim-coinage",
+        "a-mim-earliest"
+      ],
+      "shortExcerpt": "the medium is the message. This is merely to say that the personal and social consequences of any mediumΓÇª result from the new scale that is introduced into our affairs"
+    },
+    {
+      "sourceId": "src-mim-archive-faq",
+      "title": "Commonly Asked Questions about McLuhan",
+      "author": "marshallmcluhan.org editors",
+      "publisher": "marshallmcluhan.org",
+      "publicationDate": "2010",
+      "sourceType": "secondary",
+      "url": "https://marshallmcluhan.org/common-questions/",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-mim-earliest",
+        "a-mim-pop"
+      ],
+      "shortExcerpt": "The message of any medium or technology is the change of scale or pace or pattern that it introduces into human affairs. (Understanding Media, NY, 1964, p. 8)"
+    }
+  ],
+  "sourceSetHash": "sha256:9d6c745bd10bd9d5"
+}

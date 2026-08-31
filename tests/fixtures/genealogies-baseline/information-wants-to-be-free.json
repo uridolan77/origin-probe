@@ -1,0 +1,126 @@
+﻿{
+  "genealogyId": "gen-information-wants-to-be-free",
+  "slug": "information-wants-to-be-free",
+  "phrase": "Information wants to be free",
+  "aliases": [
+    "information wants to be expensive",
+    "info wants to be free"
+  ],
+  "revision": 1,
+  "reviewedAt": "2026-08-29",
+  "status": "provisional",
+  "finding": "Direct coinage evidence supports Stewart Brand at the 1984 Hackers Conference; the free-only slogan is a contested truncation of a free-and-expensive paradox.",
+  "searchScope": "Quote Investigator dossier, contemporaneous Washington Post reporting, Whole Earth Review transcript citations, and BrandΓÇÖs later Media Lab restatement. Did not inspect physical May 1985 Whole Earth Review hardcopy beyond QIΓÇÖs verified excerpts.",
+  "evidenceReviewed": "QI (2018) citations to May 1985 Whole Earth Review transcript; 18 Nov 1984 Washington Post; BrandΓÇÖs Media Lab (1987/1988).",
+  "supersedesRevision": null,
+  "correctionHistory": [],
+  "assertions": [
+    {
+      "assertionId": "a-iwf-coinage",
+      "evidenceRole": "CLAIMED_COINAGE",
+      "subject": "Stewart Brand",
+      "publicStatement": "Commonly credited to Stewart Brand, who stated the free/expensive paradox at the November 1984 Hackers Conference.",
+      "evidenceIds": [
+        "src-iwf-wer-1985",
+        "src-iwf-wapo-1984"
+      ],
+      "supportKind": "direct"
+    },
+    {
+      "assertionId": "a-iwf-earliest",
+      "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
+      "subject": "Hackers Conference, November 1984 / Washington Post 18 Nov 1984",
+      "publicStatement": "Earliest verified occurrence located: BrandΓÇÖs November 1984 Hackers Conference remarks, reported in The Washington Post on 18 November 1984 and transcribed in Whole Earth Review (May 1985).",
+      "evidenceIds": [
+        "src-iwf-wapo-1984",
+        "src-iwf-wer-1985"
+      ],
+      "supportKind": "direct"
+    },
+    {
+      "assertionId": "a-iwf-contested",
+      "evidenceRole": "CONTESTED_INCOMPLETE",
+      "subject": "Free-only slogan vs paradox",
+      "publicStatement": "The record remains contested when the free half is quoted alone; BrandΓÇÖs own framing pairs free with expensive, and later reuse often drops the costly half.",
+      "evidenceIds": [
+        "src-iwf-qi-2018",
+        "src-iwf-medialab-1987"
+      ],
+      "supportKind": "contested"
+    },
+    {
+      "assertionId": "a-iwf-pop",
+      "evidenceRole": "POPULARIZED_BY",
+      "subject": "Digital-culture reuse of the truncated slogan",
+      "publicStatement": "Popularized by repeated digital-culture citation of the free half, while Brand restated the full paradox in The Media Lab (1987).",
+      "evidenceIds": [
+        "src-iwf-medialab-1987",
+        "src-iwf-qi-2018"
+      ],
+      "supportKind": "supporting"
+    }
+  ],
+  "sources": [
+    {
+      "sourceId": "src-iwf-wer-1985",
+      "title": "ΓÇÿKeep designingΓÇÖ; HackersΓÇÖ Conference discussions (Nov 1984)",
+      "author": "Stewart Brand; Matt Herron",
+      "publisher": "Whole Earth Review",
+      "publicationDate": "1985-05",
+      "sourceType": "primary",
+      "url": "https://quoteinvestigator.com/2018/03/09/info/",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-iwf-coinage",
+        "a-iwf-earliest"
+      ],
+      "shortExcerpt": "On the other hand, information wants to be free, because the cost of getting it out is getting lower and lower all the time."
+    },
+    {
+      "sourceId": "src-iwf-wapo-1984",
+      "title": "Hacking Away at The Future",
+      "author": "Michael Schrage",
+      "publisher": "The Washington Post",
+      "publicationDate": "1984-11-18",
+      "sourceType": "primary",
+      "url": "https://quoteinvestigator.com/2018/03/09/info/",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-iwf-coinage",
+        "a-iwf-earliest"
+      ],
+      "shortExcerpt": "ΓÇ£Information wants to be free,ΓÇ¥ said Stewart BrandΓÇª ΓÇ£But it also wants to be valuable,ΓÇ¥ a paradox he said is giving the fledging software industry such fits."
+    },
+    {
+      "sourceId": "src-iwf-medialab-1987",
+      "title": "The Media Lab: Inventing the Future at MIT",
+      "author": "Stewart Brand",
+      "publisher": "Penguin / Viking",
+      "publicationDate": "1987",
+      "sourceType": "primary",
+      "url": "https://quoteinvestigator.com/2018/03/09/info/",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-iwf-contested",
+        "a-iwf-pop"
+      ],
+      "shortExcerpt": "Information wants to be free because it has become so cheap to distribute, copy, and recombineΓÇötoo cheap to meter. It wants to be expensive because it can be immeasurably valuable to the recipient."
+    },
+    {
+      "sourceId": "src-iwf-qi-2018",
+      "title": "Information Wants To Be Expensive. Information Wants To Be Free",
+      "author": "Garson OΓÇÖToole",
+      "publisher": "Quote Investigator",
+      "publicationDate": "2018-03-09",
+      "sourceType": "secondary",
+      "url": "https://quoteinvestigator.com/2018/03/09/info/",
+      "accessedAt": "2026-08-29",
+      "supportsAssertionIds": [
+        "a-iwf-contested",
+        "a-iwf-pop"
+      ],
+      "shortExcerpt": "the phrase ΓÇ£Information wants to be freeΓÇ¥ by itself is an amputated distortion of his viewpoint."
+    }
+  ],
+  "sourceSetHash": "sha256:2d2489806a9dd502"
+}
