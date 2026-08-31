@@ -1,0 +1,13 @@
+name: hash-og
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  hash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hash committed social cards
+        run: sha256sum public/og/*.png
