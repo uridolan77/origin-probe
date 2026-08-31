@@ -1,0 +1,8 @@
+{
+  "keyId": "origin-site-concept-publication-authority-v1",
+  "algorithm": "Ed25519",
+  "publicKeyBase64": "MCowBQYDK2VwAyEAWlOrMbDhR6MoOLVdeGW3lLbz9zNcGVy3drmM4c0YIpo=",
+  "purpose": "Verify origin_site_concept_publication_v1 bundles for Origin product import",
+  "repository": "uridolan77/origin-probe",
+  "canonicalHost": "origin.\u006f\u006e\u0074\u006f\u0067\u006f\u006e\u0079.net"
+}
