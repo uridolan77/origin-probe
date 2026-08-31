@@ -10,6 +10,19 @@
   "reviewedAt": "2026-08-29",
   "status": "provisional",
   "finding": "Direct coinage evidence supports Marshall McLuhan; the phrase titles chapter one of Understanding Media (1964) and is treated as his formulation in the media-studies record reviewed.",
+  "index": {
+    "earliest": {
+      "date": {
+        "display": "1964",
+        "startYear": 1964,
+        "precision": "year",
+        "calendar": "proleptic-gregorian"
+      },
+      "assertionId": "a-mim-earliest"
+    },
+    "shortFinding": "McLuhan's own formulation — chapter one of Understanding Media.",
+    "verdict": "direct_coinage"
+  },
   "searchScope": "Published Understanding Media text excerpts, McLuhan archive-site commentary, and standard reference summaries. Physical first edition not re-inspected beyond widely available chapter text.",
   "evidenceReviewed": "Understanding Media chapter text (1964); McLuhan archive-site FAQ restating the 1964 passage; encyclopedia/reference summaries.",
   "supersedesRevision": null,

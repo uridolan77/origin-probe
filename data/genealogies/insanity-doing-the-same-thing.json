@@ -11,6 +11,19 @@
   "reviewedAt": "2026-08-29",
   "status": "provisional",
   "finding": "Prominent misattribution to Einstein; popularization via 1980s recovery-community and fiction use is stronger than any Einstein coinage claim, while named authorship remains incomplete.",
+  "index": {
+    "earliest": {
+      "date": {
+        "display": "1980s",
+        "startYear": 1980,
+        "precision": "decade",
+        "calendar": "proleptic-gregorian"
+      },
+      "assertionId": "a-ins-pop"
+    },
+    "shortFinding": "Not Einstein. Recovery-community and fiction use carried it.",
+    "verdict": "misattributed"
+  },
   "searchScope": "Quote Investigator dossier, Snopes summary, and cited 1981 newspaper / 1983 novel trail. Did not re-inspect Knoxville News-Sentinel microfilm beyond QI.",
   "evidenceReviewed": "QI (2017) on early-1980s recovery-community trail and Rita Mae Brown 1983; Ultimate Quotable Einstein misattribution listing via QI.",
   "supersedesRevision": null,

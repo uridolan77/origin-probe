@@ -3,13 +3,14 @@ import path from "node:path";
 import { GenealogySchema, type Genealogy } from "./schema";
 
 const DATA_DIR = path.join(process.cwd(), "data", "genealogies");
+const PUBLISHED_STATUSES = new Set(["provisional", "reviewed"]);
 
-let cache: Genealogy[] | null = null;
+let cache: readonly Genealogy[] | null = null;
 
-function loadAll(): Genealogy[] {
+function loadAll(): readonly Genealogy[] {
   if (cache) return cache;
   if (!fs.existsSync(DATA_DIR)) {
-    cache = [];
+    cache = Object.freeze([]);
     return cache;
   }
   const files = fs
@@ -27,9 +28,13 @@ function loadAll(): Genealogy[] {
         .join("; ");
       throw new Error(`Invalid genealogy in ${file}: ${issues}`);
     }
-    items.push(result.data);
+    const record = result.data;
+    if (PUBLISHED_STATUSES.has(record.status) && !record.index) {
+      throw new Error(`Invalid genealogy in ${file}: published record missing index projection`);
+    }
+    items.push(record);
   }
-  cache = items;
+  cache = Object.freeze(items);
   return cache;
 }
 
@@ -37,12 +42,27 @@ export function clearGenealogyCache(): void {
   cache = null;
 }
 
-export function getAll(): Genealogy[] {
+export function getAll(): readonly Genealogy[] {
   return loadAll();
 }
 
 export function getBySlug(slug: string): Genealogy | undefined {
   return loadAll().find((g) => g.slug === slug);
+}
+
+export type IndexedGenealogy = Genealogy & {
+  index: NonNullable<Genealogy["index"]>;
+};
+
+export function listForIndex(): readonly IndexedGenealogy[] {
+  return getAll().filter(
+    (g): g is IndexedGenealogy => g.index != null,
+  ).toSorted(
+      (a, b) =>
+        a.index.earliest.date.startYear - b.index.earliest.date.startYear ||
+        a.phrase.localeCompare(b.phrase, "en") ||
+        a.slug.localeCompare(b.slug),
+    );
 }
 
 export function search(query: string): Genealogy[] {
@@ -61,7 +81,7 @@ export type AutocompleteItem = {
 };
 
 export function listForAutocomplete(): AutocompleteItem[] {
-  return loadAll().map((g) => ({
+  return getAll().map((g) => ({
     slug: g.slug,
     phrase: g.phrase,
     aliases: g.aliases,

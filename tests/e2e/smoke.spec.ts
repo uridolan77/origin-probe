@@ -19,10 +19,20 @@ test("home page loads with traced collection", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: /Who coined it/i })).toBeVisible();
   await expect(page.getByText("Built by Uri Dolan")).toBeVisible();
-  await expect(page.getByLabel("Search the traced collection")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Available phrases" })).toBeVisible();
-  await expect(page.locator('a[href="/g/culture-eats-strategy-for-breakfast/"]')).toBeVisible();
+  await expect(page.getByLabel("Search the collection")).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Collection" })).toBeVisible();
+  await expect(page.getByRole("columnheader", { name: "Verdict" })).toBeVisible();
+  await expect(page.locator('.phrase-index-table--desktop a[href="/g/culture-eats-strategy-for-breakfast/"]')).toBeVisible();
+  await expect(page.locator(".phrase-index-table--desktop").getByRole("cell", { name: "1964" })).toBeVisible();
+  await expect(page.locator(".phrase-index-table--desktop").getByRole("cell", { name: "Direct coinage" }).first()).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test("collection index rows are chronological", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const years = await page.locator(".phrase-index-table tbody tr td:first-child").allTextContents();
+  expect(years.map((y) => Number.parseInt(y.replace(/\D/g, ""), 10))).toEqual([1964, 1970, 1980, 1984, 2000, 2010, 2012]);
 });
 
 test("every result page renders evidence roles and scope", async ({ page }) => {
@@ -39,27 +49,35 @@ test("every result page renders evidence roles and scope", async ({ page }) => {
 
 test("search autocomplete and unsupported phrase", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  const input = page.getByLabel("Search the traced collection");
+  const input = page.getByLabel("Search the collection");
   await input.fill("culture eats");
-  await expect(page.getByRole("listbox")).toBeVisible();
-  await expect(page.getByRole("option").first()).toBeVisible();
+  await expect(page.locator(".search-suggestions a").first()).toBeVisible();
 
   await input.fill("completely unknown slogan xyzzy");
-  await expect(page.getByText(/Not traced yet/)).toBeVisible();
-  await expect(page.getByRole("link", { name: /Request this phrase/i })).toBeVisible();
+  await expect(page.locator(".search-empty")).toContainText(/No matches in the collection/);
+  await expect(page.getByRole("link", { name: /Request this phrase/i })).toHaveCount(1);
 });
 
-test("keyboard navigation reaches interactive control", async ({ page }) => {
+test("keyboard navigation reaches search input", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.keyboard.press("Tab");
-  await expect(page.locator(":focus")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Skip to content" })).toBeFocused();
+  for (let i = 0; i < 8; i += 1) {
+    if (await page.getByLabel("Search the collection").evaluate((el) => el === document.activeElement)) {
+      break;
+    }
+    await page.keyboard.press("Tab");
+  }
+  await expect(page.getByLabel("Search the collection")).toBeFocused();
 });
 
-test("mobile viewport home", async ({ page }) => {
+test("mobile viewport home has no horizontal overflow", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(page.getByLabel("Search the traced collection")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Available phrases" })).toBeVisible();
+  await expect(page.getByLabel("Search the collection")).toBeVisible();
+  await expect(page.locator(".phrase-index-cards--mobile li").first()).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth);
+  expect(overflow).toBe(true);
 });
 
 test("desktop viewport result", async ({ page }) => {
@@ -72,7 +90,7 @@ test("desktop viewport result", async ({ page }) => {
 test("reduced motion does not break pages", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(page.getByLabel("Search the traced collection")).toBeVisible();
+  await expect(page.getByLabel("Search the collection")).toBeVisible();
   await page.goto("/g/information-wants-to-be-free/", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Evidence roles" })).toBeVisible();
 });

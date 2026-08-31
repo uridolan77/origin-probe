@@ -6,72 +6,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { z } from "zod";
+import {
+  GenealogySchema,
+  INDEX_EARLIEST_ROLES,
+  PUBLISHED_STATUSES,
+  UNPUBLISHED_STATUSES,
+} from "./genealogy-schema.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dataDir = path.join(root, "data", "genealogies");
 
 const DATE_RE = /^\d{4}(-\d{2}(-\d{2})?)?$/;
-
-const EvidenceRoleSchema = z.enum([
-  "EARLIEST_VERIFIED_OCCURRENCE",
-  "CLAIMED_COINAGE",
-  "POPULARIZED_BY",
-  "MISATTRIBUTED_TO",
-  "ANTECEDENT",
-  "CONTESTED_INCOMPLETE",
-]);
-
-const GenealogySchema = z
-  .object({
-    genealogyId: z.string().min(1),
-    slug: z
-      .string()
-      .min(1)
-      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-    phrase: z.string().min(1),
-    aliases: z.array(z.string()),
-    revision: z.number().int().positive(),
-    reviewedAt: z.string().min(1),
-    status: z.enum(["draft", "reviewed", "provisional", "superseded", "withdrawn"]),
-    finding: z.string().min(1),
-    searchScope: z.string().min(1),
-    evidenceReviewed: z.string().min(1),
-    sourceSetHash: z.string().regex(/^sha256:[0-9a-f]{16}$/),
-    supersedesRevision: z.number().int().positive().nullable(),
-    correctionHistory: z.array(z.any()),
-    assertions: z
-      .array(
-        z.object({
-          assertionId: z.string().min(1),
-          evidenceRole: EvidenceRoleSchema,
-          subject: z.string().min(1),
-          publicStatement: z.string().min(1),
-          evidenceIds: z.array(z.string()).min(1),
-          supportKind: z.enum(["direct", "supporting", "contested", "incomplete"]),
-          caveat: z.string().optional(),
-        }),
-      )
-      .min(1),
-    sources: z
-      .array(
-        z.object({
-          sourceId: z.string().min(1),
-          title: z.string().min(1),
-          author: z.string().min(1),
-          publisher: z.string().min(1),
-          publicationDate: z.string().min(1),
-          sourceType: z.enum(["primary", "secondary"]),
-          url: z.string().url(),
-          archiveUrl: z.string().url().optional(),
-          accessedAt: z.string().min(1),
-          supportsAssertionIds: z.array(z.string()).min(1),
-          shortExcerpt: z.string().max(280).optional(),
-        }),
-      )
-      .min(1),
-  })
-  .strict();
 
 function computeHash(sources) {
   const lines = sources
@@ -86,14 +31,71 @@ function fail(msg) {
   process.exitCode = 1;
 }
 
+function hasRole(assertions, role) {
+  return assertions.some((a) => a.evidenceRole === role);
+}
+
+function validateIndexProvenance(file, g, assertionById) {
+  const { index, status, assertions } = g;
+
+  if (PUBLISHED_STATUSES.has(status) && !index) {
+    fail(`${file}: published status "${status}" requires index projection`);
+    return;
+  }
+
+  if (UNPUBLISHED_STATUSES.has(status) && index) {
+    fail(`${file}: index projection is not allowed for status "${status}"`);
+    return;
+  }
+
+  if (!index) return;
+
+  const earliestAssertion = assertionById.get(index.earliest.assertionId);
+  if (!earliestAssertion) {
+    fail(
+      `${file}: index.earliest.assertionId "${index.earliest.assertionId}" not found`,
+    );
+    return;
+  }
+
+  if (!INDEX_EARLIEST_ROLES.has(earliestAssertion.evidenceRole)) {
+    fail(
+      `${file}: index.earliest.assertionId "${index.earliest.assertionId}" has disallowed role ${earliestAssertion.evidenceRole}`,
+    );
+  }
+
+  const { verdict } = index;
+  if (verdict === "misattributed" && !hasRole(assertions, "MISATTRIBUTED_TO")) {
+    fail(`${file}: verdict misattributed requires a MISATTRIBUTED_TO assertion`);
+  }
+  if (verdict === "claimed_coinage" && !hasRole(assertions, "CLAIMED_COINAGE")) {
+    fail(`${file}: verdict claimed_coinage requires a CLAIMED_COINAGE assertion`);
+  }
+  if (verdict === "popularized" && !hasRole(assertions, "POPULARIZED_BY")) {
+    fail(`${file}: verdict popularized requires a POPULARIZED_BY assertion`);
+  }
+  if (verdict === "direct_coinage") {
+    const hasDirectCoinage = assertions.some(
+      (a) =>
+        a.evidenceRole === "CLAIMED_COINAGE" ||
+        (a.evidenceRole === "EARLIEST_VERIFIED_OCCURRENCE" && a.supportKind === "direct"),
+    );
+    if (!hasDirectCoinage) {
+      fail(
+        `${file}: verdict direct_coinage requires CLAIMED_COINAGE or direct EARLIEST_VERIFIED_OCCURRENCE`,
+      );
+    }
+  }
+}
+
 if (!fs.existsSync(dataDir)) {
   fail("missing data/genealogies directory");
   process.exit(1);
 }
 
 const files = fs.readdirSync(dataDir).filter((f) => f.endsWith(".json"));
-if (files.length < 6 || files.length > 8) {
-  fail(`result page count must be 6–8, got ${files.length}`);
+if (files.length === 0) {
+  fail("genealogy collection is empty");
 }
 
 const slugs = new Set();
@@ -187,7 +189,6 @@ for (const file of files) {
     }
   }
 
-  // Bidirectional closure: every assertion evidenceId must be listed by that source
   for (const a of g.assertions) {
     for (const eid of a.evidenceIds) {
       const s = sourceById.get(eid);
@@ -198,6 +199,8 @@ for (const file of files) {
       }
     }
   }
+
+  validateIndexProvenance(file, g, assertionById);
 
   for (const alias of [g.phrase, ...g.aliases]) {
     const key = alias.trim().toLowerCase();

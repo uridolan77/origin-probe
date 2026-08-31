@@ -10,6 +10,19 @@
   "reviewedAt": "2026-08-29",
   "status": "provisional",
   "finding": "Direct coinage evidence supports Stewart Brand at the 1984 Hackers Conference; the free-only slogan is a contested truncation of a free-and-expensive paradox.",
+  "index": {
+    "earliest": {
+      "date": {
+        "display": "1984",
+        "startYear": 1984,
+        "precision": "year",
+        "calendar": "proleptic-gregorian"
+      },
+      "assertionId": "a-iwf-earliest"
+    },
+    "shortFinding": "Stewart Brand at the Hackers Conference — the slogan truncates a paradox.",
+    "verdict": "direct_coinage"
+  },
   "searchScope": "Quote Investigator dossier, contemporaneous Washington Post reporting, Whole Earth Review transcript citations, and Brand’s later Media Lab restatement. Did not inspect physical May 1985 Whole Earth Review hardcopy beyond QI’s verified excerpts.",
   "evidenceReviewed": "QI (2018) citations to May 1985 Whole Earth Review transcript; 18 Nov 1984 Washington Post; Brand’s Media Lab (1987/1988).",
   "supersedesRevision": null,

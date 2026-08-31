@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { computeSourceSetHash } from "@/lib/hash";
 import { GenealogySchema } from "@/lib/schema";
+import { clearGenealogyCache, getAll, listForIndex } from "@/lib/genealogies";
 import {
   classifyShareArrival,
   generateShareToken,
@@ -71,6 +72,153 @@ describe("GenealogySchema", () => {
       ],
     });
     expect(parsed.success).toBe(true);
+  });
+
+  it("accepts nested index projection", () => {
+    const hash = computeSourceSetHash([
+      {
+        sourceId: "src-1",
+        url: "https://example.com/work",
+        publicationDate: "1901-01-01",
+      },
+    ]);
+    const parsed = GenealogySchema.safeParse({
+      genealogyId: "g1",
+      slug: "sample-phrase",
+      phrase: "sample phrase",
+      aliases: [],
+      revision: 1,
+      reviewedAt: "2026-01-01",
+      status: "provisional",
+      finding: "A provisional finding with sources.",
+      index: {
+        earliest: {
+          date: {
+            display: "1901",
+            startYear: 1901,
+            precision: "year",
+            calendar: "proleptic-gregorian",
+          },
+          assertionId: "a1",
+        },
+        shortFinding: "Verified in the cited edition.",
+        verdict: "direct_coinage",
+      },
+      searchScope: "English-language digitized books, 1800–1950.",
+      evidenceReviewed: "Two candidate editions checked.",
+      sourceSetHash: hash,
+      supersedesRevision: null,
+      correctionHistory: [],
+      assertions: [
+        {
+          assertionId: "a1",
+          evidenceRole: "EARLIEST_VERIFIED_OCCURRENCE",
+          subject: "Example Author",
+          publicStatement: "Verified in the cited edition within scope.",
+          evidenceIds: ["src-1"],
+          supportKind: "direct",
+        },
+      ],
+      sources: [
+        {
+          sourceId: "src-1",
+          title: "Example Work",
+          author: "Example Author",
+          publisher: "Example Press",
+          publicationDate: "1901-01-01",
+          sourceType: "primary",
+          url: "https://example.com/work",
+          accessedAt: "2026-01-01",
+          supportsAssertionIds: ["a1"],
+        },
+      ],
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.index?.verdict).toBe("direct_coinage");
+      expect(parsed.data.index?.earliest.date.display).toBe("1901");
+    }
+  });
+
+  it("rejects an unknown verdict in index projection", () => {
+    const hash = computeSourceSetHash([
+      {
+        sourceId: "src-1",
+        url: "https://example.com/work",
+        publicationDate: "1901-01-01",
+      },
+    ]);
+    const parsed = GenealogySchema.safeParse({
+      genealogyId: "g1",
+      slug: "sample-phrase",
+      phrase: "sample phrase",
+      aliases: [],
+      revision: 1,
+      reviewedAt: "2026-01-01",
+      status: "provisional",
+      finding: "A provisional finding with sources.",
+      index: {
+        earliest: {
+          date: {
+            display: "1901",
+            startYear: 1901,
+            precision: "year",
+            calendar: "proleptic-gregorian",
+          },
+          assertionId: "a1",
+        },
+        shortFinding: "Verified in the cited edition.",
+        verdict: "unknown_verdict",
+      },
+      searchScope: "English-language digitized books, 1800–1950.",
+      evidenceReviewed: "Two candidate editions checked.",
+      sourceSetHash: hash,
+      supersedesRevision: null,
+      correctionHistory: [],
+      assertions: [
+        {
+          assertionId: "a1",
+          evidenceRole: "EARLIEST_VERIFIED_OCCURRENCE",
+          subject: "Example Author",
+          publicStatement: "Verified in the cited edition within scope.",
+          evidenceIds: ["src-1"],
+          supportKind: "direct",
+        },
+      ],
+      sources: [
+        {
+          sourceId: "src-1",
+          title: "Example Work",
+          author: "Example Author",
+          publisher: "Example Press",
+          publicationDate: "1901-01-01",
+          sourceType: "primary",
+          url: "https://example.com/work",
+          accessedAt: "2026-01-01",
+          supportsAssertionIds: ["a1"],
+        },
+      ],
+    });
+    expect(parsed.success).toBe(false);
+  });
+});
+
+describe("listForIndex cache safety", () => {
+  it("does not mutate canonical getAll order", () => {
+    clearGenealogyCache();
+    const before = getAll().map((g) => g.slug);
+    listForIndex();
+    listForIndex();
+    const after = getAll().map((g) => g.slug);
+    expect(after).toEqual(before);
+  });
+
+  it("sorts chronologically with phrase tie-breakers", () => {
+    clearGenealogyCache();
+    const ordered = listForIndex().map((g) => g.index.earliest.date.startYear);
+    expect(ordered).toEqual([...ordered].sort((a, b) => a - b));
+    expect(listForIndex()[0]?.slug).toBe("the-medium-is-the-message");
+    expect(listForIndex().at(-1)?.slug).toBe("move-fast-and-break-things");
   });
 });
 

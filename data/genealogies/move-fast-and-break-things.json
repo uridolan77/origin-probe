@@ -10,6 +10,19 @@
   "reviewedAt": "2026-08-29",
   "status": "provisional",
   "finding": "Direct coinage evidence supports Mark Zuckerberg / Facebook usage in the inspectable 2012 IPO letter; secondary reports place related public use earlier (2009), but that earlier transcript was not independently re-inspected here.",
+  "index": {
+    "earliest": {
+      "date": {
+        "display": "2012",
+        "startYear": 2012,
+        "precision": "year",
+        "calendar": "proleptic-gregorian"
+      },
+      "assertionId": "a-mfbt-earliest"
+    },
+    "shortFinding": "Zuckerberg's IPO letter is the earliest text we could inspect.",
+    "verdict": "claimed_coinage"
+  },
   "searchScope": "SEC EDGAR Facebook S-1 full text and secondary press summarizing earlier interview use. Did not obtain a contemporaneous 2009 Business Insider transcript beyond secondary quotation.",
   "evidenceReviewed": "Facebook Form S-1 (2012-02-01) primary text; secondary reporting of Zuckerberg’s 2009 remarks.",
   "supersedesRevision": null,
