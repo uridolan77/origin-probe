@@ -1,4 +1,4 @@
-﻿{
+{
   "genealogyId": "gen-insanity-same-thing",
   "slug": "insanity-doing-the-same-thing",
   "phrase": "Insanity is doing the same thing over and over again and expecting different results",
@@ -30,7 +30,7 @@
       "assertionId": "a-ins-pop",
       "evidenceRole": "POPULARIZED_BY",
       "subject": "Rita Mae Brown, Sudden Death (1983) and later Einstein myth",
-      "publicStatement": "Popularized in mainstream fiction by Rita Mae BrownΓÇÖs 1983 novel Sudden Death, then later by unsupported Einstein attributions from around 1990.",
+      "publicStatement": "Popularized in mainstream fiction by Rita Mae Brown’s 1983 novel Sudden Death, then later by unsupported Einstein attributions from around 1990.",
       "evidenceIds": [
         "src-ins-qi-2017"
       ],
@@ -51,7 +51,7 @@
     {
       "sourceId": "src-ins-qi-2017",
       "title": "Insanity Is Doing the Same Thing Over and Over Again and Expecting Different Results",
-      "author": "Garson OΓÇÖToole",
+      "author": "Garson O’Toole",
       "publisher": "Quote Investigator",
       "publicationDate": "2017-03-23",
       "sourceType": "secondary",
@@ -62,7 +62,7 @@
         "a-ins-pop",
         "a-ins-contested"
       ],
-      "shortExcerpt": "There is no substantive evidence that Einstein wrote or spoke the statement above. ΓÇª based on current evidence the saying originated in one of the twelve-step communities."
+      "shortExcerpt": "There is no substantive evidence that Einstein wrote or spoke the statement above. … based on current evidence the saying originated in one of the twelve-step communities."
     }
   ],
   "sourceSetHash": "sha256:fab9b8b1fa767083"

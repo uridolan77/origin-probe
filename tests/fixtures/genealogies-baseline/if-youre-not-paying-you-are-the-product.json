@@ -1,7 +1,7 @@
-﻿{
+{
   "genealogyId": "gen-you-are-the-product",
   "slug": "if-youre-not-paying-you-are-the-product",
-  "phrase": "If youΓÇÖre not paying for the product, you are the product",
+  "phrase": "If you’re not paying for the product, you are the product",
   "aliases": [
     "you are the product",
     "if you are not paying for it you are the product",
@@ -20,7 +20,7 @@
       "assertionId": "a-yap-antecedent",
       "evidenceRole": "ANTECEDENT",
       "subject": "Television Delivers People (1973)",
-      "publicStatement": "An earlier related formulation appears in Richard Serra and Carlota Fay SchoolmanΓÇÖs 1973 video Television Delivers People: ΓÇ£You are the product of t.v.ΓÇ¥ ΓÇö related idea, not the later ΓÇ£if youΓÇÖre not payingΓÇªΓÇ¥ wording.",
+      "publicStatement": "An earlier related formulation appears in Richard Serra and Carlota Fay Schoolman’s 1973 video Television Delivers People: “You are the product of t.v.” — related idea, not the later “if you’re not paying…” wording.",
       "evidenceIds": [
         "src-yap-tdp-1973",
         "src-yap-qi-2017"
@@ -31,12 +31,12 @@
       "assertionId": "a-yap-earliest-modern",
       "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
       "subject": "MetaFilter comment by Andrew Lewis (2010)",
-      "publicStatement": "Earliest verified occurrence located for the modern ΓÇ£if you are not payingΓÇªΓÇ¥ formulation: Andrew Lewis (blue_beetle) on MetaFilter in 2010.",
+      "publicStatement": "Earliest verified occurrence located for the modern “if you are not paying…” formulation: Andrew Lewis (blue_beetle) on MetaFilter in 2010.",
       "evidenceIds": [
         "src-yap-metafilter-2010"
       ],
       "supportKind": "direct",
-      "caveat": "Earlier near-matches (for example 2001 Usenet ΓÇ£YouΓÇÖre not the customer, youΓÇÖre the productΓÇ¥) exist without the payment clause; this page separates those roles."
+      "caveat": "Earlier near-matches (for example 2001 Usenet “You’re not the customer, you’re the product”) exist without the payment clause; this page separates those roles."
     },
     {
       "assertionId": "a-yap-pop",
@@ -52,7 +52,7 @@
       "assertionId": "a-yap-coinage",
       "evidenceRole": "CLAIMED_COINAGE",
       "subject": "Andrew Lewis (blue_beetle) for the payment-clause form",
-      "publicStatement": "Commonly credited to Andrew LewisΓÇÖs 2010 MetaFilter comment for the payment-clause form; that credit covers the modern wording, not the 1973 antecedent.",
+      "publicStatement": "Commonly credited to Andrew Lewis’s 2010 MetaFilter comment for the payment-clause form; that credit covers the modern wording, not the 1973 antecedent.",
       "evidenceIds": [
         "src-yap-metafilter-2010"
       ],
@@ -87,12 +87,12 @@
         "a-yap-earliest-modern",
         "a-yap-coinage"
       ],
-      "shortExcerpt": "If you are not paying for it, youΓÇÖre not the customer; youΓÇÖre the product being sold."
+      "shortExcerpt": "If you are not paying for it, you’re not the customer; you’re the product being sold."
     },
     {
       "sourceId": "src-yap-qi-2017",
-      "title": "YouΓÇÖre Not the Customer; YouΓÇÖre the Product",
-      "author": "Garson OΓÇÖToole",
+      "title": "You’re Not the Customer; You’re the Product",
+      "author": "Garson O’Toole",
       "publisher": "Quote Investigator",
       "publicationDate": "2017-07-16",
       "sourceType": "secondary",

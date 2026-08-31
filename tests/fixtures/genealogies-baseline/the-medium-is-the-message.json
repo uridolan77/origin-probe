@@ -1,4 +1,4 @@
-﻿{
+{
   "genealogyId": "gen-medium-is-the-message",
   "slug": "the-medium-is-the-message",
   "phrase": "The medium is the message",
@@ -29,7 +29,7 @@
       "assertionId": "a-mim-earliest",
       "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
       "subject": "Understanding Media (1964)",
-      "publicStatement": "Earliest verified occurrence located in Marshall McLuhan, Understanding Media: The Extensions of Man (New York: McGraw-Hill, 1964), chapter ΓÇ£The Medium Is the Message.ΓÇ¥",
+      "publicStatement": "Earliest verified occurrence located in Marshall McLuhan, Understanding Media: The Extensions of Man (New York: McGraw-Hill, 1964), chapter “The Medium Is the Message.”",
       "evidenceIds": [
         "src-mim-um-1964",
         "src-mim-archive-faq"
@@ -39,7 +39,7 @@
     {
       "assertionId": "a-mim-pop",
       "evidenceRole": "POPULARIZED_BY",
-      "subject": "McLuhanΓÇÖs media-theory reception and later title play (Massage)",
+      "subject": "McLuhan’s media-theory reception and later title play (Massage)",
       "publicStatement": "Popularized by the reception of Understanding Media and later cultural reuse, including the intentional 1967 title play The Medium Is the Massage.",
       "evidenceIds": [
         "src-mim-archive-faq"
@@ -61,7 +61,7 @@
         "a-mim-coinage",
         "a-mim-earliest"
       ],
-      "shortExcerpt": "the medium is the message. This is merely to say that the personal and social consequences of any mediumΓÇª result from the new scale that is introduced into our affairs"
+      "shortExcerpt": "the medium is the message. This is merely to say that the personal and social consequences of any medium… result from the new scale that is introduced into our affairs"
     },
     {
       "sourceId": "src-mim-archive-faq",

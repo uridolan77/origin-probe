@@ -1,4 +1,4 @@
-﻿{
+{
   "genealogyId": "gen-be-the-change",
   "slug": "be-the-change-you-wish-to-see",
   "phrase": "Be the change you wish to see in the world",
@@ -11,7 +11,7 @@
   "reviewedAt": "2026-08-29",
   "status": "provisional",
   "finding": "Prominent misattribution to Gandhi; attribution investigations point to a 1970s modern slogan trail and a 1913 Gandhi passage as a related antecedent, not the same wording. Earliest modern hardcopy was not independently re-inspected in this corpus.",
-  "searchScope": "Quote Investigator dossier and secondary reporting of the 1974/1987 print trail. GandhiΓÇÖs 1913 Indian Opinion passage reviewed via secondary quotation.",
+  "searchScope": "Quote Investigator dossier and secondary reporting of the 1974/1987 print trail. Gandhi’s 1913 Indian Opinion passage reviewed via secondary quotation.",
   "evidenceReviewed": "QI (2017) on Lorrance 1974 trail and Gandhi 1913 antecedent; secondary reporting of 1987 Gandhi attribution.",
   "supersedesRevision": null,
   "correctionHistory": [],
@@ -30,7 +30,7 @@
       "assertionId": "a-btc-antecedent",
       "evidenceRole": "ANTECEDENT",
       "subject": "Gandhi, Indian Opinion (1913)",
-      "publicStatement": "An earlier related formulation appears in GandhiΓÇÖs 1913 writing about changing ourselves so that tendencies in the world would also change ΓÇö thematically related, not the same wording.",
+      "publicStatement": "An earlier related formulation appears in Gandhi’s 1913 writing about changing ourselves so that tendencies in the world would also change — thematically related, not the same wording.",
       "evidenceIds": [
         "src-btc-qi-2017"
       ],
@@ -61,7 +61,7 @@
     {
       "sourceId": "src-btc-qi-2017",
       "title": "Be the Change You Wish To See in the World",
-      "author": "Garson OΓÇÖToole",
+      "author": "Garson O’Toole",
       "publisher": "Quote Investigator",
       "publicationDate": "2017-10-23",
       "sourceType": "secondary",

@@ -1,4 +1,4 @@
-﻿{
+{
   "genealogyId": "gen-culture-eats-strategy",
   "slug": "culture-eats-strategy-for-breakfast",
   "phrase": "Culture eats strategy for breakfast",
@@ -20,7 +20,7 @@
       "assertionId": "a-culture-earliest",
       "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
       "subject": "March 2000 Giga Information Group headline, as cited September 2000",
-      "publicStatement": "Earliest verified occurrence located: a September 2000 PIMA trade-journal article quotes a March 2000 Giga Information Group headline, ΓÇ£Culture Eats Strategy for Breakfast!ΓÇ¥",
+      "publicStatement": "Earliest verified occurrence located: a September 2000 PIMA trade-journal article quotes a March 2000 Giga Information Group headline, “Culture Eats Strategy for Breakfast!”",
       "evidenceIds": [
         "src-culture-pima-2000",
         "src-culture-qi-2017"
@@ -64,9 +64,9 @@
   "sources": [
     {
       "sourceId": "src-culture-pima-2000",
-      "title": "Recovered paper tradingΓÇöready for the Web? (citing March 2000 Giga headline)",
+      "title": "Recovered paper trading—ready for the Web? (citing March 2000 Giga headline)",
       "author": "Bill Moore; Jerry Rose",
-      "publisher": "PIMAΓÇÖs North American Papermaker",
+      "publisher": "PIMA’s North American Papermaker",
       "publicationDate": "2000-09",
       "sourceType": "primary",
       "url": "https://quoteinvestigator.com/2017/05/23/culture-eats/",
@@ -74,12 +74,12 @@
       "supportsAssertionIds": [
         "a-culture-earliest"
       ],
-      "shortExcerpt": "As stated in the March 2000 Giga Information Group headline ΓÇ£Culture Eats Strategy for Breakfast!ΓÇ¥"
+      "shortExcerpt": "As stated in the March 2000 Giga Information Group headline “Culture Eats Strategy for Breakfast!”"
     },
     {
       "sourceId": "src-culture-qi-2017",
       "title": "Culture Eats Strategy for Breakfast",
-      "author": "Garson OΓÇÖToole",
+      "author": "Garson O’Toole",
       "publisher": "Quote Investigator",
       "publicationDate": "2017-05-23",
       "sourceType": "secondary",
@@ -105,7 +105,7 @@
       "supportsAssertionIds": [
         "a-culture-pop"
       ],
-      "shortExcerpt": "One of FieldsΓÇÖ favorite slogans on the wall: ΓÇ£Culture eats strategy for breakfast.ΓÇ¥"
+      "shortExcerpt": "One of Fields’ favorite slogans on the wall: “Culture eats strategy for breakfast.”"
     },
     {
       "sourceId": "src-culture-textbook-2011",
@@ -119,7 +119,7 @@
       "supportsAssertionIds": [
         "a-culture-misattr"
       ],
-      "shortExcerpt": "as the phrase often attributed to Peter Drucker claims: ΓÇÿCulture eats strategy for breakfast.ΓÇÖ"
+      "shortExcerpt": "as the phrase often attributed to Peter Drucker claims: ‘Culture eats strategy for breakfast.’"
     }
   ],
   "sourceSetHash": "sha256:df78a9558764081a"

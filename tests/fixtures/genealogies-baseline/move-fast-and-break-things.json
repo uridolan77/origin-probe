@@ -1,4 +1,4 @@
-﻿{
+{
   "genealogyId": "gen-move-fast-break-things",
   "slug": "move-fast-and-break-things",
   "phrase": "Move fast and break things",
@@ -11,7 +11,7 @@
   "status": "provisional",
   "finding": "Direct coinage evidence supports Mark Zuckerberg / Facebook usage in the inspectable 2012 IPO letter; secondary reports place related public use earlier (2009), but that earlier transcript was not independently re-inspected here.",
   "searchScope": "SEC EDGAR Facebook S-1 full text and secondary press summarizing earlier interview use. Did not obtain a contemporaneous 2009 Business Insider transcript beyond secondary quotation.",
-  "evidenceReviewed": "Facebook Form S-1 (2012-02-01) primary text; secondary reporting of ZuckerbergΓÇÖs 2009 remarks.",
+  "evidenceReviewed": "Facebook Form S-1 (2012-02-01) primary text; secondary reporting of Zuckerberg’s 2009 remarks.",
   "supersedesRevision": null,
   "correctionHistory": [],
   "assertions": [
@@ -29,7 +29,7 @@
       "assertionId": "a-mfbt-earliest",
       "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
       "subject": "Facebook Form S-1, 1 February 2012",
-      "publicStatement": "Earliest verified occurrence located in an inspectable primary text in this review: ZuckerbergΓÇÖs letter in FacebookΓÇÖs Form S-1 (1 February 2012).",
+      "publicStatement": "Earliest verified occurrence located in an inspectable primary text in this review: Zuckerberg’s letter in Facebook’s Form S-1 (1 February 2012).",
       "evidenceIds": [
         "src-mfbt-s1-2012"
       ],
@@ -40,7 +40,7 @@
       "assertionId": "a-mfbt-pop",
       "evidenceRole": "POPULARIZED_BY",
       "subject": "Facebook IPO letter (February 2012)",
-      "publicStatement": "Popularized by ZuckerbergΓÇÖs ΓÇ£Hacker WayΓÇ¥ letter in FacebookΓÇÖs February 2012 Form S-1, which quotes the saying and explains it for investors.",
+      "publicStatement": "Popularized by Zuckerberg’s “Hacker Way” letter in Facebook’s February 2012 Form S-1, which quotes the saying and explains it for investors.",
       "evidenceIds": [
         "src-mfbt-s1-2012"
       ],
@@ -62,7 +62,7 @@
         "a-mfbt-earliest",
         "a-mfbt-pop"
       ],
-      "shortExcerpt": "We have a saying: ΓÇ£Move fast and break things.ΓÇ¥ The idea is that if you never break anything, youΓÇÖre probably not moving fast enough."
+      "shortExcerpt": "We have a saying: “Move fast and break things.” The idea is that if you never break anything, you’re probably not moving fast enough."
     }
   ],
   "sourceSetHash": "sha256:3e623363e0382ecc"

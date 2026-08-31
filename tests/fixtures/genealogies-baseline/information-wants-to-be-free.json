@@ -1,4 +1,4 @@
-﻿{
+{
   "genealogyId": "gen-information-wants-to-be-free",
   "slug": "information-wants-to-be-free",
   "phrase": "Information wants to be free",
@@ -10,8 +10,8 @@
   "reviewedAt": "2026-08-29",
   "status": "provisional",
   "finding": "Direct coinage evidence supports Stewart Brand at the 1984 Hackers Conference; the free-only slogan is a contested truncation of a free-and-expensive paradox.",
-  "searchScope": "Quote Investigator dossier, contemporaneous Washington Post reporting, Whole Earth Review transcript citations, and BrandΓÇÖs later Media Lab restatement. Did not inspect physical May 1985 Whole Earth Review hardcopy beyond QIΓÇÖs verified excerpts.",
-  "evidenceReviewed": "QI (2018) citations to May 1985 Whole Earth Review transcript; 18 Nov 1984 Washington Post; BrandΓÇÖs Media Lab (1987/1988).",
+  "searchScope": "Quote Investigator dossier, contemporaneous Washington Post reporting, Whole Earth Review transcript citations, and Brand’s later Media Lab restatement. Did not inspect physical May 1985 Whole Earth Review hardcopy beyond QI’s verified excerpts.",
+  "evidenceReviewed": "QI (2018) citations to May 1985 Whole Earth Review transcript; 18 Nov 1984 Washington Post; Brand’s Media Lab (1987/1988).",
   "supersedesRevision": null,
   "correctionHistory": [],
   "assertions": [
@@ -30,7 +30,7 @@
       "assertionId": "a-iwf-earliest",
       "evidenceRole": "EARLIEST_VERIFIED_OCCURRENCE",
       "subject": "Hackers Conference, November 1984 / Washington Post 18 Nov 1984",
-      "publicStatement": "Earliest verified occurrence located: BrandΓÇÖs November 1984 Hackers Conference remarks, reported in The Washington Post on 18 November 1984 and transcribed in Whole Earth Review (May 1985).",
+      "publicStatement": "Earliest verified occurrence located: Brand’s November 1984 Hackers Conference remarks, reported in The Washington Post on 18 November 1984 and transcribed in Whole Earth Review (May 1985).",
       "evidenceIds": [
         "src-iwf-wapo-1984",
         "src-iwf-wer-1985"
@@ -41,7 +41,7 @@
       "assertionId": "a-iwf-contested",
       "evidenceRole": "CONTESTED_INCOMPLETE",
       "subject": "Free-only slogan vs paradox",
-      "publicStatement": "The record remains contested when the free half is quoted alone; BrandΓÇÖs own framing pairs free with expensive, and later reuse often drops the costly half.",
+      "publicStatement": "The record remains contested when the free half is quoted alone; Brand’s own framing pairs free with expensive, and later reuse often drops the costly half.",
       "evidenceIds": [
         "src-iwf-qi-2018",
         "src-iwf-medialab-1987"
@@ -63,7 +63,7 @@
   "sources": [
     {
       "sourceId": "src-iwf-wer-1985",
-      "title": "ΓÇÿKeep designingΓÇÖ; HackersΓÇÖ Conference discussions (Nov 1984)",
+      "title": "‘Keep designing’; Hackers’ Conference discussions (Nov 1984)",
       "author": "Stewart Brand; Matt Herron",
       "publisher": "Whole Earth Review",
       "publicationDate": "1985-05",
@@ -89,7 +89,7 @@
         "a-iwf-coinage",
         "a-iwf-earliest"
       ],
-      "shortExcerpt": "ΓÇ£Information wants to be free,ΓÇ¥ said Stewart BrandΓÇª ΓÇ£But it also wants to be valuable,ΓÇ¥ a paradox he said is giving the fledging software industry such fits."
+      "shortExcerpt": "“Information wants to be free,” said Stewart Brand… “But it also wants to be valuable,” a paradox he said is giving the fledging software industry such fits."
     },
     {
       "sourceId": "src-iwf-medialab-1987",
@@ -104,12 +104,12 @@
         "a-iwf-contested",
         "a-iwf-pop"
       ],
-      "shortExcerpt": "Information wants to be free because it has become so cheap to distribute, copy, and recombineΓÇötoo cheap to meter. It wants to be expensive because it can be immeasurably valuable to the recipient."
+      "shortExcerpt": "Information wants to be free because it has become so cheap to distribute, copy, and recombine—too cheap to meter. It wants to be expensive because it can be immeasurably valuable to the recipient."
     },
     {
       "sourceId": "src-iwf-qi-2018",
       "title": "Information Wants To Be Expensive. Information Wants To Be Free",
-      "author": "Garson OΓÇÖToole",
+      "author": "Garson O’Toole",
       "publisher": "Quote Investigator",
       "publicationDate": "2018-03-09",
       "sourceType": "secondary",
@@ -119,7 +119,7 @@
         "a-iwf-contested",
         "a-iwf-pop"
       ],
-      "shortExcerpt": "the phrase ΓÇ£Information wants to be freeΓÇ¥ by itself is an amputated distortion of his viewpoint."
+      "shortExcerpt": "the phrase “Information wants to be free” by itself is an amputated distortion of his viewpoint."
     }
   ],
   "sourceSetHash": "sha256:2d2489806a9dd502"
