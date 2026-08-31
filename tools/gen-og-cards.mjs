@@ -30,19 +30,19 @@ const ROLE_LABELS = {
 
 const FROZEN_CARD_SHA256 = Object.freeze({
   "be-the-change-you-wish-to-see":
-    "1f916a66c19e5d6330d83d9e3a87477e884f4641a640aef2a9d4ea6e2ff08dde",
+    "f17d80bce661f0d0f262c80978364f2c1ce2e396ea2d65f5736baba44b91ad95",
   "culture-eats-strategy-for-breakfast":
-    "5f24194ed6b2a042b0ebb8ca362b04899facddcd91d41ab01f86b71c5bd9d8aa",
+    "f0337cf83404b4fce95e384e1c1e68b78f3e352efb1db7f87720a106486f60cf",
   "if-youre-not-paying-you-are-the-product":
-    "fc06d91d64139bdb035977a7d246ff48c162dab3d7119e45ac27d1b743c4dfd7",
+    "d743c9af6db62c3cbaffb9049be61bbc2a56ceb8a166734f9573d2f533db042c",
   "information-wants-to-be-free":
-    "18cb6422a48115c112c9fa4025240d18571ef4611d16f759bff89202470daaa5",
+    "aa4a776e0fcf0fa17b48d8b681e674df4240da94ceed5500a0c14d6937cebab5",
   "insanity-doing-the-same-thing":
-    "00bd3c11199edfc8dc1175813284904402eb720599a04ee62c7a5e985069db2c",
+    "8c60009449cb9690d9c65d42a84ac3f169c11905893ef801620246c9ce840c35",
   "move-fast-and-break-things":
-    "f2f6752c60cde73c1ff0aee958c1d5daf5988a664e2b3994f06eaa9dbbedccbf",
+    "9b8b11485bc12094df5d807cdce25ef98deb32c5c26bc9113ab8781ac7fbdfe1",
   "the-medium-is-the-message":
-    "85449fb649ecfe53d1e4139c856133e900960f06ae26a7ac7288ad225784879d",
+    "3fce0231cccfcb47d9bdd19295de9882900bd30a8f6e41aebd297256f3a4cac3",
 });
 
 function sha256(bytes) {
