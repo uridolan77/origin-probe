@@ -185,6 +185,7 @@ export const PublishedConceptGenealogySchema = z
     publishedAt: z.string().datetime({ offset: true }),
     reviewedAt: z.string().datetime({ offset: true }),
     status: z.enum(["published", "superseded", "withdrawn"]),
+    supersedesDossierDigest: Sha256HexSchema.optional(),
     finding: z.string().min(1),
     projectionSlots: z.array(PublishedProjectionSchema),
     assertions: z.array(PublishedConceptAssertionSchema).min(1),
@@ -210,11 +211,14 @@ export const NormalizedIntervalSchema = z
   })
   .strict();
 
+export type NormalizedInterval = z.infer<typeof NormalizedIntervalSchema>;
+
 export const PublicationProjectionPlanSchema = z
   .object({
     conceptId: ConceptIdSchema,
     slug: SlugSchema,
     slot: ConceptPublicRoleSchema,
+    templateVersion: z.literal(1),
     eligibleAssertionIds: z.array(z.string().min(1)).min(1),
     normalizedIntervals: z.array(NormalizedIntervalSchema).min(1),
     searchScopeId: z.string().min(1),
@@ -244,6 +248,45 @@ export const AuthorizationEnvelopeSchema = z
 
 export type AuthorizationEnvelope = z.infer<typeof AuthorizationEnvelopeSchema>;
 
+export const ReviewedWorkspaceSchema = z
+  .object({
+    workspaceKind: z.literal("origin_reviewed_workspace_v1"),
+    conceptId: ConceptIdSchema,
+    slug: SlugSchema,
+    acceptedAssertionIds: z.array(z.string().min(1)).min(1),
+    reviewEventIds: z.array(z.string().min(1)).min(1),
+    reviewedAt: z.string().datetime({ offset: true }),
+  })
+  .strict();
+
+export type ReviewedWorkspace = z.infer<typeof ReviewedWorkspaceSchema>;
+
+export const PublicationRequestSchema = z
+  .object({
+    requestKind: z.literal("origin_publication_request_v1"),
+    requestId: z.string().min(1),
+    conceptId: ConceptIdSchema,
+    slug: SlugSchema,
+    revision: z.number().int().positive(),
+    requestedSlots: z.array(ConceptPublicRoleSchema).min(1),
+    requestedAt: z.string().datetime({ offset: true }),
+  })
+  .strict();
+
+export type PublicationRequest = z.infer<typeof PublicationRequestSchema>;
+
+export const UpstreamArtifactsSchema = z
+  .object({
+    conceptId: ConceptIdSchema,
+    slug: SlugSchema,
+    reviewedWorkspace: ReviewedWorkspaceSchema,
+    publicationRequest: PublicationRequestSchema,
+    derivedPlan: PublicationProjectionPlanSchema,
+  })
+  .strict();
+
+export type UpstreamArtifacts = z.infer<typeof UpstreamArtifactsSchema>;
+
 export const SITE_PUBLICATION_PACKAGE_KIND =
   "origin_site_concept_publication_v1" as const;
 
@@ -261,6 +304,7 @@ export const ConceptPublicationBundleSchema = z
     roleRegistryDigest: Sha256HexSchema,
     policyRegistryDigest: Sha256HexSchema,
     authorizationEnvelope: AuthorizationEnvelopeSchema,
+    upstreamArtifacts: z.array(UpstreamArtifactsSchema).min(1),
     projectionPlans: z.array(PublicationProjectionPlanSchema).min(1),
     dossierDigests: z.array(
       z

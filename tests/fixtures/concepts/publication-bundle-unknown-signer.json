@@ -6,23 +6,76 @@
   "generatedAt": "2026-08-31T16:00:00.000Z",
   "signerKeyId": "unknown-key",
   "sourceCandidatePackageDigest": "a2e463e0b134b4ed49ebb6cced8d0bf1afbb2dcf5780568d7e66ac31299d6814",
-  "roleRegistryDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-  "policyRegistryDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "roleRegistryDigest": "038a5c3d0da5963142d59b8177778d90e4415084ea35c3c7dd95f67c04ab5a9b",
+  "policyRegistryDigest": "e1785ba1ef8036360241bcdb6570a87af084f6d07afde7ef2d82d0d21b2673f9",
   "authorizationEnvelope": {
     "authorizationId": "AUTH-FIXTURE-001",
     "authorizedBy": "PRN-FIXTURE-AUTHORITY",
     "authorizedAt": "2026-08-31T15:50:00.000Z",
-    "workspaceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    "requestDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    "planDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "workspaceDigest": "a6d54617976e3b7b36abd9178b59aa25c98a01e53f7f696745d2530b4a8b3941",
+    "requestDigest": "c189d89161d944fd661bf28763b325890c85ac70961ead26111dfb7da2358caf",
+    "planDigest": "f347029c96f5ebfd6bf317620694b6f201c8c6693cf5750a9c8654d12daf3e99",
     "authorityKeyId": "origin-site-concept-publication-fixture-only-v1",
-    "signature": "dflpyNv7XisoaO+L8xu5iAjn93p8/6QKuCGvk60xvOQFfkdRD8OcCw5YDkA7M8INPVBksr68lEHBd1b/FzWLBw=="
+    "signature": "/Tc6tfXB7BcskLASAF4FGoID2UAXP9WVA71zLO15PqilX4GIZv+fiAT3ivcGoFmF0sSO0WZgXtm7ft0HOkdMDw=="
   },
+  "upstreamArtifacts": [
+    {
+      "conceptId": "C042",
+      "slug": "synthetic-fixture-concept",
+      "reviewedWorkspace": {
+        "workspaceKind": "origin_reviewed_workspace_v1",
+        "conceptId": "C042",
+        "slug": "synthetic-fixture-concept",
+        "acceptedAssertionIds": [
+          "C042-A01"
+        ],
+        "reviewEventIds": [
+          "REV-C042-001"
+        ],
+        "reviewedAt": "2026-08-31T15:40:00.000Z"
+      },
+      "publicationRequest": {
+        "requestKind": "origin_publication_request_v1",
+        "requestId": "REQ-FIXTURE-001",
+        "conceptId": "C042",
+        "slug": "synthetic-fixture-concept",
+        "revision": 1,
+        "requestedSlots": [
+          "earliest_accepted_formulation"
+        ],
+        "requestedAt": "2026-08-31T15:45:00.000Z"
+      },
+      "derivedPlan": {
+        "conceptId": "C042",
+        "slug": "synthetic-fixture-concept",
+        "slot": "earliest_accepted_formulation",
+        "templateVersion": 1,
+        "eligibleAssertionIds": [
+          "C042-A01"
+        ],
+        "normalizedIntervals": [
+          {
+            "assertionId": "C042-A01",
+            "startYear": 1970,
+            "precision": "year"
+          }
+        ],
+        "searchScopeId": "fixture-scope-1",
+        "searchScopeDigest": "b4ccc47413ab2c3190db22df602404d58d9b82b426be3c7aec0212e6165b720b",
+        "selectedAssertionIds": [
+          "C042-A01"
+        ],
+        "disposition": "unique",
+        "projectionTextDigest": "de733bb99644fb3bf1b8c1289aa4ae6de3a13213f2fc3c3fe50428b8c5357907"
+      }
+    }
+  ],
   "projectionPlans": [
     {
       "conceptId": "C042",
       "slug": "synthetic-fixture-concept",
       "slot": "earliest_accepted_formulation",
+      "templateVersion": 1,
       "eligibleAssertionIds": [
         "C042-A01"
       ],
@@ -39,14 +92,14 @@
         "C042-A01"
       ],
       "disposition": "unique",
-      "projectionTextDigest": "461989026ec8e05c376560c67b8ab0673cb2eb918ff1948389048fc278e0eadd"
+      "projectionTextDigest": "de733bb99644fb3bf1b8c1289aa4ae6de3a13213f2fc3c3fe50428b8c5357907"
     }
   ],
   "dossierDigests": [
     {
       "conceptId": "C042",
       "slug": "synthetic-fixture-concept",
-      "digest": "df25a08bcdd8ff2d925319b2a06ac3007f427624094cffe9ca1d2d1242f81b22"
+      "digest": "1af79cfcc3673bea09987e210d18f56c1b76aeb6d5253ff76039e92a74f2e7e2"
     }
   ],
   "dossiers": [
@@ -63,7 +116,7 @@
       "publishedAt": "2026-08-31T16:00:00.000Z",
       "reviewedAt": "2026-08-31T15:40:00.000Z",
       "status": "published",
-      "finding": "Within the declared search scope, an accepted formulation is attested in the fixture source.",
+      "finding": "Within Synthetic fixture corpus only, the earliest accepted formulation for earliest_accepted_formulation is attested as follows: Within the fixture search scope, the earliest accepted formulation appears in Source S01 (1970). (1970; Fixture Author, Fixture Paper, 1970).",
       "projectionSlots": [
         {
           "slot": "earliest_accepted_formulation",
@@ -109,18 +162,18 @@
       ],
       "publicationReceipt": {
         "packageId": "ORIGIN-SITE-CONCEPT-PUBLICATION-FIXTURE-001",
-        "workspaceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "requestDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-        "planDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-        "roleRegistryDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-        "policyRegistryDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "workspaceDigest": "a6d54617976e3b7b36abd9178b59aa25c98a01e53f7f696745d2530b4a8b3941",
+        "requestDigest": "c189d89161d944fd661bf28763b325890c85ac70961ead26111dfb7da2358caf",
+        "planDigest": "f347029c96f5ebfd6bf317620694b6f201c8c6693cf5750a9c8654d12daf3e99",
+        "roleRegistryDigest": "038a5c3d0da5963142d59b8177778d90e4415084ea35c3c7dd95f67c04ab5a9b",
+        "policyRegistryDigest": "e1785ba1ef8036360241bcdb6570a87af084f6d07afde7ef2d82d0d21b2673f9",
         "authorizationId": "AUTH-FIXTURE-001",
         "authorizedBy": "PRN-FIXTURE-AUTHORITY",
         "authorizedAt": "2026-08-31T15:50:00.000Z",
         "authorityKeyId": "origin-site-concept-publication-fixture-only-v1",
-        "signature": "n+uSbtxwmIaAvcvsfSEU7u2B1/QqcNx8NMzdabL6VF1VtFelkbeD8gjldicEhCwd29LzkJb8IdOKy9yAFJGiCg=="
+        "signature": "+Jhzyn826bTHciEoClKAypzRwXormw7D+WCBfdS993c9MjMRuMpAf/RNtApC7gBI5bP5xKN3v6o0m/EqJG9+AQ=="
       }
     }
   ],
-  "signature": "CqeTWlF6Sxi0JIOWnMcyYGsfjpLUB4tYmtzg8I3Jftz3rv4EayUBV+2/jMYweCzFLq+2UFKiXVEXJLiGEP6gCA=="
+  "signature": "uRf9FE3FhLdguAnstMXKCGAT7jzqMNJzgs/4y8trgZ4m/JEaS8CJnpFgKA0Xfwpzz3HkeWWnZC6yjzZtlowDCw=="
 }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceCandidatePackageDigest": "a2e463e0b134b4ed49ebb6cced8d0bf1afbb2dcf5780568d7e66ac31299d6814",
-  "roleRegistryDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-  "policyRegistryDigest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "roleRegistryDigest": "038a5c3d0da5963142d59b8177778d90e4415084ea35c3c7dd95f67c04ab5a9b",
+  "policyRegistryDigest": "e1785ba1ef8036360241bcdb6570a87af084f6d07afde7ef2d82d0d21b2673f9",
   "authorityFingerprintSha256": "b978646d15db4ae4fb326262acc9ba1a66c17969f2fb67e438d50772d6cde9ee"
 }

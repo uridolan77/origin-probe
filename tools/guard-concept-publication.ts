@@ -6,7 +6,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validateConceptData } from "./validate-concept-data";
-import { loadVerifiedPublications } from "../src/lib/concepts/publication-membrane";
+import { loadVerifiedPublications, resolveMembraneOptionsForRepo } from "../src/lib/concepts/publication-membrane";
+import { regeneratePublicFinding, FINDING_TEMPLATE_VERSION } from "../src/lib/concepts/finding-projection";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
@@ -30,6 +31,7 @@ const ALLOWED_DATA_IMPORTS = [
   "data/concepts/pinned-publication-policy.json",
   "data/concepts/catalog-receipt.json",
   "data/concepts/authority-rotation-envelope.json",
+  "data/concepts/registries/",
 ];
 
 function walk(dir: string, acc: string[] = []): string[] {
@@ -112,20 +114,27 @@ export function guardConceptPublication(repoRoot = REPO_ROOT) {
   let publicHistoricalClaimCount = 0;
   let authorizedCount = validation.authorizedAssertionIds?.length ?? 0;
   try {
-    const loaded = loadVerifiedPublications(repoRoot);
+    const loaded = loadVerifiedPublications(
+      repoRoot,
+      resolveMembraneOptionsForRepo(repoRoot),
+    );
     publicHistoricalClaimCount = loaded.dossiers
       .filter((d) => d.status === "published")
-      .reduce((n, d) => n + d.assertions.length, 0);
+      .reduce(
+        (n, d) =>
+          n + d.projectionSlots.reduce((m, slot) => m + slot.assertionIds.length, 0),
+        0,
+      );
     authorizedCount = loaded.authorizedAssertionIds.length;
 
     const rendered = loaded.dossiers
       .filter((d) => d.status === "published")
-      .flatMap((d) => d.assertions.map((a) => a.assertionId))
+      .flatMap((d) =>
+        d.projectionSlots.flatMap((slot) => slot.assertionIds),
+      )
       .sort();
     const authorized = [...loaded.authorizedAssertionIds].sort();
     if (rendered.join(",") !== authorized.join(",")) {
-      // authorized includes plan eligible; rendered must be subset equal to published assertions
-      const renderedSet = new Set(rendered);
       for (const id of rendered) {
         if (!loaded.authorizedAssertionIds.includes(id)) {
           errors.push(
@@ -133,12 +142,39 @@ export function guardConceptPublication(repoRoot = REPO_ROOT) {
           );
         }
       }
-      // All rendered must be authorized; authorized may equal union of plan+dossier
+      for (const id of authorized) {
+        if (!rendered.includes(id)) {
+          errors.push(
+            `verified plan selected assertion ${id} is not rendered in public sections`,
+          );
+        }
+      }
       if (rendered.length !== publicHistoricalClaimCount) {
         errors.push("rendered public assertion count mismatch");
       }
-      void authorized;
-      void renderedSet;
+    }
+
+    for (const bundle of loaded.bundles) {
+      for (const dossier of bundle.dossiers.filter((d) => d.status === "published")) {
+        for (const plan of bundle.projectionPlans.filter(
+          (p) => p.conceptId === dossier.conceptId && p.slug === dossier.slug,
+        )) {
+          const regenerated = regeneratePublicFinding({
+            templateVersion: FINDING_TEMPLATE_VERSION,
+            searchScope: dossier.searchScope,
+            slot: plan.slot,
+            disposition: plan.disposition,
+            selectedAssertionIds: plan.selectedAssertionIds,
+            assertions: dossier.assertions,
+            sources: dossier.sources,
+          });
+          if (dossier.finding !== regenerated) {
+            errors.push(
+              `${dossier.slug}: public finding bytes do not match regenerated projection`,
+            );
+          }
+        }
+      }
     }
   } catch (err) {
     errors.push(
@@ -165,8 +201,38 @@ export function guardConceptPublication(repoRoot = REPO_ROOT) {
     "pins",
     "publication-authority.sha256",
   );
+  const rootPinPath = path.join(
+    repoRoot,
+    "tools",
+    "pins",
+    "publication-root.sha256",
+  );
   if (!fs.existsSync(pinPath)) {
     errors.push("missing tools/pins/publication-authority.sha256");
+  }
+  if (!fs.existsSync(rootPinPath)) {
+    errors.push("missing tools/pins/publication-root.sha256");
+  }
+
+  const roleRegistryPath = path.join(
+    repoRoot,
+    "data",
+    "concepts",
+    "registries",
+    "role-registry.json",
+  );
+  const policyRegistryPath = path.join(
+    repoRoot,
+    "data",
+    "concepts",
+    "registries",
+    "policy-registry.json",
+  );
+  if (!fs.existsSync(roleRegistryPath)) {
+    errors.push("missing data/concepts/registries/role-registry.json");
+  }
+  if (!fs.existsSync(policyRegistryPath)) {
+    errors.push("missing data/concepts/registries/policy-registry.json");
   }
 
   return {

@@ -12,12 +12,14 @@ import {
 } from "./publication-authority";
 import {
   AuthorityRotationEnvelopeSchema,
+  ConceptCatalogFileSchema,
   ConceptPublicationBundleSchema,
   PinnedPublicationPolicySchema,
   PRIORITY_PROJECTION_SLOTS,
   PublishedConceptGenealogySchema,
   SlugSchema,
   type AuthorizationEnvelope,
+  type ConceptCatalogFile,
   type ConceptPublicationBundle,
   type PinnedPublicationPolicy,
   type PublicationAuthority,
@@ -25,6 +27,22 @@ import {
   type PublishedConceptAssertion,
   type PublishedConceptGenealogy,
 } from "./schema";
+import {
+  FINDING_TEMPLATE_VERSION,
+  verifyFindingProjection,
+} from "./finding-projection";
+import {
+  deriveNormalizedIntervals,
+  intervalsEqual,
+} from "./temporal-normalization";
+import {
+  loadRegistries,
+  validateRegistrySemantics,
+  RoleRegistrySchema,
+  PolicyRegistrySchema,
+  type LoadedRegistries,
+} from "./registry-loader";
+import { compareCatalogDossierIdentity } from "./catalog-identity";
 
 export class PublicationRejectedError extends Error {
   code = "PUBLICATION_REJECTED" as const;
@@ -68,6 +86,10 @@ export type MembraneOptions = {
   rotationEnvelope?: unknown;
   /** Override catalog concept IDs allowed in dossiers (fixture isolation). */
   allowedConceptIds?: ReadonlySet<string>;
+  /** Skip catalog identity binding (component-only fixture tests). */
+  skipCatalogBinding?: boolean;
+  /** Override registries directory (fixture isolation). */
+  registriesRoot?: string;
 };
 
 function parseFiniteTime(label: string, value: string): number {
@@ -86,6 +108,65 @@ function loadPinnedPolicy(repoRoot: string): PinnedPublicationPolicy {
   return PinnedPublicationPolicySchema.parse(
     JSON.parse(fs.readFileSync(p, "utf8")),
   );
+}
+
+function loadRootDocument(repoRoot: string): {
+  publicKeyBase64: string;
+  fingerprintSha256: string;
+} {
+  const doc = JSON.parse(
+    fs.readFileSync(
+      path.join(repoRoot, "data", "concepts", "publication-root.public.json"),
+      "utf8",
+    ),
+  ) as { publicKeyBase64: string; fingerprintSha256?: string };
+  return {
+    publicKeyBase64: doc.publicKeyBase64,
+    fingerprintSha256: (
+      doc.fingerprintSha256 ?? authorityFingerprintSha256(doc.publicKeyBase64)
+    ).toLowerCase(),
+  };
+}
+
+function requiresExternalPins(opts: MembraneOptions): boolean {
+  if (opts.fixtureMode) return false;
+  return (
+    process.env.ORIGIN_REQUIRE_EXTERNAL_PINS === "1" ||
+    process.env.CI === "true"
+  );
+}
+
+function loadCatalogIfPresent(repoRoot: string): ConceptCatalogFile | null {
+  const catalogPath = path.join(repoRoot, "data", "concepts", "catalog.json");
+  if (!fs.existsSync(catalogPath)) return null;
+  return ConceptCatalogFileSchema.parse(
+    JSON.parse(fs.readFileSync(catalogPath, "utf8")),
+  );
+}
+
+function loadRegistriesFromRoot(
+  repoRoot: string,
+  opts: MembraneOptions,
+): LoadedRegistries {
+  if (opts.registriesRoot) {
+    const roleRaw = fs.readFileSync(
+      path.join(opts.registriesRoot, "role-registry.json"),
+      "utf8",
+    );
+    const policyRaw = fs.readFileSync(
+      path.join(opts.registriesRoot, "policy-registry.json"),
+      "utf8",
+    );
+    const { RoleRegistrySchema: RoleSchema, PolicyRegistrySchema: PolicySchema } =
+      { RoleRegistrySchema, PolicyRegistrySchema };
+    return {
+      roleRegistry: RoleSchema.parse(JSON.parse(roleRaw)),
+      policyRegistry: PolicySchema.parse(JSON.parse(policyRaw)),
+      roleRegistryDigest: sha256Hex(roleRaw.replace(/\r\n/g, "\n")),
+      policyRegistryDigest: sha256Hex(policyRaw.replace(/\r\n/g, "\n")),
+    };
+  }
+  return loadRegistries(repoRoot);
 }
 
 function loadCommittedPin(repoRoot: string): string {
@@ -134,15 +215,32 @@ export function resolveAuthorityTrust(
   }
 
   const envPin = process.env.ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT?.trim().toLowerCase();
+  const envRootPin = process.env.ORIGIN_PUBLICATION_ROOT_FINGERPRINT?.trim().toLowerCase();
   const committedPin =
     opts.pinFingerprint?.toLowerCase() ??
     (opts.fixtureMode
       ? policy.authorityFingerprintSha256
       : loadCommittedPin(repoRoot));
+  const rootDoc = loadRootDocument(repoRoot);
+
+  if (requiresExternalPins(opts)) {
+    if (!envPin) {
+      fail("Missing ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT (external pin required)");
+    }
+    if (!envRootPin) {
+      fail("Missing ORIGIN_PUBLICATION_ROOT_FINGERPRINT (external pin required)");
+    }
+    if (envRootPin !== rootDoc.fingerprintSha256) {
+      fail("Root fingerprint pin mismatch");
+    }
+  } else if (!opts.fixtureMode && envRootPin && envRootPin !== rootDoc.fingerprintSha256) {
+    fail("Root fingerprint pin mismatch");
+  }
+
   // Fixture mode never consults the production CI pin env var.
-  const expectedPin = (
-    opts.fixtureMode ? committedPin : envPin || committedPin
-  ).toLowerCase();
+  const expectedPin = requiresExternalPins(opts)
+    ? envPin!
+    : (opts.fixtureMode ? committedPin : envPin || committedPin).toLowerCase();
 
   if (fp !== expectedPin) {
     // Allow only with a valid root-signed rotation envelope.
@@ -170,14 +268,14 @@ export function resolveAuthorityTrust(
     if (rotation.toKeyId !== authority.keyId) {
       fail("Authority rotation toKeyId mismatch");
     }
-    const rootKey =
-      opts.rootPublicKeyBase64 ??
-      JSON.parse(
-        fs.readFileSync(
-          path.join(repoRoot, "data", "concepts", "publication-root.public.json"),
-          "utf8",
-        ),
-      ).publicKeyBase64;
+    const rootKey = opts.rootPublicKeyBase64 ?? rootDoc.publicKeyBase64;
+    if (
+      requiresExternalPins(opts) &&
+      envRootPin &&
+      envRootPin !== rootDoc.fingerprintSha256
+    ) {
+      fail("Root fingerprint pin mismatch for rotation envelope");
+    }
     const rotPayload = signingPayloadWithoutSignature(rotation);
     if (!verifyEd25519(rotPayload, rotation.signature, rootKey)) {
       fail("Invalid authority rotation envelope signature");
@@ -299,9 +397,23 @@ export function verifyPriorityPlan(
     fail("Dossier projection slot does not match verified plan selection");
   }
 
-  const findingDigest = sha256Hex(dossier.finding);
-  if (plan.projectionTextDigest !== findingDigest) {
-    fail("Projection text digest mismatch");
+  if (plan.templateVersion !== FINDING_TEMPLATE_VERSION) {
+    fail(`Unsupported finding template version: ${plan.templateVersion}`);
+  }
+
+  const derivedIntervals = deriveNormalizedIntervals(
+    assertions,
+    plan.eligibleAssertionIds,
+    plan.slot,
+  );
+  if (!intervalsEqual(plan.normalizedIntervals, derivedIntervals)) {
+    fail("Projection plan intervals must match derived assertion temporal facts");
+  }
+
+  try {
+    verifyFindingProjection(dossier, plan);
+  } catch (err) {
+    fail(err instanceof Error ? err.message : String(err));
   }
 }
 
@@ -355,6 +467,130 @@ function verifyAuthorizationEnvelope(
   }
 }
 
+function verifyUpstreamArtifacts(
+  bundle: ConceptPublicationBundle,
+  dossiers: readonly PublishedConceptGenealogy[],
+): void {
+  for (const dossier of dossiers) {
+    const upstream = bundle.upstreamArtifacts.find(
+      (u) => u.conceptId === dossier.conceptId && u.slug === dossier.slug,
+    );
+    if (!upstream) {
+      fail(`Missing upstream artifacts for dossier ${dossier.conceptId}`);
+    }
+
+    const wsDigest = sha256Hex(
+      Buffer.from(JSON.stringify(upstream.reviewedWorkspace), "utf8"),
+    );
+    const reqDigest = sha256Hex(
+      Buffer.from(JSON.stringify(upstream.publicationRequest), "utf8"),
+    );
+    const planDigest = sha256Hex(
+      Buffer.from(JSON.stringify(upstream.derivedPlan), "utf8"),
+    );
+
+    if (wsDigest !== bundle.authorizationEnvelope.workspaceDigest) {
+      fail("Upstream workspace digest mismatch");
+    }
+    if (reqDigest !== bundle.authorizationEnvelope.requestDigest) {
+      fail("Upstream publication request digest mismatch");
+    }
+    if (planDigest !== bundle.authorizationEnvelope.planDigest) {
+      fail("Upstream derived plan digest mismatch");
+    }
+
+    if (upstream.reviewedWorkspace.conceptId !== dossier.conceptId) {
+      fail("Upstream workspace conceptId mismatch");
+    }
+    if (upstream.reviewedWorkspace.slug !== dossier.slug) {
+      fail("Upstream workspace slug mismatch");
+    }
+    if (upstream.publicationRequest.conceptId !== dossier.conceptId) {
+      fail("Upstream request conceptId mismatch");
+    }
+    if (upstream.publicationRequest.slug !== dossier.slug) {
+      fail("Upstream request slug mismatch");
+    }
+    if (upstream.publicationRequest.revision !== dossier.revision) {
+      fail("Upstream request revision mismatch");
+    }
+
+    const dossierAssertionIds = new Set(
+      dossier.assertions.map((a) => a.assertionId),
+    );
+    for (const id of dossierAssertionIds) {
+      if (!upstream.reviewedWorkspace.acceptedAssertionIds.includes(id)) {
+        fail(`Upstream workspace missing accepted assertion ${id}`);
+      }
+    }
+
+    for (const rid of upstream.reviewedWorkspace.reviewEventIds) {
+      let found = false;
+      for (const a of dossier.assertions) {
+        if (a.acceptedReviewEventIds.includes(rid)) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        fail(`Upstream review event ${rid} not referenced by dossier assertions`);
+      }
+    }
+
+    const plans = bundle.projectionPlans.filter(
+      (p) => p.conceptId === dossier.conceptId && p.slug === dossier.slug,
+    );
+    // The upstream derived plan must be byte-identical to the live projection
+    // plan that will be used for priority/finding verification — not merely a
+    // digest-compatible decoy that differs from bundle.projectionPlans.
+    const derivedMatches = plans.some(
+      (p) => JSON.stringify(p) === JSON.stringify(upstream.derivedPlan),
+    );
+    if (!derivedMatches) {
+      fail("Upstream derived plan does not match verified projection plan");
+    }
+    if (plans.length === 1) {
+      if (JSON.stringify(plans[0]) !== JSON.stringify(upstream.derivedPlan)) {
+        fail("Upstream derived plan does not match the sole verified projection plan");
+      }
+    } else {
+      // When multiple plans exist for the dossier, the governing priority plan
+      // (if any) must be the exact upstream derivedPlan object.
+      for (const prioritySlot of PRIORITY_PROJECTION_SLOTS) {
+        const priorityPlan = plans.find((p) => p.slot === prioritySlot);
+        if (
+          priorityPlan &&
+          JSON.stringify(priorityPlan) !== JSON.stringify(upstream.derivedPlan)
+        ) {
+          fail(
+            "Upstream derived plan does not match the priority projection plan under verification",
+          );
+        }
+      }
+    }
+  }
+}
+
+function verifyCatalogBinding(
+  catalog: ConceptCatalogFile,
+  dossier: PublishedConceptGenealogy,
+): void {
+  const byId = catalog.items.find((i) => i.conceptId === dossier.conceptId);
+  const bySlug = catalog.items.find((i) => i.slug === dossier.slug);
+  if (!byId) fail(`Unknown catalog conceptId ${dossier.conceptId}`);
+  if (!bySlug) fail(`Unknown catalog slug ${dossier.slug}`);
+  if (byId.conceptId !== bySlug.conceptId || byId.slug !== bySlug.slug) {
+    fail("Catalog conceptId/slug identity binding mismatch");
+  }
+  const mismatches = compareCatalogDossierIdentity(byId, dossier);
+  if (mismatches.length > 0) {
+    fail(`Catalog/dossier identity mismatch: ${mismatches[0]!.field}`);
+  }
+  if (byId.researchMaturity !== "published") {
+    fail(`${dossier.slug}: catalog maturity must be published for active dossier`);
+  }
+}
+
 /**
  * Parse + verify a signed publication bundle. Shared by importer, loader, guards, tests.
  */
@@ -364,7 +600,9 @@ export function verifyPublicationBundle(
   opts: MembraneOptions = {},
 ): ConceptPublicationBundle {
   const { authority, policy } = resolveAuthorityTrust(repoRoot, opts);
+  const registries = loadRegistriesFromRoot(repoRoot, opts);
   const now = opts.now ?? Date.now();
+  const catalog = opts.skipCatalogBinding ? null : loadCatalogIfPresent(repoRoot);
 
   // Pre-schema semantic rejects so adversarial fixtures keep stable messages.
   if (raw && typeof raw === "object") {
@@ -436,11 +674,58 @@ export function verifyPublicationBundle(
     fail("Canonical host mismatch");
   }
   if (parsed.revoked === true) fail("Bundle revoked");
+  const generatedAt = parseFiniteTime("generatedAt", parsed.generatedAt);
+  if (generatedAt > now) fail("Future bundle generatedAt");
   if (parsed.expiresAt) {
     const exp = parseFiniteTime("expiry", parsed.expiresAt);
     if (exp < now) fail("Stale authorization / expired bundle");
   }
-  parseFiniteTime("generatedAt", parsed.generatedAt);
+  if (authority.expiresAt) {
+    const authExp = parseFiniteTime("authority expiry", authority.expiresAt);
+    if (authExp < now) fail("Publication authority expired");
+  }
+  if (authority.revoked === true) fail("Publication authority revoked");
+
+  validateRegistrySemantics(
+    registries.roleRegistry,
+    registries.policyRegistry,
+    parsed.packageKind,
+    parsed.packageVersion,
+    FINDING_TEMPLATE_VERSION,
+  );
+
+  if (parsed.roleRegistryDigest !== registries.roleRegistryDigest) {
+    fail("Role registry digest mismatch");
+  }
+  if (parsed.policyRegistryDigest !== registries.policyRegistryDigest) {
+    fail("Policy registry digest mismatch");
+  }
+  if (parsed.roleRegistryDigest !== policy.roleRegistryDigest) {
+    fail("Registry mismatch");
+  }
+  if (parsed.policyRegistryDigest !== policy.policyRegistryDigest) {
+    fail("Registry mismatch");
+  }
+
+  if (
+    !exactSetEqual(
+      parsed.dossiers.map((d) => `${d.conceptId}:${d.slug}`),
+      parsed.upstreamArtifacts.map((u) => `${u.conceptId}:${u.slug}`),
+    )
+  ) {
+    fail("upstreamArtifacts must cover dossier set exactly");
+  }
+
+  const conceptIds = new Set<string>();
+  const slugs = new Set<string>();
+  for (const dossier of parsed.dossiers) {
+    if (conceptIds.has(dossier.conceptId)) fail("Duplicate concept ID");
+    conceptIds.add(dossier.conceptId);
+    if (slugs.has(dossier.slug)) fail("Duplicate concept slug");
+    slugs.add(dossier.slug);
+  }
+
+  verifyUpstreamArtifacts(parsed, parsed.dossiers);
 
   if (parsed.signerKeyId !== authority.keyId) fail("Unknown signer");
 
@@ -451,12 +736,6 @@ export function verifyPublicationBundle(
 
   if (parsed.sourceCandidatePackageDigest !== policy.sourceCandidatePackageDigest) {
     fail("Incorrect source Candidate digest");
-  }
-  if (parsed.roleRegistryDigest !== policy.roleRegistryDigest) {
-    fail("Registry mismatch");
-  }
-  if (parsed.policyRegistryDigest !== policy.policyRegistryDigest) {
-    fail("Registry mismatch");
   }
 
   // Exact dossier digest set
@@ -469,8 +748,6 @@ export function verifyPublicationBundle(
     fail("Duplicate dossier digest records");
   }
 
-  const conceptIds = new Set<string>();
-  const slugs = new Set<string>();
   const assertionIds = new Set<string>();
   const sourceIds = new Set<string>();
   const evidenceIds = new Set<string>();
@@ -493,11 +770,13 @@ export function verifyPublicationBundle(
     if (dossier.status !== "published" && dossier.status !== "superseded") {
       fail(`Invalid dossier status: ${dossier.status}`);
     }
+    if (dossier.revision > 1 && !dossier.supersedesDossierDigest) {
+      fail("Revision > 1 requires supersedesDossierDigest");
+    }
 
-    if (conceptIds.has(dossier.conceptId)) fail("Duplicate concept ID");
-    conceptIds.add(dossier.conceptId);
-    if (slugs.has(dossier.slug)) fail("Duplicate concept slug");
-    slugs.add(dossier.slug);
+    if (catalog && dossier.status === "published") {
+      verifyCatalogBinding(catalog, dossier);
+    }
 
     const expected = parsed.dossierDigests.find(
       (d) => d.conceptId === dossier.conceptId && d.slug === dossier.slug,
@@ -543,15 +822,11 @@ export function verifyPublicationBundle(
       assertionIds.add(assertion.assertionId);
 
       for (const eid of assertion.evidenceIds) {
-        if (evidenceIds.has(eid)) {
-          // evidence IDs unique globally within bundle
-        }
+        if (evidenceIds.has(eid)) fail("Duplicate evidence ID");
         evidenceIds.add(eid);
       }
       for (const rid of assertion.acceptedReviewEventIds) {
-        if (reviewEventIds.has(rid)) {
-          // allow shared review events across assertions? require unique globally
-        }
+        if (reviewEventIds.has(rid)) fail("Duplicate review event ID");
         reviewEventIds.add(rid);
       }
 
@@ -600,7 +875,9 @@ export function verifyPublicationBundle(
       }
     }
 
-    // Priority plans required and verified
+    // Priority plans required when present; finding projection is unconditional
+    // for every published dossier.
+    let governingPlan: PublicationProjectionPlan | null = null;
     for (const prioritySlot of PRIORITY_PROJECTION_SLOTS) {
       if (!slotNames.has(prioritySlot)) continue;
       const plans = parsed.projectionPlans.filter(
@@ -613,13 +890,35 @@ export function verifyPublicationBundle(
         fail(`Missing or duplicate projection plan for ${prioritySlot}`);
       }
       verifyPriorityPlan(plans[0]!, dossier.assertions, dossier);
+      governingPlan = plans[0]!;
+    }
+
+    if (!governingPlan) {
+      const dossierPlans = parsed.projectionPlans.filter(
+        (p) => p.conceptId === dossier.conceptId && p.slug === dossier.slug,
+      );
+      if (dossierPlans.length !== 1) {
+        fail("Published dossier missing finding-authority plan");
+      }
+      governingPlan = dossierPlans[0]!;
+      try {
+        verifyFindingProjection(dossier, governingPlan);
+      } catch (err) {
+        fail(err instanceof Error ? err.message : String(err));
+      }
     }
   }
 
-  // Every projection plan must reference a dossier
+  // Every projection plan must reference a dossier with exact identity pair
   for (const plan of parsed.projectionPlans) {
-    if (!conceptIds.has(plan.conceptId) || !slugs.has(plan.slug)) {
+    const dossier = parsed.dossiers.find(
+      (d) => d.conceptId === plan.conceptId && d.slug === plan.slug,
+    );
+    if (!dossier) {
       fail("Projection plan references unknown dossier");
+    }
+    if (plan.conceptId !== dossier!.conceptId || plan.slug !== dossier!.slug) {
+      fail("Projection plan identity pair mismatch");
     }
   }
 
@@ -636,10 +935,16 @@ export function authorizedAcceptedAssertionIds(
   bundle: ConceptPublicationBundle,
 ): string[] {
   const ids = new Set<string>();
-  for (const d of derivePublishedDossiers(bundle)) {
-    for (const a of d.assertions) ids.add(a.assertionId);
+  for (const plan of bundle.projectionPlans) {
+    for (const id of plan.selectedAssertionIds) ids.add(id);
   }
   return [...ids].sort();
+}
+
+export function planSelectedAssertionIds(
+  bundle: ConceptPublicationBundle,
+): string[] {
+  return authorizedAcceptedAssertionIds(bundle);
 }
 
 export function safePublicationPath(
@@ -722,6 +1027,10 @@ export function loadVerifiedPublications(
   const bundles: ConceptPublicationBundle[] = [];
   const dossiers: PublishedConceptGenealogy[] = [];
   const authorized = new Set<string>();
+  const globalConceptIds = new Map<string, PublishedConceptGenealogy>();
+  const globalSlugs = new Map<string, PublishedConceptGenealogy>();
+  const bundleContentDigests = new Set<string>();
+  const activeDigests = new Map<string, string>();
 
   if (fs.existsSync(bundlesDir)) {
     const files = fs
@@ -729,12 +1038,41 @@ export function loadVerifiedPublications(
       .filter((f) => f.endsWith(".json"))
       .sort();
     for (const file of files) {
-      const raw: unknown = JSON.parse(
-        fs.readFileSync(path.join(bundlesDir, file), "utf8"),
-      );
+      const filePath = path.join(bundlesDir, file);
+      const rawText = fs.readFileSync(filePath, "utf8");
+      const raw: unknown = JSON.parse(rawText);
+      const contentDigest = sha256Hex(rawText.replace(/\r\n/g, "\n"));
+      if (bundleContentDigests.has(contentDigest)) {
+        fail(`Duplicate bundle content loaded from ${file}`);
+      }
+      bundleContentDigests.add(contentDigest);
+
       const bundle = verifyPublicationBundle(raw, repoRoot, opts);
       bundles.push(bundle);
       for (const d of derivePublishedDossiers(bundle)) {
+        const priorConcept = globalConceptIds.get(d.conceptId);
+        if (priorConcept) {
+          fail(`Duplicate active concept ${d.conceptId} across bundles`);
+        }
+        const priorSlug = globalSlugs.get(d.slug);
+        if (priorSlug) {
+          fail(`Duplicate active slug ${d.slug} across bundles`);
+        }
+
+        if (d.revision > 1) {
+          if (!d.supersedesDossierDigest) {
+            fail("Revision > 1 requires supersedesDossierDigest");
+          }
+          const priorDigest = activeDigests.get(d.conceptId);
+          if (!priorDigest || priorDigest !== d.supersedesDossierDigest) {
+            fail("Invalid supersession chain: supersedesDossierDigest mismatch");
+          }
+        }
+
+        const digest = canonicalDossierDigest(d);
+        activeDigests.set(d.conceptId, digest);
+        globalConceptIds.set(d.conceptId, d);
+        globalSlugs.set(d.slug, d);
         dossiers.push(d);
       }
       for (const id of authorizedAcceptedAssertionIds(bundle)) {
@@ -777,6 +1115,29 @@ export function loadVerifiedPublications(
   };
 }
 
+export function resolveMembraneOptionsForRepo(
+  repoRoot: string = process.cwd(),
+): MembraneOptions {
+  const authPath = path.join(
+    repoRoot,
+    "data",
+    "concepts",
+    "publication-authority.public.json",
+  );
+  if (!fs.existsSync(authPath)) return {};
+  const authority = loadPublicationAuthority(repoRoot);
+  if (!authority.keyId.includes("fixture-only")) return {};
+  const policy = loadPinnedPolicy(repoRoot);
+  const registriesRoot = path.join(repoRoot, "data", "concepts", "registries");
+  return {
+    fixtureMode: true,
+    authority,
+    pinnedPolicy: policy,
+    pinFingerprint: policy.authorityFingerprintSha256,
+    registriesRoot: fs.existsSync(registriesRoot) ? registriesRoot : undefined,
+  };
+}
+
 export function validatePublicationBundle(
   bundle: unknown,
   authority: PublicationAuthority,
@@ -800,13 +1161,13 @@ export function validatePublicationBundle(
         bundle &&
         "roleRegistryDigest" in bundle
           ? String((bundle as { roleRegistryDigest: string }).roleRegistryDigest)
-          : "d".repeat(64),
+          : "038a5c3d0da5963142d59b8177778d90e4415084ea35c3c7dd95f67c04ab5a9b",
       policyRegistryDigest:
         typeof bundle === "object" &&
         bundle &&
         "policyRegistryDigest" in bundle
           ? String((bundle as { policyRegistryDigest: string }).policyRegistryDigest)
-          : "e".repeat(64),
+          : "e1785ba1ef8036360241bcdb6570a87af084f6d07afde7ef2d82d0d21b2673f9",
       authorityFingerprintSha256: authorityFingerprintSha256(
         authority.publicKeyBase64,
       ),

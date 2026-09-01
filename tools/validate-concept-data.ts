@@ -15,7 +15,9 @@ import {
 import {
   loadVerifiedPublications,
   PublicationRejectedError,
+  resolveMembraneOptionsForRepo,
 } from "../src/lib/concepts/publication-membrane";
+import { compareCatalogDossierIdentity } from "../src/lib/concepts/catalog-identity";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
@@ -107,7 +109,10 @@ export function validateConceptData(repoRoot = REPO_ROOT) {
   let authorizedAssertionIds: string[] = [];
 
   try {
-    const loaded = loadVerifiedPublications(repoRoot);
+    const loaded = loadVerifiedPublications(
+      repoRoot,
+      resolveMembraneOptionsForRepo(repoRoot),
+    );
     publishedCount = loaded.dossiers.filter((d) => d.status === "published").length;
     acceptedAssertionCount = loaded.dossiers
       .filter((d) => d.status === "published")
@@ -115,11 +120,44 @@ export function validateConceptData(repoRoot = REPO_ROOT) {
     authorizedAssertionIds = loaded.authorizedAssertionIds;
 
     for (const d of loaded.dossiers) {
-      const cat = catalog.items.find((i) => i.slug === d.slug);
-      if (cat && cat.researchMaturity !== "published") {
-        fail(
-          `${d.slug}: published dossier present but catalog maturity is not published`,
+      const catBySlug = catalog.items.find((i) => i.slug === d.slug);
+      const catById = catalog.items.find((i) => i.conceptId === d.conceptId);
+
+      if (!catBySlug) {
+        fail(`${d.slug}: published dossier slug not found in catalog`);
+      }
+      if (!catById) {
+        fail(`${d.conceptId}: published dossier conceptId not found in catalog`);
+      }
+      if (catBySlug && catById && catBySlug.conceptId !== catById.conceptId) {
+        fail(`${d.slug}: catalog conceptId/slug binding mismatch`);
+      }
+
+      const cat = catBySlug ?? catById;
+      if (cat) {
+        const mismatches = compareCatalogDossierIdentity(cat, d);
+        for (const m of mismatches) {
+          fail(`${d.slug}: catalog/dossier ${m.field} mismatch`);
+        }
+        if (d.status === "published" && cat.researchMaturity !== "published") {
+          fail(
+            `${d.slug}: published dossier present but catalog maturity is not published`,
+          );
+        }
+      }
+    }
+
+    if (publishedCount > 0) {
+      const receiptPath = path.join(repoRoot, "data", "concepts", "catalog-receipt.json");
+      if (fs.existsSync(receiptPath)) {
+        const receipt = CatalogReceiptSchema.parse(
+          JSON.parse(fs.readFileSync(receiptPath, "utf8")),
         );
+        if (receipt.publishedDossierCount !== publishedCount) {
+          fail(
+            `catalog receipt publishedDossierCount ${receipt.publishedDossierCount} != active verified ${publishedCount}`,
+          );
+        }
       }
     }
   } catch (err) {

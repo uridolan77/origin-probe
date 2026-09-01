@@ -6,12 +6,14 @@ import {
   type ConceptCatalogItem,
 } from "./schema";
 
-const CATALOG_PATH = path.join(process.cwd(), "data", "concepts", "catalog.json");
+const catalogPath = () =>
+  path.join(process.cwd(), "data", "concepts", "catalog.json");
 
 let cache: ConceptCatalogFile | null = null;
 
 function loadCatalog(): ConceptCatalogFile {
   if (cache) return cache;
+  const CATALOG_PATH = catalogPath();
   if (!fs.existsSync(CATALOG_PATH)) {
     throw new Error("Missing data/concepts/catalog.json");
   }

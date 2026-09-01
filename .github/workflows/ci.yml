@@ -6,8 +6,31 @@ on:
   workflow_dispatch:
 
 jobs:
-  verify:
+  trust-validation:
     runs-on: ubuntu-latest
+    environment: publication-trust
+    env:
+      ORIGIN_REQUIRE_EXTERNAL_PINS: "1"
+      ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT: ${{ vars.ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT }}
+      ORIGIN_PUBLICATION_ROOT_FINGERPRINT: ${{ vars.ORIGIN_PUBLICATION_ROOT_FINGERPRINT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Require external trust pins
+        run: |
+          test -n "$ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT" || { echo "Missing ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT"; exit 1; }
+          test -n "$ORIGIN_PUBLICATION_ROOT_FINGERPRINT" || { echo "Missing ORIGIN_PUBLICATION_ROOT_FINGERPRINT"; exit 1; }
+      - name: Coordinated substitution rejected under external pins
+        run: node tools/test-coordinated-authority-substitution.mjs
+
+  verify:
+    needs: trust-validation
+    runs-on: ubuntu-latest
+    environment: publication-trust
     services:
       postgres:
         image: postgres:16
@@ -24,9 +47,9 @@ jobs:
           --health-retries 5
     env:
       MEASUREMENT_TEST_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/origin_measure_test
-      # Separately governed pin of data/concepts/publication-authority.public.json SPKI fingerprint.
-      # Changing the authority key without a root-signed rotation envelope must fail CI.
-      ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT: b978646d15db4ae4fb326262acc9ba1a66c17969f2fb67e438d50772d6cde9ee
+      ORIGIN_REQUIRE_EXTERNAL_PINS: "1"
+      ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT: ${{ vars.ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT }}
+      ORIGIN_PUBLICATION_ROOT_FINGERPRINT: ${{ vars.ORIGIN_PUBLICATION_ROOT_FINGERPRINT }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -40,6 +63,8 @@ jobs:
       - run: npm run lint
       - run: npm run test
       - run: npm run guard:all
+      - name: Fixture-backed product publication build witness
+        run: node tools/test-product-publication-build.mjs
       - name: Ensure OG font
         run: |
           sudo apt-get update -y
@@ -47,6 +72,74 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+
+  verify-sealed-catalog:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: publication-trust
+    env:
+      ORIGIN_REQUIRE_EXTERNAL_PINS: "1"
+      ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT: ${{ vars.ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT }}
+      ORIGIN_PUBLICATION_ROOT_FINGERPRINT: ${{ vars.ORIGIN_PUBLICATION_ROOT_FINGERPRINT }}
+      CANDIDATE_005_ARTIFACT_SHA256: ${{ vars.CANDIDATE_005_ARTIFACT_SHA256 }}
+      CANDIDATE_005_C092_ZIP_SHA256: ${{ vars.CANDIDATE_005_C092_ZIP_SHA256 }}
+      CANDIDATE_005_CUSTODY_PASSPHRASE: ${{ secrets.CANDIDATE_005_CUSTODY_PASSPHRASE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Rebuild catalog from sealed Candidate 005 custody blobs
+        run: |
+          set -euo pipefail
+          test -n "$ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT" || { echo "Missing ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT"; exit 1; }
+          test -n "$ORIGIN_PUBLICATION_ROOT_FINGERPRINT" || { echo "Missing ORIGIN_PUBLICATION_ROOT_FINGERPRINT"; exit 1; }
+          test -n "$CANDIDATE_005_ARTIFACT_SHA256" || { echo "Missing CANDIDATE_005_ARTIFACT_SHA256"; exit 1; }
+          test -n "$CANDIDATE_005_C092_ZIP_SHA256" || { echo "Missing CANDIDATE_005_C092_ZIP_SHA256"; exit 1; }
+          test -n "$CANDIDATE_005_CUSTODY_PASSPHRASE" || { echo "Missing CANDIDATE_005_CUSTODY_PASSPHRASE"; exit 1; }
+
+          node tools/decrypt-custody-artifacts.mjs \
+            --artifact-enc data/concepts/custody/candidate-005-artifact.zip.enc \
+            --c092-enc data/concepts/custody/candidate-005-c092.zip.enc \
+            --artifact-out /tmp/candidate-005-artifact.zip \
+            --c092-out /tmp/candidate-005-c092.zip
+
+          ARTIFACT_DIGEST=$(sha256sum /tmp/candidate-005-artifact.zip | awk '{print $1}')
+          C092_DIGEST=$(sha256sum /tmp/candidate-005-c092.zip | awk '{print $1}')
+          test "$ARTIFACT_DIGEST" = "$CANDIDATE_005_ARTIFACT_SHA256"
+          test "$C092_DIGEST" = "$CANDIDATE_005_C092_ZIP_SHA256"
+
+          cp data/concepts/catalog.json /tmp/committed-catalog.json
+          cp data/concepts/catalog-receipt.json /tmp/committed-catalog-receipt.json
+
+          node tools/build-concept-catalog.mjs \
+            --artifact-zip /tmp/candidate-005-artifact.zip \
+            --c092-zip /tmp/candidate-005-c092.zip
+          node tools/validate-concept-data.mjs
+
+          cmp -s data/concepts/catalog.json /tmp/committed-catalog.json
+          cmp -s data/concepts/catalog-receipt.json /tmp/committed-catalog-receipt.json
+
+          CATALOG_DIGEST=$(sha256sum data/concepts/catalog.json | awk '{print $1}')
+          RECEIPT_DIGEST=$(sha256sum data/concepts/catalog-receipt.json | awk '{print $1}')
+          mkdir -p sealed-witness
+          cat > sealed-witness/receipt.json <<EOF
+          {
+            "result": "PASS",
+            "head_sha": "${{ github.sha }}",
+            "run_id": "${{ github.run_id }}",
+            "artifact_digest": "${ARTIFACT_DIGEST}",
+            "c092_digest": "${C092_DIGEST}",
+            "catalog_digest": "${CATALOG_DIGEST}",
+            "receipt_digest": "${RECEIPT_DIGEST}"
+          }
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sealed-catalog-witness
+          path: sealed-witness/receipt.json
 
   verify-windows:
     if: github.event_name == 'workflow_dispatch'

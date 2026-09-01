@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   loadVerifiedPublications,
+  resolveMembraneOptionsForRepo,
   type LoadedPublications,
 } from "./publication-membrane";
 import type { PublishedConceptGenealogy } from "./schema";
@@ -19,7 +20,10 @@ function loadAll(repoRoot: string = process.cwd()): LoadedPublications {
     if (repoRoot === process.cwd()) cache = empty;
     return empty;
   }
-  const loaded = loadVerifiedPublications(repoRoot);
+  const loaded = loadVerifiedPublications(
+    repoRoot,
+    resolveMembraneOptionsForRepo(repoRoot),
+  );
   if (repoRoot === process.cwd()) cache = loaded;
   return loaded;
 }

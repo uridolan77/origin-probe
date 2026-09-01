@@ -46,14 +46,41 @@ Authoritative receipts used (sealed delivery naming):
 - Neutral catalog metadata only (`data/concepts/catalog.json` + receipt)
 - Signed site publication bundles of kind `origin_site_concept_publication_v1` (none at intake)
 - Product schemas, importers, guards, and UI that render catalog / accepted dossiers
+- AES-256-GCM encrypted custody blobs under `data/concepts/custody/*.zip.enc` (ciphertext only; passphrase lives in the GitHub `publication-trust` environment)
 
 **Excluded from the product repository and web build:**
 
-- Candidate 005 delivery / artifact / workspace / trusted-verifier ZIPs
+- Candidate 005 delivery / artifact / workspace / trusted-verifier ZIPs in plaintext
 - Research workspaces and TASK_GRAPH / ROLE_AUDIT_QUEUE raw graphs
 - Candidate assertion prose and unaccepted historical claims
 - Fixture private keys and trusted-verifier executables
 - Internal review-event ledgers
+
+## Sealed catalog custody (CI witness)
+
+Controlling digests are GitHub Environment variables on `publication-trust` (not inline workflow YAML):
+
+| Variable | Value |
+|----------|-------|
+| `CANDIDATE_005_ARTIFACT_SHA256` | `a2e463e0b134b4ed49ebb6cced8d0bf1afbb2dcf5780568d7e66ac31299d6814` |
+| `CANDIDATE_005_C092_ZIP_SHA256` | `74ace215ecc436399e5f57da0b4e1b4ad6d61672a3025a8e930ff679c5d209d0` |
+
+Environment secret:
+
+| Secret | Purpose |
+|--------|---------|
+| `CANDIDATE_005_CUSTODY_PASSPHRASE` | Decrypts committed `*.zip.enc` custody blobs |
+
+Operator encrypt (local only; never commit the passphrase):
+
+```bash
+export CANDIDATE_005_CUSTODY_PASSPHRASE='...'
+node tools/encrypt-custody-artifacts.mjs \
+  --artifact-zip /path/to/ORIGIN_CONCEPT_GENEALOGIES_100_CANDIDATE_005_ARTIFACT.zip \
+  --c092-zip /path/to/ORIGIN_CONCEPT_GENEALOGIES_100_CANDIDATE_005_C092_PILOT_WORKSPACE.zip
+```
+
+Hosted witness: manually dispatch the `verify-sealed-catalog` job. It fails closed when passphrase or digest vars are absent, decrypts, verifies digests, rebuilds the catalog, and compares rebuilt `catalog.json` / `catalog-receipt.json` to the committed tree.
 
 ## Source filenames (logical)
 

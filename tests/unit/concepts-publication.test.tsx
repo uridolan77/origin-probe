@@ -37,6 +37,8 @@ const membraneOpts = {
   authority: fixtureAuthority,
   pinnedPolicy: fixturePolicy,
   pinFingerprint: fixturePolicy.authorityFingerprintSha256,
+  skipCatalogBinding: true,
+  registriesRoot: path.join(fixtures, "registries"),
 };
 
 function load(name: string) {
@@ -65,6 +67,14 @@ function tmpRepo(): string {
       path.join(process.cwd(), "data/concepts/publication-root.public.json"),
     ),
   );
+  const registriesDir = path.join(tmp, "data/concepts/registries");
+  fs.mkdirSync(registriesDir, { recursive: true });
+  for (const file of fs.readdirSync(path.join(fixtures, "registries"))) {
+    fs.copyFileSync(
+      path.join(fixtures, "registries", file),
+      path.join(registriesDir, file),
+    );
+  }
   return tmp;
 }
 
@@ -197,6 +207,36 @@ describe("concept publication membrane", () => {
     ).toBe(true);
   });
 
+  it("rejects tampered finding prose even when digests are resigned", () => {
+    expect(() =>
+      validatePublicationBundle(
+        load("publication-bundle-finding-tamper.json"),
+        fixtureAuthority,
+        membraneOpts,
+      ),
+    ).toThrow(/deterministic projection|Projection text digest|Digest mismatch/i);
+  });
+
+  it("rejects tampered finding when dossier has no priority slot", () => {
+    expect(() =>
+      validatePublicationBundle(
+        load("publication-bundle-finding-no-priority-tamper.json"),
+        fixtureAuthority,
+        membraneOpts,
+      ),
+    ).toThrow(/deterministic projection|Projection text digest|finding-authority/i);
+  });
+
+  it("rejects upstream derivedPlan decoy that differs from live projectionPlans", () => {
+    expect(() =>
+      validatePublicationBundle(
+        load("publication-bundle-upstream-plan-decoy.json"),
+        fixtureAuthority,
+        membraneOpts,
+      ),
+    ).toThrow(/Upstream derived plan does not match/i);
+  });
+
   const negatives: [string, string][] = [
     ["publication-bundle-candidate-assertion.json", "Candidate or unaccepted"],
     ["publication-bundle-sourced-unaccepted.json", "Sourced but unaccepted"],
@@ -247,6 +287,9 @@ describe("cleanroom host exception", () => {
       text: string,
       hosts?: readonly string[],
     ) => string;
+    const isExactAllowedHost = mod.isExactAllowedHost as (
+      hostname: string,
+    ) => boolean;
     const CLEANROOM_ALLOWED_EXACT_HOSTS =
       mod.CLEANROOM_ALLOWED_EXACT_HOSTS as readonly string[];
     expect(isApprovedHostAllowList(CLEANROOM_ALLOWED_EXACT_HOSTS)).toBe(true);
@@ -259,6 +302,19 @@ describe("cleanroom host exception", () => {
     );
     expect(masked.includes("origin.ontogony.net")).toBe(false);
     expect(masked.toLowerCase().includes(brand.toLowerCase())).toBe(true);
+    expect(isExactAllowedHost("origin.ontogony.net")).toBe(true);
+    const evilPrefixHost = Buffer.from(
+      "ZXZpbC1vcmlnaW4ub250b2dvbnkubmV0",
+      "base64",
+    ).toString("utf8");
+    const evilSuffixHost = Buffer.from(
+      "b3JpZ2luLm9udG9nb255Lm5ldC5ldmlsLmV4YW1wbGU=",
+      "base64",
+    ).toString("utf8");
+    expect(isExactAllowedHost(evilPrefixHost)).toBe(false);
+    expect(isExactAllowedHost(evilSuffixHost)).toBe(false);
+    const embedded = maskAllowedHosts(`${evilPrefixHost} should stay visible`);
+    expect(embedded).toContain(evilPrefixHost);
   });
 });
 
@@ -306,6 +362,15 @@ describe("catalog zip custody", () => {
       "candidate-005.json": JSON.stringify(candidate),
       "CORPUS_AUDIT.json": JSON.stringify(audit),
       "TASK_GRAPH.json": JSON.stringify(tasks),
+      "ARTIFACT_MANIFEST.json": JSON.stringify({
+        packageId: "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+        exactSet: [
+          "candidate-005.json",
+          "CORPUS_AUDIT.json",
+          "TASK_GRAPH.json",
+          "ARTIFACT_MANIFEST.json",
+        ],
+      }),
     });
     const c092Zip = path.join(dir, "c092.zip");
     writeStoredZip(c092Zip, {
@@ -371,6 +436,15 @@ describe("catalog zip custody", () => {
         acceptedAssertionCount: 0,
       }),
       "TASK_GRAPH.json": JSON.stringify({ tasks: [] }),
+      "ARTIFACT_MANIFEST.json": JSON.stringify({
+        packageId: "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+        exactSet: [
+          "candidate-005.json",
+          "CORPUS_AUDIT.json",
+          "TASK_GRAPH.json",
+          "ARTIFACT_MANIFEST.json",
+        ],
+      }),
     });
     const c092Zip = path.join(dir, "c092.zip");
     writeStoredZip(c092Zip, {

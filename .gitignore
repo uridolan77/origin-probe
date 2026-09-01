@@ -10,6 +10,7 @@ test-results/
 .env
 .env.*
 !.env.example
+.custody-passphrase.local
 .vercel
 *.tsbuildinfo
 tools/fonts/

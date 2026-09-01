@@ -40,11 +40,29 @@ const EXPECTED_ARTIFACT =
 const EXPECTED_C092 =
   "74ace215ecc436399e5f57da0b4e1b4ad6d61672a3025a8e930ff679c5d209d0";
 
+function assertEnvDigestPins() {
+  const envArtifact = process.env.CANDIDATE_005_ARTIFACT_SHA256;
+  const envC092 = process.env.CANDIDATE_005_C092_ZIP_SHA256;
+  if (envArtifact && envArtifact.toLowerCase() !== EXPECTED_ARTIFACT) {
+    throw new Error(
+      `CANDIDATE_005_ARTIFACT_SHA256 env pin does not match builder constant (${envArtifact})`,
+    );
+  }
+  if (envC092 && envC092.toLowerCase() !== EXPECTED_C092) {
+    throw new Error(
+      `CANDIDATE_005_C092_ZIP_SHA256 env pin does not match builder constant (${envC092})`,
+    );
+  }
+}
+
 const ARTIFACT_EXACT_SET = [
   "candidate-005.json",
   "CORPUS_AUDIT.json",
   "TASK_GRAPH.json",
+  "ARTIFACT_MANIFEST.json",
 ];
+
+const C092_EXACT_SET = ["C092_MATURITY_REPORT.json"];
 
 function slugify(label) {
   const base = label
@@ -78,51 +96,20 @@ function deriveMaturity(record, audit, c092Pilot) {
 }
 
 function deriveC092PilotFromWorkspace(extractDir) {
-  const candidates = [
-    "C092_MATURITY_REPORT.json",
-    "maturity-report.json",
-    "reports/C092_MATURITY_REPORT.json",
-    "C092/maturity.json",
-  ];
-  for (const rel of candidates) {
-    const p = path.join(extractDir, rel);
-    if (fs.existsSync(p)) {
-      return JSON.parse(fs.readFileSync(p, "utf8"));
-    }
+  const reportPath = path.join(extractDir, "C092_MATURITY_REPORT.json");
+  if (!fs.existsSync(reportPath)) {
+    throw new Error(
+      "C092 maturity report missing at trusted path C092_MATURITY_REPORT.json",
+    );
   }
-  // Fall back: workspace marker file used by sealed pilot packages
-  const marker = path.join(extractDir, "PASS_PARTIALLY_VERIFIED");
-  if (fs.existsSync(marker)) {
-    return {
-      recordId: "C092",
-      gate: "PASS_PARTIALLY_VERIFIED",
-      acceptedAssertionIds: [],
-    };
+  const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+  if (report.recordId !== "C092") {
+    throw new Error("C092 report recordId mismatch");
   }
-  // Scan for any json declaring the gate
-  function walk(dir) {
-    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
-      const full = path.join(dir, ent.name);
-      if (ent.isDirectory()) {
-        const hit = walk(full);
-        if (hit) return hit;
-      } else if (ent.name.endsWith(".json")) {
-        try {
-          const j = JSON.parse(fs.readFileSync(full, "utf8"));
-          if (
-            j.recordId === "C092" &&
-            j.gate === "PASS_PARTIALLY_VERIFIED"
-          ) {
-            return j;
-          }
-        } catch {
-          /* ignore */
-        }
-      }
-    }
-    return null;
+  if (report.gate !== "PASS_PARTIALLY_VERIFIED") {
+    throw new Error("C092 gate must be PASS_PARTIALLY_VERIFIED");
   }
-  return walk(extractDir);
+  return report;
 }
 
 export function buildConceptCatalogFromZips({
@@ -133,7 +120,9 @@ export function buildConceptCatalogFromZips({
   expectedC092Digest = EXPECTED_C092,
   enforcePinnedDigests = true,
   artifactExactSet = ARTIFACT_EXACT_SET,
+  c092ExactSet = C092_EXACT_SET,
 }) {
+  assertEnvDigestPins();
   if (!artifactZip || !c092Zip) {
     throw new Error(
       "Usage requires --artifact-zip and --c092-zip (no --artifact-dir / --c092-report)",
@@ -154,27 +143,23 @@ export function buildConceptCatalogFromZips({
   let c092Extract;
   try {
     artifactExtract = extractZipToTemp(artifactZip, artifactExactSet);
-    c092Extract = extractZipToTemp(c092Zip);
+    c092Extract = extractZipToTemp(c092Zip, c092ExactSet);
 
+    const manifestPath = path.join(artifactExtract.dir, "ARTIFACT_MANIFEST.json");
     const candidatePath = path.join(artifactExtract.dir, "candidate-005.json");
     const auditPath = path.join(artifactExtract.dir, "CORPUS_AUDIT.json");
     const taskGraphPath = path.join(artifactExtract.dir, "TASK_GRAPH.json");
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    if (manifest.packageId !== SOURCE_PACKAGE_ID) {
+      throw new Error(`Artifact manifest packageId mismatch: ${manifest.packageId}`);
+    }
     const candidate = JSON.parse(fs.readFileSync(candidatePath, "utf8"));
     const audit = JSON.parse(fs.readFileSync(auditPath, "utf8"));
     const taskGraph = JSON.parse(fs.readFileSync(taskGraphPath, "utf8"));
 
     const c092Pilot = deriveC092PilotFromWorkspace(c092Extract.dir);
-    if (!c092Pilot) {
-      throw new Error("C092 maturity could not be derived from verified workspace ZIP");
-    }
-    if (c092Pilot.recordId !== "C092") {
-      throw new Error("C092 report recordId mismatch");
-    }
     if ((c092Pilot.acceptedAssertionIds ?? []).length !== 0) {
       throw new Error("C092 report unexpectedly lists accepted assertions");
-    }
-    if (c092Pilot.gate !== "PASS_PARTIALLY_VERIFIED") {
-      throw new Error("C092 gate must be PASS_PARTIALLY_VERIFIED");
     }
 
     if (candidate.packageId !== SOURCE_PACKAGE_ID) {
