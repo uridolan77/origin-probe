@@ -1,0 +1,216 @@
+{
+  "packageKind": "origin_site_concept_publication_v1",
+  "packageVersion": 1,
+  "repository": "uridolan77/origin-probe",
+  "canonicalHost": "origin.ontogony.net",
+  "generatedAt": "2026-08-31T16:00:00.000Z",
+  "signerKeyId": "origin-site-concept-publication-fixture-only-v1",
+  "sourceCandidatePackageDigest": "a2e463e0b134b4ed49ebb6cced8d0bf1afbb2dcf5780568d7e66ac31299d6814",
+  "roleRegistryDigest": "038a5c3d0da5963142d59b8177778d90e4415084ea35c3c7dd95f67c04ab5a9b",
+  "policyRegistryDigest": "e1785ba1ef8036360241bcdb6570a87af084f6d07afde7ef2d82d0d21b2673f9",
+  "authorizationEnvelope": {
+    "authorizationId": "AUTH-FIXTURE-001",
+    "authorizedBy": "PRN-FIXTURE-AUTHORITY",
+    "authorizedAt": "2026-08-31T15:50:00.000Z",
+    "workspaceDigest": "7c972041fa9e313ec0c96ac90fee19e6ac5e20e9d734f7c877f0ef1827abf866",
+    "requestDigest": "c189d89161d944fd661bf28763b325890c85ac70961ead26111dfb7da2358caf",
+    "planDigest": "178aafb441f89e4d896d9c17af90a256f9600f0d7228d70a2ac9d1a40c7ce91a",
+    "authorityKeyId": "origin-site-concept-publication-fixture-only-v1",
+    "signature": "sw3A2NWhuAt2zUTh0xe2MKxSQh7PYEGeTyHitZtIYhjMExGMxl3Bf4fOt9LH0k7ilEJhM9Qxa7YRqxakol6dDg=="
+  },
+  "upstreamArtifacts": [
+    {
+      "conceptId": "C042",
+      "slug": "synthetic-fixture-concept",
+      "reviewedWorkspace": {
+        "workspaceKind": "origin_reviewed_workspace_v1",
+        "conceptId": "C042",
+        "slug": "synthetic-fixture-concept",
+        "acceptedAssertionIds": [
+          "C042-A1",
+          "C042-A2"
+        ],
+        "reviewEventIds": [
+          "REV-C042-T1",
+          "REV-C042-T2"
+        ],
+        "reviewedAt": "2026-08-31T15:40:00.000Z"
+      },
+      "publicationRequest": {
+        "requestKind": "origin_publication_request_v1",
+        "requestId": "REQ-FIXTURE-001",
+        "conceptId": "C042",
+        "slug": "synthetic-fixture-concept",
+        "revision": 1,
+        "requestedSlots": [
+          "earliest_accepted_formulation"
+        ],
+        "requestedAt": "2026-08-31T15:45:00.000Z"
+      },
+      "derivedPlan": {
+        "conceptId": "C042",
+        "slug": "synthetic-fixture-concept",
+        "slot": "earliest_accepted_formulation",
+        "templateVersion": 1,
+        "eligibleAssertionIds": [
+          "C042-A1",
+          "C042-A2"
+        ],
+        "normalizedIntervals": [
+          {
+            "assertionId": "C042-A1",
+            "startYear": 1950,
+            "precision": "year"
+          },
+          {
+            "assertionId": "C042-A2",
+            "startYear": 1950,
+            "precision": "year"
+          }
+        ],
+        "searchScopeId": "fixture-scope-1",
+        "searchScopeDigest": "b4ccc47413ab2c3190db22df602404d58d9b82b426be3c7aec0212e6165b720b",
+        "selectedAssertionIds": [
+          "C042-A1",
+          "C042-A2"
+        ],
+        "disposition": "contested",
+        "projectionTextDigest": "1195d5197d64cf6cbe053b444a9bf07601b3512d53666660ada66c17caf37532"
+      }
+    }
+  ],
+  "projectionPlans": [
+    {
+      "conceptId": "C042",
+      "slug": "synthetic-fixture-concept",
+      "slot": "earliest_accepted_formulation",
+      "templateVersion": 1,
+      "eligibleAssertionIds": [
+        "C042-A1",
+        "C042-A2"
+      ],
+      "normalizedIntervals": [
+        {
+          "assertionId": "C042-A1",
+          "startYear": 1950,
+          "precision": "year"
+        },
+        {
+          "assertionId": "C042-A2",
+          "startYear": 1950,
+          "precision": "year"
+        }
+      ],
+      "searchScopeId": "fixture-scope-1",
+      "searchScopeDigest": "b4ccc47413ab2c3190db22df602404d58d9b82b426be3c7aec0212e6165b720b",
+      "selectedAssertionIds": [
+        "C042-A1",
+        "C042-A2"
+      ],
+      "disposition": "contested",
+      "projectionTextDigest": "1195d5197d64cf6cbe053b444a9bf07601b3512d53666660ada66c17caf37532"
+    }
+  ],
+  "dossierDigests": [
+    {
+      "conceptId": "C042",
+      "slug": "synthetic-fixture-concept",
+      "digest": "6b53f3672ac1f3369ca8f1c4790ce7cd9edb177f0b048dc943e41e51ef09c4e2"
+    }
+  ],
+  "dossiers": [
+    {
+      "conceptId": "C042",
+      "slug": "synthetic-fixture-concept",
+      "label": "Synthetic fixture concept",
+      "aliases": [
+        "fixture concept"
+      ],
+      "objectKind": "thought_experiment",
+      "definitionScope": "Contract-test only; not a real corpus record.",
+      "revision": 1,
+      "publishedAt": "2026-08-31T16:00:00.000Z",
+      "reviewedAt": "2026-08-31T15:40:00.000Z",
+      "status": "published",
+      "finding": "Within Synthetic fixture corpus only, the earliest accepted formulation for earliest_accepted_formulation is contested among:\n- tie A (1950; Fixture Author, Fixture Paper, 1970)\n- tie B (1950; Fixture Author, Fixture Paper, 1970)",
+      "projectionSlots": [
+        {
+          "slot": "earliest_accepted_formulation",
+          "assertionIds": [
+            "C042-A1",
+            "C042-A2"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "assertionId": "C042-A1",
+          "role": "earliest_accepted_formulation",
+          "claim": "tie A",
+          "acceptedReviewEventIds": [
+            "REV-C042-T1"
+          ],
+          "evidenceIds": [
+            "C042-ET1"
+          ],
+          "sourceIds": [
+            "C042-S01"
+          ],
+          "temporal": {
+            "display": "1950",
+            "startYear": 1950,
+            "precision": "year"
+          },
+          "caveat": "Bounded fixture"
+        },
+        {
+          "assertionId": "C042-A2",
+          "role": "earliest_accepted_formulation",
+          "claim": "tie B",
+          "acceptedReviewEventIds": [
+            "REV-C042-T2"
+          ],
+          "evidenceIds": [
+            "C042-ET2"
+          ],
+          "sourceIds": [
+            "C042-S01"
+          ],
+          "temporal": {
+            "display": "1950",
+            "startYear": 1950,
+            "precision": "year"
+          },
+          "caveat": "Bounded fixture"
+        }
+      ],
+      "sources": [
+        {
+          "sourceId": "C042-S01",
+          "citation": "Fixture Author, Fixture Paper, 1970",
+          "url": "https://example.org/fixture-source",
+          "publicationDate": "1970"
+        }
+      ],
+      "searchScope": "Synthetic fixture corpus only",
+      "limitations": [
+        "Not a historical authority",
+        "Contract test only"
+      ],
+      "publicationReceipt": {
+        "packageId": "ORIGIN-SITE-CONCEPT-PUBLICATION-FIXTURE-001",
+        "workspaceDigest": "7c972041fa9e313ec0c96ac90fee19e6ac5e20e9d734f7c877f0ef1827abf866",
+        "requestDigest": "c189d89161d944fd661bf28763b325890c85ac70961ead26111dfb7da2358caf",
+        "planDigest": "178aafb441f89e4d896d9c17af90a256f9600f0d7228d70a2ac9d1a40c7ce91a",
+        "roleRegistryDigest": "038a5c3d0da5963142d59b8177778d90e4415084ea35c3c7dd95f67c04ab5a9b",
+        "policyRegistryDigest": "e1785ba1ef8036360241bcdb6570a87af084f6d07afde7ef2d82d0d21b2673f9",
+        "authorizationId": "AUTH-FIXTURE-001",
+        "authorizedBy": "PRN-FIXTURE-AUTHORITY",
+        "authorizedAt": "2026-08-31T15:50:00.000Z",
+        "authorityKeyId": "origin-site-concept-publication-fixture-only-v1",
+        "signature": "Tn8V6SBUDnWiiNSDJxADDbFR2eaVKTGF/U3qlf5P1Ny7GToEu1vL44WEsEcYUCZJpsTOyHb7whPjtKW0h3alAw=="
+      }
+    }
+  ],
+  "signature": "ABEko/vXwv3dmpRYuWmwut6ELXDmLuE+joxGRx24dtmke+aBjrf42UawzU86/KDTGHDdkomi3SVaj3LzZEc6Dw=="
+}

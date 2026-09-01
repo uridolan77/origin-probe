@@ -1,7 +1,25 @@
 #!/usr/bin/env node
+/**
+ * Clean-room denylist scan.
+ *
+ * Documented exception: the intentional public canonical hostname
+ * `origin.ontogony.net` may appear as an exact contiguous string. Brand
+ * tokens outside that exact hostname remain prohibited.
+ */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  CLEANROOM_ALLOWED_EXACT_HOSTS,
+  isApprovedHostAllowList,
+  maskAllowedHosts,
+} from "./lib/cleanroom-policy.mjs";
+
+export {
+  CLEANROOM_ALLOWED_EXACT_HOSTS,
+  isApprovedHostAllowList,
+  maskAllowedHosts,
+};
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const denylistPath = path.join(root, "tools", "denylist.json");
@@ -47,6 +65,13 @@ const files = walk(root).filter((f) => {
 
 let failed = false;
 
+if (!isApprovedHostAllowList(CLEANROOM_ALLOWED_EXACT_HOSTS)) {
+  failed = true;
+  console.error(
+    "cleanroom hit: CLEANROOM_ALLOWED_EXACT_HOSTS broadened beyond exact public hostname",
+  );
+}
+
 for (const file of files) {
   let text;
   try {
@@ -54,20 +79,21 @@ for (const file of files) {
   } catch {
     continue;
   }
-  // Skip binary-ish
   if (text.includes("\u0000")) continue;
+
+  const scanned = maskAllowedHosts(text);
 
   for (const p of patterns) {
     let hit = false;
     if (p.mode === "regex") {
       try {
         const re = new RegExp(p.decoded, "i");
-        hit = re.test(text);
+        hit = re.test(scanned);
       } catch {
-        hit = text.toLowerCase().includes(p.decoded.toLowerCase());
+        hit = scanned.toLowerCase().includes(p.decoded.toLowerCase());
       }
     } else {
-      hit = text.toLowerCase().includes(p.decoded.toLowerCase());
+      hit = scanned.toLowerCase().includes(p.decoded.toLowerCase());
     }
     if (hit) {
       failed = true;

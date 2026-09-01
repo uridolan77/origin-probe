@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "registryKind": "origin_concept_public_role_registry_v1",
+  "roles": [
+    "lexical_history",
+    "conceptual_antecedent",
+    "earliest_accepted_formulation",
+    "technical_use_or_naming",
+    "canonical_systematization",
+    "transmission_and_translation",
+    "semantic_change",
+    "reception_and_popularization",
+    "contested_or_unresolved"
+  ],
+  "priorityProjectionSlots": ["earliest_accepted_formulation"],
+  "slotRequirements": {
+    "earliest_accepted_formulation": {
+      "requiresTemporalStartYear": true,
+      "eligibilityRole": "earliest_accepted_formulation"
+    }
+  }
+}

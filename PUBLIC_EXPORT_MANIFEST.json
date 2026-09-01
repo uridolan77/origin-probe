@@ -19,6 +19,33 @@
         "data/genealogies/*.json"
       ]
     },
+    "static_concept_catalog": {
+      "description": "Sanitized concept research catalog, accepted public dossiers, and concept product schemas/tools.",
+      "globs": [
+        "data/concepts/catalog.json",
+        "data/concepts/catalog-receipt.json",
+        "data/concepts/publication-authority.public.json",
+        "data/concepts/publications/**",
+        "data/concepts/publications/.gitkeep",
+        "src/lib/concepts/**",
+        "src/app/concepts/**",
+        "src/components/Concept*.tsx",
+        "src/components/MaturityChip.tsx",
+        "docs/concepts/**",
+        "tools/build-concept-catalog.mjs",
+        "tools/import-concept-publication.mjs",
+        "tools/validate-concept-data.mjs",
+        "tools/guard-concept-publication.mjs",
+        "tools/gen-concept-publication-fixtures.mjs",
+        "tests/fixtures/concepts/**",
+        "tests/unit/concepts-*.test.ts",
+        "tests/unit/concept-*.test.ts",
+        "tests/unit/concept-*.test.tsx",
+        "tests/e2e/concepts.spec.ts",
+        "src/app/sitemap.ts",
+        "src/app/robots.ts"
+      ]
+    },
     "public_citations": {
       "description": "Public citation notes and bibliographic excerpts.",
       "globs": [

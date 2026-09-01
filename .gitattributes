@@ -4,3 +4,4 @@ measurement/scripts/window002-*.mjs text eol=lf
 measurement/scripts/window002-*.ps1 text eol=lf
 measurement/test/window002-*.test.js text eol=lf
 tests/fixtures/genealogies-baseline/*.json text eol=lf
+data/concepts/*.json text eol=lf

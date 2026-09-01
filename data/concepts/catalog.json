@@ -1,0 +1,1912 @@
+{
+  "schemaVersion": 1,
+  "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+  "sourceArtifactDigest": "a2e463e0b134b4ed49ebb6cced8d0bf1afbb2dcf5780568d7e66ac31299d6814",
+  "generatedFrom": {
+    "artifactDigest": "a2e463e0b134b4ed49ebb6cced8d0bf1afbb2dcf5780568d7e66ac31299d6814",
+    "corpusAuditDigest": "ffc4c81f271d0d55f234f9862a871f76633448ab5791b2b6bdd08843605e7dcd",
+    "c092PilotDigest": "74ace215ecc436399e5f57da0b4e1b4ad6d61672a3025a8e930ff679c5d209d0"
+  },
+  "items": [
+    {
+      "conceptId": "C001",
+      "slug": "logos",
+      "label": "Logos",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Reality and metaphysics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "28c1aee6611dccdee355702ab5f7fa5f45cc2e8a24f74d0a2581978f3771d761"
+    },
+    {
+      "conceptId": "C002",
+      "slug": "being-and-becoming",
+      "label": "Being and becoming",
+      "aliases": [],
+      "objectKind": "distinction",
+      "domains": [
+        "Reality and metaphysics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "5637e1efa5856cdcd2d498fe439768e318a084cd9ff70f2af1678e8748efd4b8"
+    },
+    {
+      "conceptId": "C003",
+      "slug": "atomism",
+      "label": "Atomism",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Reality and metaphysics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 25,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "aa0010b47cbb32f58b2ec43ea8796fded6ec6bafab60afb1c005ab6da3ff5493"
+    },
+    {
+      "conceptId": "C004",
+      "slug": "theory-of-forms",
+      "label": "Theory of Forms",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Reality and metaphysics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "cd8d557ba7cd8c79fdb4c52de266ca84b43555a89bd273ba2661c04bcd551b03"
+    },
+    {
+      "conceptId": "C005",
+      "slug": "substance-ousia",
+      "label": "Substance (ousia)",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Reality and metaphysics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "b812f6e7d5307b942a0be6c1a60eab7bfb7e8128e28a15402687b54d02ae7334"
+    },
+    {
+      "conceptId": "C006",
+      "slug": "hylomorphism",
+      "label": "Hylomorphism",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Reality and metaphysics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 18,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "728dd06ed142464dca09c49d86bdb70b1eef536322a57b4ac4d95a0caf3f8c6b"
+    },
+    {
+      "conceptId": "C007",
+      "slug": "four-causes",
+      "label": "Four causes",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "Reality and metaphysics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "ffe5221a29bdc6a9825bafac6451f41177f0fa1b9648a946608e90666d8abaee"
+    },
+    {
+      "conceptId": "C008",
+      "slug": "potentiality-and-actuality",
+      "label": "Potentiality and actuality",
+      "aliases": [],
+      "objectKind": "distinction",
+      "domains": [
+        "Reality and metaphysics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "613d9640cc02fb4b64ec6883f2df03748b2a8b9603d1013eec9b34287a02e6c8"
+    },
+    {
+      "conceptId": "C009",
+      "slug": "essence-existence-distinction",
+      "label": "Essence–existence distinction",
+      "aliases": [],
+      "objectKind": "distinction",
+      "domains": [
+        "Reality and metaphysics"
+      ],
+      "researchMaturity": "source_leads_mapped",
+      "publicFindingAvailable": false,
+      "openTaskCount": 25,
+      "sourceLeadCount": 4,
+      "evidenceLeadCount": 7,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "7596baca5e7f114dccf58ce1a033ff56d0791de4d4a16fe00553a70e1ec3479f"
+    },
+    {
+      "conceptId": "C010",
+      "slug": "nihilism",
+      "label": "Nihilism",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Reality and metaphysics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 28,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "6152b1ea5433d8b28afeaa5335f380ac889190e818c6259a957b652d80068fb1"
+    },
+    {
+      "conceptId": "C011",
+      "slug": "socratic-elenchus",
+      "label": "Socratic elenchus",
+      "aliases": [],
+      "objectKind": "method",
+      "domains": [
+        "Knowledge and method"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "decfe62b9d488a97c421b43db0ac86a2e1dade4591f779ddc7b4efc03a90392d"
+    },
+    {
+      "conceptId": "C012",
+      "slug": "cave-analogy-allegory-of-the-cave",
+      "label": "Cave analogy (allegory of the cave)",
+      "aliases": [],
+      "objectKind": "thought_experiment",
+      "domains": [
+        "Knowledge and method"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "cef0f8759e9d506ab651c4fb7b548356fac0da643f51976529f0f3c3b7570728"
+    },
+    {
+      "conceptId": "C013",
+      "slug": "epoche-suspension-of-judgment",
+      "label": "Epoché (suspension of judgment)",
+      "aliases": [],
+      "objectKind": "method",
+      "domains": [
+        "Knowledge and method"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 26,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "7b6d93df13768092f3c622fb8d51e3b611f9dc4991aee5198cb815f4ce80bfd9"
+    },
+    {
+      "conceptId": "C014",
+      "slug": "methodic-doubt",
+      "label": "Methodic doubt",
+      "aliases": [],
+      "objectKind": "method",
+      "domains": [
+        "Knowledge and method"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "24c16a471ddec5e1dc05241be94005890ba8ba53324c75e0df88366dd0b51315"
+    },
+    {
+      "conceptId": "C015",
+      "slug": "cogito",
+      "label": "Cogito",
+      "aliases": [],
+      "objectKind": "argument",
+      "domains": [
+        "Knowledge and method"
+      ],
+      "researchMaturity": "source_leads_mapped",
+      "publicFindingAvailable": false,
+      "openTaskCount": 19,
+      "sourceLeadCount": 3,
+      "evidenceLeadCount": 6,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "6f5789b90523cb9117abdc1a09dc2f5310432551d89af3d7e0f1ab3e19f25263"
+    },
+    {
+      "conceptId": "C016",
+      "slug": "tabula-rasa",
+      "label": "Tabula rasa",
+      "aliases": [],
+      "objectKind": "reception_formula",
+      "domains": [
+        "Knowledge and method"
+      ],
+      "researchMaturity": "source_leads_mapped",
+      "publicFindingAvailable": false,
+      "openTaskCount": 31,
+      "sourceLeadCount": 5,
+      "evidenceLeadCount": 10,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "97d3ef791ff051f2e5412d9cf9b77e81613b41cd958c76fd11ea27cf41ec63fb"
+    },
+    {
+      "conceptId": "C017",
+      "slug": "transcendental-idealism",
+      "label": "Transcendental idealism",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Knowledge and method"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "d234faf944bf6d3a9d33f542115387000de98682e59f59f2e9e7cc6da6455f00"
+    },
+    {
+      "conceptId": "C018",
+      "slug": "problem-of-induction",
+      "label": "Problem of induction",
+      "aliases": [],
+      "objectKind": "problem_family",
+      "domains": [
+        "Knowledge and method"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "49bd6bc89bc93088a9477d1a288ed941d136f433cdbb36ffbd53cdd074b63e97"
+    },
+    {
+      "conceptId": "C019",
+      "slug": "synthetic-a-priori",
+      "label": "Synthetic a priori",
+      "aliases": [],
+      "objectKind": "distinction",
+      "domains": [
+        "Knowledge and method"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "2cc951120b862568255abded331fcd659564a7059dd5bb7434f44235ff2e39a9"
+    },
+    {
+      "conceptId": "C020",
+      "slug": "justified-true-belief-and-the-gettier-problem",
+      "label": "Justified true belief and the Gettier problem",
+      "aliases": [],
+      "objectKind": "problem_family",
+      "domains": [
+        "Knowledge and method"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "ed5ed8c3dee56bf2d40e1b0167f149f91c680a3242e693b9fdaf7d7620c4397e"
+    },
+    {
+      "conceptId": "C021",
+      "slug": "law-of-non-contradiction",
+      "label": "Law of non-contradiction",
+      "aliases": [],
+      "objectKind": "principle",
+      "domains": [
+        "Logic and language"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "53a4d9f3a24ee7e4d36e50f94c72bd6baa605b63ef9077a4ebdc04dabf0e887e"
+    },
+    {
+      "conceptId": "C022",
+      "slug": "syllogism",
+      "label": "Syllogism",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "Logic and language"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "70c32ee40a1b254b00549560073965611839b635ce12baf367b0f13e1e65e90c"
+    },
+    {
+      "conceptId": "C023",
+      "slug": "liar-paradox",
+      "label": "Liar paradox",
+      "aliases": [],
+      "objectKind": "paradox",
+      "domains": [
+        "Logic and language"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 26,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "08ee286aae770005b0b773f77323b9af22c1dfa132a82eb51cd45502020e06da"
+    },
+    {
+      "conceptId": "C024",
+      "slug": "sorites-paradox",
+      "label": "Sorites paradox",
+      "aliases": [],
+      "objectKind": "paradox",
+      "domains": [
+        "Logic and language"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 26,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "f4ea7d828fc3f8dfa0689b0e246e928d03527d43a6ac41bb411bf7d91939a89b"
+    },
+    {
+      "conceptId": "C025",
+      "slug": "ockhams-razor",
+      "label": "Ockham's razor",
+      "aliases": [],
+      "objectKind": "reception_formula",
+      "domains": [
+        "Logic and language"
+      ],
+      "researchMaturity": "source_leads_mapped",
+      "publicFindingAvailable": false,
+      "openTaskCount": 38,
+      "sourceLeadCount": 10,
+      "evidenceLeadCount": 11,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "3d42089fa20fc90025f855409e226212f2d32a9dde710f2d00528ddc2c462030"
+    },
+    {
+      "conceptId": "C026",
+      "slug": "principle-of-sufficient-reason",
+      "label": "Principle of sufficient reason",
+      "aliases": [],
+      "objectKind": "principle",
+      "domains": [
+        "Logic and language"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "17ce7e82fc1ad0a7e326f4241e269c6962659d03f9fdbd26523490f75aa28184"
+    },
+    {
+      "conceptId": "C027",
+      "slug": "analytic-synthetic-distinction",
+      "label": "Analytic–synthetic distinction",
+      "aliases": [],
+      "objectKind": "distinction",
+      "domains": [
+        "Logic and language"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "f892727c357851d684b686333f2ca53f206d62090938d421b5731d7570ac70fb"
+    },
+    {
+      "conceptId": "C028",
+      "slug": "sense-and-reference",
+      "label": "Sense and reference",
+      "aliases": [],
+      "objectKind": "distinction",
+      "domains": [
+        "Logic and language"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "fdc838d306d2c8396e9944df7d2bbacb51f8056430bd5dd9b7f246f35e8e2282"
+    },
+    {
+      "conceptId": "C029",
+      "slug": "definite-descriptions",
+      "label": "Definite descriptions",
+      "aliases": [],
+      "objectKind": "theory",
+      "domains": [
+        "Logic and language"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "ff1bde09b7b719d16506779a41aacc9e548973ee6c7cf9812f91922c996a3aff"
+    },
+    {
+      "conceptId": "C030",
+      "slug": "language-games",
+      "label": "Language-games",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "Logic and language"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "13da839b8aba559cfe75ec9c47e18890cc43108f9071d4a02f45870980305ea6"
+    },
+    {
+      "conceptId": "C031",
+      "slug": "eudaimonia",
+      "label": "Eudaimonia",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Ethics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "304c969f24e5d145766a8ef1b58e635407f28c71fbbd336f404ffe09f9eae5ae"
+    },
+    {
+      "conceptId": "C032",
+      "slug": "virtue-ethics",
+      "label": "Virtue ethics",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Ethics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 27,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "f34d205aacdf8a5395f33fed66d86d612f684f762f9767bae141f010e39ecdc1"
+    },
+    {
+      "conceptId": "C033",
+      "slug": "doctrine-of-the-mean",
+      "label": "Doctrine of the mean",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Ethics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "6455fb0774aa3fb34de7d367b1c041fde3a5bfb76ed1d2e7016f7668a2026293"
+    },
+    {
+      "conceptId": "C034",
+      "slug": "dichotomy-of-control",
+      "label": "Dichotomy of control",
+      "aliases": [],
+      "objectKind": "principle",
+      "domains": [
+        "Ethics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "929a664d08ba7185c1afd44a8c07aadda2c8439f4c9694a156cad3776bda3d1a"
+    },
+    {
+      "conceptId": "C035",
+      "slug": "euthyphro-dilemma",
+      "label": "Euthyphro dilemma",
+      "aliases": [],
+      "objectKind": "problem_family",
+      "domains": [
+        "Ethics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "a803b525a9eaba211bd7e9551ad3066c1123f046c3dbe3412482132aa567bde5"
+    },
+    {
+      "conceptId": "C036",
+      "slug": "natural-law",
+      "label": "Natural law",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Ethics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 24,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "f2eb2f6fd275fc2a6bb5e20bdd202c0592c9e38539704540819162830c4dfe51"
+    },
+    {
+      "conceptId": "C037",
+      "slug": "categorical-imperative",
+      "label": "Categorical imperative",
+      "aliases": [],
+      "objectKind": "principle",
+      "domains": [
+        "Ethics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "958eed6a3bbbb1f60ae131e3ff7f5c968decdd6387c7c340fe1687fb5386a1f8"
+    },
+    {
+      "conceptId": "C038",
+      "slug": "autonomy",
+      "label": "Autonomy",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Ethics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "66bad5bbfc6d41e961bb03ed7c47e7ccb37c79bae846f1ac69d69ad09ec5d429"
+    },
+    {
+      "conceptId": "C039",
+      "slug": "utilitarianism",
+      "label": "Utilitarianism",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Ethics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "3ff2901ea7f8266bffb7d2d78dac6c55bb21578564c2f8602ea1b06781a09d17"
+    },
+    {
+      "conceptId": "C040",
+      "slug": "is-ought-gap",
+      "label": "Is–ought gap",
+      "aliases": [],
+      "objectKind": "distinction",
+      "domains": [
+        "Ethics"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "d4f3283ff65dec0c3b51f35b7739e6a111ec518e0b61b0f634b12c48ea4f432c"
+    },
+    {
+      "conceptId": "C041",
+      "slug": "cosmopolitanism",
+      "label": "Cosmopolitanism",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Politics and law"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 26,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "b0168c83f06f3f0daeed260e70050f007eb883b2c1a851f484f7d3a93acba084"
+    },
+    {
+      "conceptId": "C042",
+      "slug": "natural-rights",
+      "label": "Natural rights",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Politics and law"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "f8a417f62e14521022df88193bbcb2bfa120894846fabab458b538cad204833b"
+    },
+    {
+      "conceptId": "C043",
+      "slug": "social-contract",
+      "label": "Social contract",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Politics and law"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 25,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "8b1f9458fa0a47dc5e2fcbf8c2d145c0291caa2a6bf2f020b9f33d9b64812b69"
+    },
+    {
+      "conceptId": "C044",
+      "slug": "state-of-nature",
+      "label": "State of nature",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "Politics and law"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "03fcfe6364d68fad52dd6e1f39b02daaed7e64c7b9e592edb3e4c946429cbd55"
+    },
+    {
+      "conceptId": "C045",
+      "slug": "consent-of-the-governed",
+      "label": "Consent of the governed",
+      "aliases": [],
+      "objectKind": "principle",
+      "domains": [
+        "Politics and law"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "510c437873cbeb215891c659841d1c48dc3f6e6cb8ac810ddb5ab92d952a74a5"
+    },
+    {
+      "conceptId": "C046",
+      "slug": "separation-of-powers",
+      "label": "Separation of powers",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Politics and law"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "03efe83aa40b283c0ac32d621e7bee2107d9841ed4239f14f139b297ccedbfd4"
+    },
+    {
+      "conceptId": "C047",
+      "slug": "general-will",
+      "label": "General will",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Politics and law"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "65f9fd2877648e2c062bb7620e2f55f7ccf34eb39bfbb0aa9e1714dfd91c3ee6"
+    },
+    {
+      "conceptId": "C048",
+      "slug": "toleration",
+      "label": "Toleration",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Politics and law"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "90908120a6296c5f088214234d680ad0c199a889bc23f82f1cf5bbeb748053ac"
+    },
+    {
+      "conceptId": "C049",
+      "slug": "civil-disobedience",
+      "label": "Civil disobedience",
+      "aliases": [],
+      "objectKind": "reception_formula",
+      "domains": [
+        "Politics and law"
+      ],
+      "researchMaturity": "source_leads_mapped",
+      "publicFindingAvailable": false,
+      "openTaskCount": 29,
+      "sourceLeadCount": 5,
+      "evidenceLeadCount": 10,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "3e248e509bf47f02fcb20507d9d5b8a76a1b938b919c45ae1ea59430a03fd315"
+    },
+    {
+      "conceptId": "C050",
+      "slug": "veil-of-ignorance",
+      "label": "Veil of ignorance",
+      "aliases": [],
+      "objectKind": "thought_experiment",
+      "domains": [
+        "Politics and law"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "30114be1184d0b29d2dfaaa244f4afe8c14eb8e8ad9ba4f712d8fe40be870e3b"
+    },
+    {
+      "conceptId": "C051",
+      "slug": "mind-body-dualism",
+      "label": "Mind–body dualism",
+      "aliases": [],
+      "objectKind": "distinction",
+      "domains": [
+        "Mind and self"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "c33d67bc690bae03ab0305d9f4d311c701564710200bbae487d1c039136e82f8"
+    },
+    {
+      "conceptId": "C052",
+      "slug": "personal-identity-as-consciousness-and-memory",
+      "label": "Personal identity as consciousness and memory",
+      "aliases": [],
+      "objectKind": "theory",
+      "domains": [
+        "Mind and self"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "e50efc009f24b71a3981db18fba2bc9898ba910813ba53d40c36d2ed3b09940c"
+    },
+    {
+      "conceptId": "C053",
+      "slug": "bundle-theory-of-the-self",
+      "label": "Bundle theory of the self",
+      "aliases": [],
+      "objectKind": "theory",
+      "domains": [
+        "Mind and self"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "8fc1c712bae0419f1a53532443356554bc858b6db42bf780e8f8cb59347225b1"
+    },
+    {
+      "conceptId": "C054",
+      "slug": "free-will",
+      "label": "Free will",
+      "aliases": [],
+      "objectKind": "problem_family",
+      "domains": [
+        "Mind and self"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 25,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "499cb82f4375f475ce9e622701682f92b87400ddaf35649d38c9ed85870446b7"
+    },
+    {
+      "conceptId": "C055",
+      "slug": "intentionality",
+      "label": "Intentionality",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Mind and self"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 25,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "b9685b8bb8258e7b089dddca601e031a508450553a8e55825927f310f641d361"
+    },
+    {
+      "conceptId": "C056",
+      "slug": "the-unconscious",
+      "label": "The unconscious",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Mind and self"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "849e604475ee2b1e7499de75673e127bddda15eb8f0d86991e394f2ca681ca99"
+    },
+    {
+      "conceptId": "C057",
+      "slug": "qualia",
+      "label": "Qualia",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Mind and self"
+      ],
+      "researchMaturity": "source_leads_mapped",
+      "publicFindingAvailable": false,
+      "openTaskCount": 19,
+      "sourceLeadCount": 3,
+      "evidenceLeadCount": 6,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "dd6d19f34a995f9c4b9bdca8fbfce436bedd1691a5abb54e2fe18695f9d0bee5"
+    },
+    {
+      "conceptId": "C058",
+      "slug": "functionalism",
+      "label": "Functionalism",
+      "aliases": [],
+      "objectKind": "theory",
+      "domains": [
+        "Mind and self"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "a3f8d8924b305213c9af3d3b6143e582ffb79f8e46ec7e2c2a3010b476d54838"
+    },
+    {
+      "conceptId": "C059",
+      "slug": "turing-test-imitation-game",
+      "label": "Turing test (imitation game)",
+      "aliases": [],
+      "objectKind": "thought_experiment",
+      "domains": [
+        "Mind and self"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "c3f702fab69c0f9be971d6d146881e88df2ab12883e54b387411c468c3c72313"
+    },
+    {
+      "conceptId": "C060",
+      "slug": "chinese-room",
+      "label": "Chinese room",
+      "aliases": [],
+      "objectKind": "thought_experiment",
+      "domains": [
+        "Mind and self"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "66fc8485b135ac63844f13f0ca4e91b39f3b8e188dd0f1a7427abb8ef8fa0ba6"
+    },
+    {
+      "conceptId": "C061",
+      "slug": "privation-theory-of-evil",
+      "label": "Privation theory of evil",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Religion and existence"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "e02f1f8564fc78fe8a2bebf332a9c5f769237d9c5fee3407b759806631ab48e1"
+    },
+    {
+      "conceptId": "C062",
+      "slug": "ontological-argument",
+      "label": "Ontological argument",
+      "aliases": [],
+      "objectKind": "argument",
+      "domains": [
+        "Religion and existence"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 24,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "29963572521c76a6dfb80eb5081f4795c1202e4e132e9f4fb166b15f47082be6"
+    },
+    {
+      "conceptId": "C063",
+      "slug": "problem-of-evil",
+      "label": "Problem of evil",
+      "aliases": [],
+      "objectKind": "problem_family",
+      "domains": [
+        "Religion and existence"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 28,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "7e60cd4d85ca5aeff563984c7be82161acaa49aa88bf3ce8e39797c182466e12"
+    },
+    {
+      "conceptId": "C064",
+      "slug": "theodicy",
+      "label": "Theodicy",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Religion and existence"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "4f5268373d4c8afa34fa3fbaa3b9e09f7632f5d445d6d5b5d249d2beb2fdf984"
+    },
+    {
+      "conceptId": "C065",
+      "slug": "pascals-wager",
+      "label": "Pascal's wager",
+      "aliases": [],
+      "objectKind": "argument",
+      "domains": [
+        "Religion and existence"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "df1c0f83a10d546ca86a0f5c2783258d1904411cfda9825e7a3f5f53f783e492"
+    },
+    {
+      "conceptId": "C066",
+      "slug": "leap-of-faith",
+      "label": "Leap of faith",
+      "aliases": [],
+      "objectKind": "reception_formula",
+      "domains": [
+        "Religion and existence"
+      ],
+      "researchMaturity": "source_leads_mapped",
+      "publicFindingAvailable": false,
+      "openTaskCount": 30,
+      "sourceLeadCount": 6,
+      "evidenceLeadCount": 11,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "cc66a8cbb874a5da522c7583966651908a316c2132e5722fac85a8b06b9242e3"
+    },
+    {
+      "conceptId": "C067",
+      "slug": "existential-anxiety",
+      "label": "Existential anxiety",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Religion and existence"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "f4bbcd36c6899fa26dd965f8195bb0d54c0d42db92dae2aafb1f47f2c835ec27"
+    },
+    {
+      "conceptId": "C068",
+      "slug": "death-of-god",
+      "label": "Death of God",
+      "aliases": [],
+      "objectKind": "reception_formula",
+      "domains": [
+        "Religion and existence"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "6be878d3a2d1ca055b1981803105f1621ea8b406578fe32a40afb77253636dd6"
+    },
+    {
+      "conceptId": "C069",
+      "slug": "the-absurd",
+      "label": "The absurd",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Religion and existence"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "4d66c8439caa07df4b32cb928e6dae2fb01ea3ad9a42afffa9e1d6bf51a36d30"
+    },
+    {
+      "conceptId": "C070",
+      "slug": "existence-precedes-essence",
+      "label": "Existence precedes essence",
+      "aliases": [],
+      "objectKind": "reception_formula",
+      "domains": [
+        "Religion and existence"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "65387bfa24df7c1143d06ebafe49dde4e8d22a1ccfced9d0aa1d89fc80ccbae4"
+    },
+    {
+      "conceptId": "C071",
+      "slug": "hegelian-dialectic",
+      "label": "Hegelian dialectic",
+      "aliases": [],
+      "objectKind": "reception_formula",
+      "domains": [
+        "History, economy, and power"
+      ],
+      "researchMaturity": "source_leads_mapped",
+      "publicFindingAvailable": false,
+      "openTaskCount": 34,
+      "sourceLeadCount": 5,
+      "evidenceLeadCount": 12,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "5753cb07f532cfd4f2dae263bb37bf2c4433d8e3e396dec8fabff4b089d1143e"
+    },
+    {
+      "conceptId": "C072",
+      "slug": "recognition-and-the-master-slave-dialectic",
+      "label": "Recognition and the master–slave dialectic",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "History, economy, and power"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "44113ebe8bda7983f5d1bdab00e454a8ab2a36d3f331afe66133edff5458667e"
+    },
+    {
+      "conceptId": "C073",
+      "slug": "alienation",
+      "label": "Alienation",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "History, economy, and power"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "f9ff7f82d74b73bf072008fab157293cd09351ef1e7d1e0a1c2f8522ea4021f7"
+    },
+    {
+      "conceptId": "C074",
+      "slug": "ideology",
+      "label": "Ideology",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "History, economy, and power"
+      ],
+      "researchMaturity": "source_leads_mapped",
+      "publicFindingAvailable": false,
+      "openTaskCount": 24,
+      "sourceLeadCount": 4,
+      "evidenceLeadCount": 8,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "2a87069fb509ddda53d0c78269fff007fe5abca5ce1b4b0ccf8cf01b497a8d02"
+    },
+    {
+      "conceptId": "C075",
+      "slug": "class-struggle",
+      "label": "Class struggle",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "History, economy, and power"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "85d5f5275c29ac0d6577c42f376ed20f17fb7b16487daf1f0883974ba2fa26f5"
+    },
+    {
+      "conceptId": "C076",
+      "slug": "commodity-fetishism",
+      "label": "Commodity fetishism",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "History, economy, and power"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "8032e47c384550b7ba747d293ba4ab3f1358d32d9a1471308d81ada9e0b21e54"
+    },
+    {
+      "conceptId": "C077",
+      "slug": "invisible-hand",
+      "label": "Invisible hand",
+      "aliases": [],
+      "objectKind": "reception_formula",
+      "domains": [
+        "History, economy, and power"
+      ],
+      "researchMaturity": "source_leads_mapped",
+      "publicFindingAvailable": false,
+      "openTaskCount": 34,
+      "sourceLeadCount": 5,
+      "evidenceLeadCount": 10,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "16a9b251aef17896871fad8397e0d3c00064b7edcb1f6a45f6089758a465f2ac"
+    },
+    {
+      "conceptId": "C078",
+      "slug": "division-of-labor",
+      "label": "Division of labor",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "History, economy, and power"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 24,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "c3a676de4f4a6784035b9e3b676aaf49ef6c30fdb37604e10ecc7afcdff84177"
+    },
+    {
+      "conceptId": "C079",
+      "slug": "genealogy-as-critique",
+      "label": "Genealogy as critique",
+      "aliases": [],
+      "objectKind": "method",
+      "domains": [
+        "History, economy, and power"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "e363fc05f5727f5b7cd708308ce39c7c617a0678b8e0eef561f337255e20fe81"
+    },
+    {
+      "conceptId": "C080",
+      "slug": "power-knowledge",
+      "label": "Power/knowledge",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "History, economy, and power"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "a7727927231731ff28c1cd10ddd5a20b3c784fa938ad2253da1470e753005de8"
+    },
+    {
+      "conceptId": "C081",
+      "slug": "phenomenology",
+      "label": "Phenomenology",
+      "aliases": [],
+      "objectKind": "method",
+      "domains": [
+        "Interpretation and science"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "98a9a106449ff93999de2a2190aa301aa06e88d108a422b6c5f8f726d5c25ab0"
+    },
+    {
+      "conceptId": "C082",
+      "slug": "hermeneutic-circle",
+      "label": "Hermeneutic circle",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "Interpretation and science"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 25,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "a5954563b9601f9808322e2695e1d9eb0bfa7629ec7c845d5fbd74d902664493"
+    },
+    {
+      "conceptId": "C083",
+      "slug": "being-in-the-world",
+      "label": "Being-in-the-world",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Interpretation and science"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "1ae217c72f5e5dc72cce66cbe97beb6e37283f0faadbb361321446197a9a1ebd"
+    },
+    {
+      "conceptId": "C084",
+      "slug": "authenticity",
+      "label": "Authenticity",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Interpretation and science"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "6069cfb534c4db6c1358268388580c4f760f16c4822f69b75e7a8b81339d21c7"
+    },
+    {
+      "conceptId": "C085",
+      "slug": "bad-faith",
+      "label": "Bad faith",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Interpretation and science"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "4399de81c6cd8f35c39ef1019d67fa32770570c3b21ec08e57a9850fd325f7ad"
+    },
+    {
+      "conceptId": "C086",
+      "slug": "speech-acts",
+      "label": "Speech acts",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "Interpretation and science"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 27,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "6db86ace0faa6093b750f7cafdb6fb8bbb08ddcebc7b6adaea071010fbbff5bf"
+    },
+    {
+      "conceptId": "C087",
+      "slug": "falsifiability",
+      "label": "Falsifiability",
+      "aliases": [],
+      "objectKind": "principle",
+      "domains": [
+        "Interpretation and science"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "c816d2b039887749a1875b9c2f15a05afabbadae71a53cc9769dc43d8b32f812"
+    },
+    {
+      "conceptId": "C088",
+      "slug": "paradigm-shift",
+      "label": "Paradigm shift",
+      "aliases": [],
+      "objectKind": "reception_formula",
+      "domains": [
+        "Interpretation and science"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "3518638f4706b0f7b70cc731caa3953af3471a3ae2cc2a89ac4046ea9f64b622"
+    },
+    {
+      "conceptId": "C089",
+      "slug": "social-construction",
+      "label": "Social construction",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "Interpretation and science"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "ec5d116bda348850dd1d693669d5d038543e7f36d3f52d7f56b1dbbeb5b69451"
+    },
+    {
+      "conceptId": "C090",
+      "slug": "deconstruction",
+      "label": "Deconstruction",
+      "aliases": [],
+      "objectKind": "method",
+      "domains": [
+        "Interpretation and science"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "c34ec4b25964a44a043f8b796b507766b877917a7ef1e19d45cd56b4c364197d"
+    },
+    {
+      "conceptId": "C091",
+      "slug": "banality-of-evil",
+      "label": "Banality of evil",
+      "aliases": [],
+      "objectKind": "reception_formula",
+      "domains": [
+        "Contemporary justice, identity, and mind"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "243012884a06c9850eeb1d4547d122c1486f571bcc75cb796c47c48733af5de7"
+    },
+    {
+      "conceptId": "C092",
+      "slug": "trolley-problem",
+      "label": "Trolley problem",
+      "aliases": [],
+      "objectKind": "case_family",
+      "domains": [
+        "Contemporary justice, identity, and mind"
+      ],
+      "researchMaturity": "partially_verified",
+      "publicFindingAvailable": false,
+      "openTaskCount": 19,
+      "sourceLeadCount": 2,
+      "evidenceLeadCount": 6,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "83cf6af632dbec97a6ee92795dfecf3859c66410714f56c5239e985006e5a741"
+    },
+    {
+      "conceptId": "C093",
+      "slug": "care-ethics",
+      "label": "Care ethics",
+      "aliases": [],
+      "objectKind": "doctrine",
+      "domains": [
+        "Contemporary justice, identity, and mind"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 22,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "3c922e66f29bde63fa5cc08aaefe5b455742a9fb82b94f66f4df1e44f68c6ce0"
+    },
+    {
+      "conceptId": "C094",
+      "slug": "difference-principle",
+      "label": "Difference principle",
+      "aliases": [],
+      "objectKind": "principle",
+      "domains": [
+        "Contemporary justice, identity, and mind"
+      ],
+      "researchMaturity": "source_leads_mapped",
+      "publicFindingAvailable": false,
+      "openTaskCount": 21,
+      "sourceLeadCount": 3,
+      "evidenceLeadCount": 8,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "dde2151f79c990f2cd2f0b9072738a6a3731139882bf24d5c9b6e97725b6eb83"
+    },
+    {
+      "conceptId": "C095",
+      "slug": "capability-approach",
+      "label": "Capability approach",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "Contemporary justice, identity, and mind"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 24,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "95ed8d9e7a3b38161de624b34d9759cb5fc525347341e9a726adf7ee7d4c9b1a"
+    },
+    {
+      "conceptId": "C096",
+      "slug": "intersectionality",
+      "label": "Intersectionality",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Contemporary justice, identity, and mind"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 23,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "dac847564a8d30bece73629f0ec0424c097a7c6f94f3197bb22741fa28740f62"
+    },
+    {
+      "conceptId": "C097",
+      "slug": "epistemic-injustice",
+      "label": "Epistemic injustice",
+      "aliases": [],
+      "objectKind": "lexeme_concept",
+      "domains": [
+        "Contemporary justice, identity, and mind"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "a54019abb0a503d47ef201d9e4c2534bf0bd8a66ce43936ba8332b419b7e9af5"
+    },
+    {
+      "conceptId": "C098",
+      "slug": "hard-problem-of-consciousness",
+      "label": "Hard problem of consciousness",
+      "aliases": [],
+      "objectKind": "problem_family",
+      "domains": [
+        "Contemporary justice, identity, and mind"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "88d58f073e84e41d7fc0206c4775d414b28c4ac55614137386dbd5b68212020c"
+    },
+    {
+      "conceptId": "C099",
+      "slug": "extended-mind",
+      "label": "Extended mind",
+      "aliases": [],
+      "objectKind": "theory",
+      "domains": [
+        "Contemporary justice, identity, and mind"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "8a2ddce79176012ec25bd94785d1e014d3c4ce5757635e9b35c38a73bd5c3f16"
+    },
+    {
+      "conceptId": "C100",
+      "slug": "gender-performativity",
+      "label": "Gender performativity",
+      "aliases": [],
+      "objectKind": "framework",
+      "domains": [
+        "Contemporary justice, identity, and mind"
+      ],
+      "researchMaturity": "research_queue",
+      "publicFindingAvailable": false,
+      "openTaskCount": 17,
+      "sourceLeadCount": 0,
+      "evidenceLeadCount": 0,
+      "acceptedAssertionCount": 0,
+      "publicationSlug": null,
+      "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+      "sourceRecordDigest": "9f40bb89e685e4d390c4365e9697b2ca8df2d3916b0a6846441d52e7c12b5191"
+    }
+  ]
+}

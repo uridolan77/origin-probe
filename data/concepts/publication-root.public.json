@@ -1,0 +1,8 @@
+{
+  "keyId": "origin-site-publication-root-v1",
+  "algorithm": "Ed25519",
+  "publicKeyBase64": "MCowBQYDK2VwAyEAIWHq3Zer43QKc8KLZDRrhWV3qCU6Z/A3Bul5aUPBhuo=",
+  "purpose": "Root authority for publication-authority key rotation envelopes",
+  "repository": "uridolan77/origin-probe",
+  "fingerprintSha256": "ec298a8ee6a094b4448a3f259c612c9850531a5ef5ff1a30120541b9e50e92db"
+}

@@ -10,6 +10,7 @@ test-results/
 .env
 .env.*
 !.env.example
+.custody-passphrase.local
 .vercel
 *.tsbuildinfo
 tools/fonts/
@@ -17,3 +18,5 @@ tools/fonts/
 measurement/api/_env.deploy.js
 measurement/.local-store/
 
+
+.local/

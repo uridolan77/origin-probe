@@ -1,0 +1,13 @@
+{
+  "receiptKind": "origin_concept_catalog_receipt_v1",
+  "sourcePackageId": "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
+  "sourceArtifactDigest": "a2e463e0b134b4ed49ebb6cced8d0bf1afbb2dcf5780568d7e66ac31299d6814",
+  "corpusAuditDigest": "ffc4c81f271d0d55f234f9862a871f76633448ab5791b2b6bdd08843605e7dcd",
+  "c092PilotDigest": "74ace215ecc436399e5f57da0b4e1b4ad6d61672a3025a8e930ff679c5d209d0",
+  "catalogDigest": "448d9ccdd450dd1cdd8bd249aaa16ae5c0c9640b5c31a93330e00f2d9c3b73e4",
+  "catalogCount": 100,
+  "acceptedAssertionCount": 0,
+  "publishedDossierCount": 0,
+  "c092Maturity": "partially_verified",
+  "transformationBoundary": "Neutral catalog metadata only; candidate assertion prose excluded"
+}
