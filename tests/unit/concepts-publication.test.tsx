@@ -359,26 +359,27 @@ describe("catalog zip custody", () => {
     const tasks = { tasks: [] };
     const artifactZip = path.join(dir, "artifact.zip");
     writeStoredZip(artifactZip, {
-      "candidate-005.json": JSON.stringify(candidate),
       "CORPUS_AUDIT.json": JSON.stringify(audit),
+      "MANIFEST.sha256": "fixture\n",
+      "MIGRATION_REPORT.md": "# fixture\n",
+      "RESEARCH_TASKS.csv": "taskId\n",
+      "REVIEW_REGISTER.json": JSON.stringify({ events: [] }),
+      "ROLE_AUDIT_QUEUE.csv": "assertionId\n",
       "TASK_GRAPH.json": JSON.stringify(tasks),
-      "ARTIFACT_MANIFEST.json": JSON.stringify({
-        packageId: "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
-        exactSet: [
-          "candidate-005.json",
-          "CORPUS_AUDIT.json",
-          "TASK_GRAPH.json",
-          "ARTIFACT_MANIFEST.json",
-        ],
-      }),
+      "candidate-005.json": JSON.stringify(candidate),
+      "research-index.md": "# fixture\n",
     });
     const c092Zip = path.join(dir, "c092.zip");
     writeStoredZip(c092Zip, {
-      "C092_MATURITY_REPORT.json": JSON.stringify({
+      "C092-pilot-workspace.md": "# fixture\n",
+      "C092-pilot-workspace.v005.json": JSON.stringify({ packageId: "fixture" }),
+      "MANIFEST.sha256": "fixture\n",
+      "PILOT_REPORT.json": JSON.stringify({
         recordId: "C092",
         gate: "PASS_PARTIALLY_VERIFIED",
         acceptedAssertionIds: [],
       }),
+      "PILOT_REPORT.md": "# fixture\n",
     });
 
     const outRoot = path.join(dir, "repo");
@@ -427,32 +428,33 @@ describe("catalog zip custody", () => {
     });
     const artifactZip = path.join(dir, "artifact.zip");
     writeStoredZip(artifactZip, {
-      "candidate-005.json": JSON.stringify({
-        packageId: "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
-        records,
-      }),
       "CORPUS_AUDIT.json": JSON.stringify({
         sourceLeadModeledRecordIds: [],
         acceptedAssertionCount: 0,
       }),
+      "MANIFEST.sha256": "fixture\n",
+      "MIGRATION_REPORT.md": "# fixture\n",
+      "RESEARCH_TASKS.csv": "taskId\n",
+      "REVIEW_REGISTER.json": JSON.stringify({ events: [] }),
+      "ROLE_AUDIT_QUEUE.csv": "assertionId\n",
       "TASK_GRAPH.json": JSON.stringify({ tasks: [] }),
-      "ARTIFACT_MANIFEST.json": JSON.stringify({
+      "candidate-005.json": JSON.stringify({
         packageId: "ORIGIN-CONCEPT-GENEALOGIES-100-CANDIDATE-005",
-        exactSet: [
-          "candidate-005.json",
-          "CORPUS_AUDIT.json",
-          "TASK_GRAPH.json",
-          "ARTIFACT_MANIFEST.json",
-        ],
+        records,
       }),
+      "research-index.md": "# fixture\n",
     });
     const c092Zip = path.join(dir, "c092.zip");
     writeStoredZip(c092Zip, {
-      "C092_MATURITY_REPORT.json": JSON.stringify({
+      "C092-pilot-workspace.md": "# fixture\n",
+      "C092-pilot-workspace.v005.json": JSON.stringify({ packageId: "fixture" }),
+      "MANIFEST.sha256": "fixture\n",
+      "PILOT_REPORT.json": JSON.stringify({
         recordId: "C092",
         gate: "PASS_PARTIALLY_VERIFIED",
         acceptedAssertionIds: [],
       }),
+      "PILOT_REPORT.md": "# fixture\n",
     });
     const outRoot = path.join(dir, "repo");
     fs.mkdirSync(path.join(outRoot, "data/concepts"), { recursive: true });

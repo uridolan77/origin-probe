@@ -56,13 +56,24 @@ function assertEnvDigestPins() {
 }
 
 const ARTIFACT_EXACT_SET = [
-  "candidate-005.json",
   "CORPUS_AUDIT.json",
+  "MANIFEST.sha256",
+  "MIGRATION_REPORT.md",
+  "RESEARCH_TASKS.csv",
+  "REVIEW_REGISTER.json",
+  "ROLE_AUDIT_QUEUE.csv",
   "TASK_GRAPH.json",
-  "ARTIFACT_MANIFEST.json",
+  "candidate-005.json",
+  "research-index.md",
 ];
 
-const C092_EXACT_SET = ["C092_MATURITY_REPORT.json"];
+const C092_EXACT_SET = [
+  "C092-pilot-workspace.md",
+  "C092-pilot-workspace.v005.json",
+  "MANIFEST.sha256",
+  "PILOT_REPORT.json",
+  "PILOT_REPORT.md",
+];
 
 function slugify(label) {
   const base = label
@@ -96,10 +107,10 @@ function deriveMaturity(record, audit, c092Pilot) {
 }
 
 function deriveC092PilotFromWorkspace(extractDir) {
-  const reportPath = path.join(extractDir, "C092_MATURITY_REPORT.json");
+  const reportPath = path.join(extractDir, "PILOT_REPORT.json");
   if (!fs.existsSync(reportPath)) {
     throw new Error(
-      "C092 maturity report missing at trusted path C092_MATURITY_REPORT.json",
+      "C092 maturity report missing at trusted path PILOT_REPORT.json",
     );
   }
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
@@ -145,15 +156,13 @@ export function buildConceptCatalogFromZips({
     artifactExtract = extractZipToTemp(artifactZip, artifactExactSet);
     c092Extract = extractZipToTemp(c092Zip, c092ExactSet);
 
-    const manifestPath = path.join(artifactExtract.dir, "ARTIFACT_MANIFEST.json");
     const candidatePath = path.join(artifactExtract.dir, "candidate-005.json");
     const auditPath = path.join(artifactExtract.dir, "CORPUS_AUDIT.json");
     const taskGraphPath = path.join(artifactExtract.dir, "TASK_GRAPH.json");
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-    if (manifest.packageId !== SOURCE_PACKAGE_ID) {
-      throw new Error(`Artifact manifest packageId mismatch: ${manifest.packageId}`);
-    }
     const candidate = JSON.parse(fs.readFileSync(candidatePath, "utf8"));
+    if (candidate.packageId !== SOURCE_PACKAGE_ID) {
+      throw new Error(`Artifact packageId mismatch: ${candidate.packageId}`);
+    }
     const audit = JSON.parse(fs.readFileSync(auditPath, "utf8"));
     const taskGraph = JSON.parse(fs.readFileSync(taskGraphPath, "utf8"));
 

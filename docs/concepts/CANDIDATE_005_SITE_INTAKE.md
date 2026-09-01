@@ -29,6 +29,28 @@ Authoritative receipts used (sealed delivery naming):
 | Package index | `3cbff9b5c66f2f5b2d85f74dc455362a18996d49dde12452a1dd7b3b7748d4c7` | 2327 |
 | Validation report | `fa104005685dc8b6ee58185e63c9ca66ca87ad26e6dc1c00276c83739552c155` | 6076 |
 
+### Sealed exact file sets (catalog builder)
+
+Artifact ZIP must contain exactly:
+
+- `candidate-005.json`
+- `CORPUS_AUDIT.json`
+- `TASK_GRAPH.json`
+- `MANIFEST.sha256`
+- `MIGRATION_REPORT.md`
+- `RESEARCH_TASKS.csv`
+- `REVIEW_REGISTER.json`
+- `ROLE_AUDIT_QUEUE.csv`
+- `research-index.md`
+
+C092 workspace ZIP must contain exactly:
+
+- `PILOT_REPORT.json` (trusted maturity gate document)
+- `PILOT_REPORT.md`
+- `C092-pilot-workspace.v005.json`
+- `C092-pilot-workspace.md`
+- `MANIFEST.sha256`
+
 ## Counts at intake
 
 | Metric | Value |
