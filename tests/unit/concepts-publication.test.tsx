@@ -159,19 +159,55 @@ describe("concept publication membrane", () => {
     // Resign valid bundle with substituted key but keep old pin
     const bundle = load("publication-bundle-valid.json");
     bundle.signerKeyId = newAuth.keyId;
-    expect(() =>
-      verifyPublicationBundle(bundle, tmp, {
-        authority: newAuth,
-        pinnedPolicy: {
-          ...fixturePolicy,
-          authorityFingerprintSha256: authorityFingerprintSha256(
-            fixtureAuthority.publicKeyBase64,
-          ),
-        },
-        pinFingerprint: fixturePolicy.authorityFingerprintSha256,
-        fixtureMode: false,
-      }),
-    ).toThrow(/Authority key substitution|fingerprint pin mismatch/i);
+
+    // Hermetic external pins so CI=true / ORIGIN_REQUIRE_EXTERNAL_PINS cannot
+    // fail closed on missing env before the substitution/mismatch path.
+    const pinAuthority = fs
+      .readFileSync(
+        path.join(process.cwd(), "tools/pins/publication-authority.sha256"),
+        "utf8",
+      )
+      .trim();
+    const pinRoot = fs
+      .readFileSync(
+        path.join(process.cwd(), "tools/pins/publication-root.sha256"),
+        "utf8",
+      )
+      .trim();
+    const prevRequire = process.env.ORIGIN_REQUIRE_EXTERNAL_PINS;
+    const prevAuthority = process.env.ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT;
+    const prevRoot = process.env.ORIGIN_PUBLICATION_ROOT_FINGERPRINT;
+    process.env.ORIGIN_REQUIRE_EXTERNAL_PINS = "1";
+    process.env.ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT = pinAuthority;
+    process.env.ORIGIN_PUBLICATION_ROOT_FINGERPRINT = pinRoot;
+    try {
+      expect(() =>
+        verifyPublicationBundle(bundle, tmp, {
+          authority: newAuth,
+          pinnedPolicy: {
+            ...fixturePolicy,
+            authorityFingerprintSha256: authorityFingerprintSha256(
+              fixtureAuthority.publicKeyBase64,
+            ),
+          },
+          pinFingerprint: fixturePolicy.authorityFingerprintSha256,
+          fixtureMode: false,
+        }),
+      ).toThrow(/Authority key substitution|fingerprint pin mismatch/i);
+    } finally {
+      if (prevRequire === undefined) delete process.env.ORIGIN_REQUIRE_EXTERNAL_PINS;
+      else process.env.ORIGIN_REQUIRE_EXTERNAL_PINS = prevRequire;
+      if (prevAuthority === undefined) {
+        delete process.env.ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT;
+      } else {
+        process.env.ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT = prevAuthority;
+      }
+      if (prevRoot === undefined) {
+        delete process.env.ORIGIN_PUBLICATION_ROOT_FINGERPRINT;
+      } else {
+        process.env.ORIGIN_PUBLICATION_ROOT_FINGERPRINT = prevRoot;
+      }
+    }
     void priv;
   });
 

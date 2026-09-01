@@ -144,6 +144,11 @@ jobs:
   verify-windows:
     if: github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
+    environment: publication-trust
+    env:
+      ORIGIN_REQUIRE_EXTERNAL_PINS: "1"
+      ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT: ${{ vars.ORIGIN_PUBLICATION_AUTHORITY_FINGERPRINT }}
+      ORIGIN_PUBLICATION_ROOT_FINGERPRINT: ${{ vars.ORIGIN_PUBLICATION_ROOT_FINGERPRINT }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
