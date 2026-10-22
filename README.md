@@ -37,3 +37,5 @@ npm run test:e2e
 ## Launch readiness
 
 Launch is unauthorized. Do not deploy, publish, or open the repository publicly from this candidate.
+
+Failure classes and live-run invariants: [FAILURE-CLASSES.md](FAILURE-CLASSES.md)
